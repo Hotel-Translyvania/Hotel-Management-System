@@ -1,2 +1,4 @@
 def myfunc(x,y):
-  return x+y
+  add = x+y
+  mul = x*y
+  return add, mul
