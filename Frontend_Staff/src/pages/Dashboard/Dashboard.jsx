@@ -488,22 +488,63 @@ const Dashboard = () => {
 
                     {/* Room Availability and Assignments */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Room Availability */}
+                        {/* Enhanced Room Availability - Graphical Version */}
                         <div className="bg-white shadow-xl rounded-2xl p-6 hover:shadow-2xl transition-shadow duration-300">
                             <h2 className={`${sectionTitleStyle}`}>
                                 Room Availability <FaBed className="text-teal-500 ml-2" />
                             </h2>
-                            {Object.keys(roomAvailability).map((roomType) => (
-                                <div key={roomType} className="py-4 border-b border-gray-200 last:border-b-0">
-                                    <h3 className={dataLabelStyle}>{roomType}</h3>
-                                    <p className="text-sm text-gray-600">
-                                        Available: <span className="text-green-500">{roomAvailability[roomType].available}</span>,
-                                        Rented: <span className="text-red-500">{roomAvailability[roomType].rented}</span>,
-                                        Out of Order: <span className="text-yellow-500">{roomAvailability[roomType].outOfOrder}</span>
-                                        <span className="text-gray-500"> / Total: {roomAvailability[roomType].total}</span>
-                                    </p>
-                                </div>
-                            ))}
+                            
+                            {Object.keys(roomAvailability).map((roomType) => {
+                                const room = roomAvailability[roomType];
+                                const total = room.total;
+                                const availablePercent = (room.available / total) * 100;
+                                const rentedPercent = (room.rented / total) * 100;
+                                const outOfOrderPercent = (room.outOfOrder / total) * 100;
+                                
+                                return (
+                                    <div key={roomType} className="mb-6 last:mb-0">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <h3 className={`${dataLabelStyle} font-semibold`}>{roomType}</h3>
+                                            <span className="text-sm text-gray-500">Total: {total}</span>
+                                        </div>
+                                        
+                                        {/* Stacked Bar Chart */}
+                                        <div className="w-full h-6 bg-gray-200 rounded-full overflow-hidden mb-2">
+                                            <div 
+                                                className="h-full bg-green-500 inline-block" 
+                                                style={{ width: `${availablePercent}%` }}
+                                                title={`Available: ${room.available}`}
+                                            ></div>
+                                            <div 
+                                                className="h-full bg-red-500 inline-block" 
+                                                style={{ width: `${rentedPercent}%` }}
+                                                title={`Rented: ${room.rented}`}
+                                            ></div>
+                                            <div 
+                                                className="h-full bg-yellow-500 inline-block" 
+                                                style={{ width: `${outOfOrderPercent}%` }}
+                                                title={`Out of Order: ${room.outOfOrder}`}
+                                            ></div>
+                                        </div>
+                                        
+                                        {/* Legend */}
+                                        <div className="flex flex-wrap gap-4 text-xs">
+                                            <div className="flex items-center">
+                                                <div className="w-3 h-3 bg-green-500 rounded-full mr-1"></div>
+                                                <span>Available: {room.available}</span>
+                                            </div>
+                                            <div className="flex items-center">
+                                                <div className="w-3 h-3 bg-red-500 rounded-full mr-1"></div>
+                                                <span>Rented: {room.rented}</span>
+                                            </div>
+                                            <div className="flex items-center">
+                                                <div className="w-3 h-3 bg-yellow-500 rounded-full mr-1"></div>
+                                                <span>Out of Order: {room.outOfOrder}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
 
                         {/* Assignments */}
