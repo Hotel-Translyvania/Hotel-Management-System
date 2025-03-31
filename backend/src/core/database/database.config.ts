@@ -1,5 +1,7 @@
+/* eslint-disable prettier/prettier */
 import { registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { Booking } from 'src/v1/bookings/entities/booking.entity';
 
 export default registerAs('database', (): TypeOrmModuleOptions => {
   return {
