@@ -6,7 +6,7 @@ import BookingHistory from './BookingHistory';
 import Header from './Header';
 import StaffNotes from './StaffNotes';
 import {guest, contactInfo, bookingHistory, preferences, currentBooking} from './dummy_datas';
-
+import React from 'react';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -92,50 +92,55 @@ function App() {
     return <div>Error loading data.</div>;
   }
 
-  return (
-    <div>
-      <Header />
-      <hr />
-      <div className="App" style={{
-        display: isMobile ? 'flex':'grid',
-        flexDirection:"row",
-        justifyContent:"center",
-        position:"fixed",
-        gridTemplateColumns: '2fr 3fr',
-        width:"100%",
-        height: '100vh',
+
+    // ... [keep existing state and effects]
+  
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        position: 'relative'
+      }}>
+        <Header />
+        <div><hr></hr></div>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '500px 1fr', // Adjust sidebar width
         
-        overflow: 'scroll',
         }}>
-        <SideBar 
-          guestData={guest} 
-          contactInfo={contactInfo}
-          isMobile={isMobile}
-         
-        />
-        <div style={{ 
-  height: '100vh',
-  display: 'flex',
-  flexDirection: 'column'
-}}>
-          <Booking currentBooking={currentBooking} isMobile = {isMobile} />
-          <GuestPreference preferences={preferences} isMobile = {isMobile} />
-          <BookingHistory bookings={bookingHistory} isMobile = {isMobile} />
-          <StaffNotes />
+          {/* Left Sidebar - Sticky with independent scroll */}
+          <div>
+            <SideBar 
+              guestData={guest} 
+              contactInfo={contactInfo}
+            />
+          </div>
+  
+          {/* Main Content Area - Primary scroll */}
+          <div style={{
+            overflowY: 'auto',
+            height: '100vh',
+            padding: '1rem'
+          }}>
+            <Booking currentBooking={currentBooking} />
+            <GuestPreference preferences={preferences} />
+            <BookingHistory bookings={bookingHistory} />
+            <StaffNotes  /> 
+            
+            {/* Footer in normal document flow */}
+            <div style={{
+              padding: '2rem 0',
+              textAlign: 'center',
+              color: '#666'
+            }}>
+              <div></div>
+              
+            </div>
+          </div>
         </div>
       </div>
-      <div style={{
-       display:"flex",
-        alignItem:"end",
-        justifyContent:"end",
-        height: '50px',
-        backgroundColor: '#f1f1f1',
-       width: '100%',
-        paddingTop: '10px'
-      }}> hjjjj</div>
-    </div>
-  );
-}
-
+    );
+  }
 export default App;
 

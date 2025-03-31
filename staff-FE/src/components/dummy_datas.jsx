@@ -1,6 +1,6 @@
 const guest = {
-    "fname":"Hasset", 
-    "lname":"Molla",
+    "fname":"Joe", 
+    "lname":"Doe",
     "active":true,
     "id":1,
     "image":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTz4TaCgyT84ax_lVhjqJfAu490Ogi6qrNEay6k2jRzJ9lDd5AdxPmVoshlYPGinuk3a44&usqp=CAU"
