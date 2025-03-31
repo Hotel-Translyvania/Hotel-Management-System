@@ -1,13 +1,17 @@
-// src/common/database/database.config.ts
+import { registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-export const typeOrmConfig: TypeOrmModuleOptions = {
-  type: 'mysql',
-  host: 'sql12.freemysqlhosting.net',
-  port: 3306,
-  username: 'sql12768585',
-  password: 'MCLpLavKU5',
-  database: 'sql12768585',
-  entities: [], //put entities here
-  synchronize: true,
-};
+export default registerAs('database', (): TypeOrmModuleOptions => {
+  return {
+    type: 'mysql',
+    host: process.env.DATABASE_HOST,
+    port: parseInt(process.env.DATABASE_PORT || '3306'),
+    username: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME,
+    entities: [],
+    synchronize: true,
+    autoLoadEntities: true,
+    logging: true,
+  };
+});

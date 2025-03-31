@@ -84,25 +84,22 @@ export const TableToolbar = ({ table, addButtonText, onAddClick }) => {
             className="px-4  bg-white"
           />
           {filterValue && (
-            <Button
-              
-              onClick={clearFilters}
-              className=""
-            >
+            <Button onClick={clearFilters} className="">
               <X className="h-4 w-4" />
             </Button>
           )}
         </div>
       </div>
-
-      <Button
-        variant="default"
-        className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
-        onClick={onAddClick}
-      >
-        {addButtonText}
-        <PlusCircle className="h-4 w-4" />
-      </Button>
+      {addButtonText && (
+        <Button
+          variant="default"
+          className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+          onClick={onAddClick}
+        >
+          {addButtonText}
+          <PlusCircle className="h-4 w-4" />
+        </Button>
+      )}
     </div>
   );
 };

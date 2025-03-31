@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
-import { RadioGroupItem } from "@/components/ui/radio-group";
 
 export const roomSelection = [
   {

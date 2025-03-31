@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 const AddFood = () => {
+
   const [activeTab, setActiveTab] = useState('basic');
   const [foodItem, setFoodItem] = useState({
     name: '',
@@ -10,6 +11,14 @@ const AddFood = () => {
     image: null
   });
   const [previewUrl, setPreviewUrl] = useState(null);
+
+  return (
+    <div>
+      These for adding food
+      </div>
+  )
+}
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;

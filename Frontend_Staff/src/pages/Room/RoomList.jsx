@@ -14,7 +14,7 @@ const RoomList = () => {
       data={roomDatabase}
       columns={roomColumns}
       addButtonText="Add Room"
-      maxWidth={"48"}
+      maxWidth="56"
       onAddClick={handleAddRoom}
       pageSize={5}
     />

@@ -6,17 +6,22 @@ import { useState } from "react";
 import { CustomTable } from "@/components/Table/Table";
 import { roomSelection } from "@/components/Room/roomSelection";
 import { roomDatabase } from "@/TestData/roomDataTest";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
-const Process = () => {
+const ProfileAndBooking = () => {
   const [activeButton, setActiveButton] = useState("profile");
+  const [selectedRoom, setSelectedRoom] = useState(null);
   const handleOnClick = (val) => {
     setActiveButton(val);
   };
-  const [selectedRoom, setSelectedRoom] = useState(null);
   return (
-    <div className="p-4 flex justify-center items-center h-screen w-1/2 ">
+    <div className="p-4 flex justify-center items-center size-3/5"> {/* Remember w-3/5 h-screen */}
       <div className="flex flex-col rounded-3xl flex-1 p-8 bg-white">
-        <div className="flex flex-row border-b  w-fill text-[#718EBF] gap-12">
+        {/* {selectedRoom && (
+          <div>{"Selected Room: " + selectedRoom.roomNumber}</div>
+        )} */}
+        <div className="flex flex-row border-b w-fill text-[#718EBF] gap-12 font-serif text-lg">
           <button
             className={`items-center ${
               activeButton === "profile"
@@ -50,7 +55,7 @@ const Process = () => {
         </div>
         {activeButton === "profile" && <AddGuest />}
         {activeButton === "room" && (
-          <div className="p-2">
+          <div className="p-4 flex flex-col gap-4">
             <CustomTable
               data={roomDatabase}
               columns={roomSelection}
@@ -59,6 +64,15 @@ const Process = () => {
               pageSize={5}
               maxWidth="32"
             />
+            <div className="flex justify-end">
+              <Button
+                variant="default"
+                className="bg-blue-600 hover:bg-blue-700 text-white gap-2 w-1/4"
+                onClick={() => setActiveButton("booking")}
+              >
+                Next
+              </Button>
+            </div>
           </div>
         )}
         {activeButton === "booking" && <AddBooking />}
@@ -66,4 +80,4 @@ const Process = () => {
     </div>
   );
 };
-export default Process;
+export default ProfileAndBooking;

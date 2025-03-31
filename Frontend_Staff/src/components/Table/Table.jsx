@@ -22,19 +22,44 @@ export const CustomTable = ({
   data,
   columns,
   defaultSort = [],
-  pageSize,
+  pageSize = 10,
   addButtonText,
-  maxWidth,
-  EnableSelection=false,
+  maxWidth = "32",
+  EnableSelection = false,
   onAddClick = () => {},
+  onSelectionChange = () => {},
 }) => {
   const [sorting, setSorting] = useState(defaultSort);
   const [columnFilters, setColumnFilters] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
+  const [selectedRowId, setSelectedRowId] = useState(null);
+
+  const tableColumns = EnableSelection
+    ? [
+        {
+          id: "select",
+          header: "Select",
+          cell: ({ row }) => (
+            <input
+              type="radio"
+              checked={selectedRowId === row.id}
+              onChange={() => {
+                setSelectedRowId(row.id);
+                onSelectionChange(row.original);
+              }}
+              onClick={(e) => e.stopPropagation()} // what does this do ->
+              className="h-4 w-4"
+            />
+          ),
+          size: 40,
+        },
+        ...columns,
+      ]
+    : columns;
 
   const table = useReactTable({
     data,
-    columns,
+    columns: tableColumns,
     state: {
       sorting,
       columnFilters,
@@ -73,7 +98,7 @@ export const CustomTable = ({
                     style={{
                       width: header.getSize(),
                     }}
-                    className="py-2 text-gray-700"
+                    className="py-2 text-gray-700 font-medium"
                   >
                     {flexRender(
                       header.column.columnDef.header,
@@ -87,12 +112,20 @@ export const CustomTable = ({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} className="hover:bg-gray-50">
+                <TableRow
+                  key={row.id}
+                  className="hover:bg-gray-50"
+                  onClick={() => {
+                    if (EnableSelection) {
+                      setSelectedRowId(row.id);
+                      onSelectionChange(row.original);
+                    }
+                  }}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className={`py-2 pl-4 truncate max-w-${maxWidth}`}
-
+                      className={`py-2 pl-4 truncate max-w-${maxWidth} font-serif`}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
@@ -105,7 +138,7 @@ export const CustomTable = ({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={tableColumns.length}
                   className="h-24 text-center"
                 >
                   No records found
@@ -120,4 +153,3 @@ export const CustomTable = ({
     </div>
   );
 };
-

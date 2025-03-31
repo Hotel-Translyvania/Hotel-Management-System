@@ -23,7 +23,7 @@ import AddFood from "./pages/Food/AddFood";
 import AddRoom from "./pages/Room/AddRoom";
 import RoomList from "./pages/Room/RoomList";
 import EditRoom from "./pages/Room/EditRoom";
-import Process from "./pages/Process/Process";
+import ProfileAndBooking from "./pages/Process/GuestCreation";
 
 const App = () => {
   return (
@@ -43,7 +43,7 @@ const App = () => {
         {/* <Route path="/restaurant/edit-food/:id" element={<AddFood />} /> */}
         <Route path="/rooms/add-room" element={<AddRoom />} />
         <Route path="/rooms/edit-room/:id" element={<EditRoom />} />
-        <Route path="/process" element={<Process />} />
+        <Route path="/process" element={<ProfileAndBooking />} />
 
         <Route element={<Layout />}>
           <Route path="/" element={<Navigate to="/dashboard" />} />

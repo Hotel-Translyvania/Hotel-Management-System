@@ -2,7 +2,6 @@ import { CustomTable } from "@/components/Table/Table";
 import { reservationDatabase } from "@/TestData/reservationDatabase";
 import { reservationColumns } from "@/components/Reservations/ReservationsColumn";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 const ReservationListPage = () => {
   const navigate = useNavigate();
 
@@ -18,8 +17,6 @@ const ReservationListPage = () => {
         defaultSort={[{ id: "created_at", desc: false }]}
         addButtonText="Add Reservation"
         onAddClick={handleAddBooking}
-        maxWidth="32"
-        pageSize={10}
       />
     </div>
   );

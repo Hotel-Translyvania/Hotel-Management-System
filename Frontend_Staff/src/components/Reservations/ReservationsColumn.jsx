@@ -16,7 +16,7 @@ export const reservationColumns = [
         <ArrowUpDown className="size-4" />
       </Button>
     ),
-    size: 100,
+    size: 90,
   },
   {
     id: "guestName",
@@ -128,7 +128,7 @@ export const reservationColumns = [
         <ArrowUpDown className="size-4" />
       </Button>
     ),
-    size: 100,
+    size: 90,
   },
   {
     id: "actions",
