@@ -1,35 +1,30 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BookingProvider } from './context/BookingContext';
+import RoomsPage from './pages/RoomsPage';
+import BookingPage from './pages/BookingPage';
+import Navbar from './components/Navbar';
+import BookingDetails from './Components/Rooms/BookingDetails';
+import './room_booking.css';
 
-function App() {
-  const [count, setCount] = useState(0)
-
+const App = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
-
-export default App
+    <Router>
+      <BookingProvider>
+        <div className="min-h-screen bg-gray-100">
+          <Navbar />
+          
+          <main className="container mx-auto px-4 py-8">
+            <Routes>
+              <Route path="/" element={<RoomsPage />} />
+              <Route path="/rooms" element={<RoomsPage />} />
+              <Route path="/bookings" element={<BookingPage />} />
+              <Route path="/bookings/:id" element={<BookingDetails />} />
+            </Routes>
+          </main>
+        </div>
+      </BookingProvider>
+    </Router>
+  );
+};
+export default App;
