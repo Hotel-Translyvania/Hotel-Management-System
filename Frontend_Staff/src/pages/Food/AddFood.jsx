@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 
 const AddFood = () => {
@@ -7,6 +6,7 @@ const AddFood = () => {
     name: '',
     category: 'main-course',
     status: 'available',
+    preparationTime: '', // New field added
     image: null
   });
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -104,6 +104,23 @@ const AddFood = () => {
                   <option value="out-of-stock">Out of Stock</option>
                   <option value="seasonal">Seasonal</option>
                 </select>
+              </div>
+
+              {/* Preparation Time Field */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Preparation Time (minutes)
+                </label>
+                <input
+                  type="number"
+                  name="preparationTime"
+                  value={foodItem.preparationTime}
+                  onChange={handleChange}
+                  placeholder="e.g., 30"
+                  min="1"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
               </div>
             </div>
           )}
