@@ -6,7 +6,7 @@ import {
   TotalBookingsResponse,
 } from './dto/dashboard-response.dto';
 
-@Controller('api/v1/hms/dashboard')
+@Controller('/hms/dashboard')
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
