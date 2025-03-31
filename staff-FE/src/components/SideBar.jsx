@@ -15,7 +15,7 @@ export default function SideBar(props) {
       borderRight: '1px solid #eee',
       overflow: 'auto' 
     }}>
-      <Guest data = {props.guestData}/>
+      <Guest data = {props.guestData} isMobile={props.isMobile}/>
       <Contact data = {props.contactInfo} />
     </div>
   );

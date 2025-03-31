@@ -4,6 +4,7 @@ import Booking from './Booking';
 import GuestPreference from './GuestPrefrences';
 import BookingHistory from './BookingHistory';
 import Header from './Header';
+import StaffNotes from './StaffNotes';
 import {guest, contactInfo, bookingHistory, preferences, currentBooking} from './dummy_datas';
 
 
@@ -103,21 +104,35 @@ function App() {
         gridTemplateColumns: '2fr 3fr',
         width:"100%",
         height: '100vh',
-        gap: '10px',
-        overflow: 'auto'
-      }}>
+        
+        overflow: 'scroll',
+        }}>
         <SideBar 
           guestData={guest} 
           contactInfo={contactInfo}
           isMobile={isMobile}
          
         />
-        <div style={{ padding: '20px'}}>
+        <div style={{ 
+  height: '100vh',
+  display: 'flex',
+  flexDirection: 'column'
+}}>
           <Booking currentBooking={currentBooking} isMobile = {isMobile} />
           <GuestPreference preferences={preferences} isMobile = {isMobile} />
           <BookingHistory bookings={bookingHistory} isMobile = {isMobile} />
+          <StaffNotes />
         </div>
       </div>
+      <div style={{
+       display:"flex",
+        alignItem:"end",
+        justifyContent:"end",
+        height: '50px',
+        backgroundColor: '#f1f1f1',
+       width: '100%',
+        paddingTop: '10px'
+      }}> hjjjj</div>
     </div>
   );
 }

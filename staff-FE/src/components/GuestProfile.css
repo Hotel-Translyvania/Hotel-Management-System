@@ -1,101 +1,108 @@
 .guest-profile-container {
-    max-width: 400px;
-    border-radius: 10px;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    box-shadow: 0 0 20px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .guest-header h1 {
-    text-align: center;
-    margin: 0;
-    font-size: 24px;
-    position: sticky;
-  }
-  
-  .guest-id {
-    color: #666;
-    font-size: 14px;
-    margin: 5px 0;
-    text-align: center;
-  }
-  
-  .guest-status {
-    margin: 15px 0;
-  }
-  
-  .status-badge {
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: bold;
-    background-color: #00a65a;
-  }
-  
-  .status-badge  {
-    text-align: center; 
-    padding: 8px 0; 
-  }
-  
-  .status-active{
-    display: inline-block;
-    background-color: #09d267;
-    color: white; 
-    text-align: center;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-weight: 500;
-  }
-  .status-inactive{
-    display: inline-block;
-    background-color: #d20935;
-    color: white; 
-    text-align: center;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-weight: 500;
-  }
-  
-  .divider {
-    height: 1px;
-    background-color: #161515;
-    margin: 15px 0;
-  }
-  
-  .guest-actions {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .action-button {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  
-  .edit-button {
-    background-color: #f0f0f0;
-    color: #333;
-  }
-  
-  .checkout-button {
-    background-color: #ff4444;
-    color: white;
-  }
-  .guest-image{
-    display: flex;
-    justify-content: center;
-    
-  }
-  .guest-image img{
-    border-radius: 50%;
-  }
+  width: 100%; /* Use full sidebar width */
+  border-radius: 12px;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center everything */
+  background-color: white;
+  max-width: 400px;
+}
 
+/* Guest Image */
+.guest-image {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
 
-  button:hover{
-    background-color: #e0e0e0;
-    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-  }
+.guest-image img {
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  object-fit: cover; /* Ensures a perfect crop */
+  border: 4px solid #eee;
+}
+
+/* Guest Header */
+.guest-header h1 {
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+  margin: 10px 0 5px;
+}
+
+.guest-id {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+}
+
+/* Status Section */
+.guest-status {
+  display: flex;
+  justify-content: center;
+  margin: 15px 0;
+}
+
+.status-badge {
+  padding: 6px 14px;
+  border-radius: 15px;
+  font-size: 14px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.status-active {
+  background-color: #09d267;
+  color: white;
+}
+
+.status-inactive {
+  background-color: #d20935;
+  color: white;
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  width: 90%;
+  background-color: #ddd;
+  margin: 15px 0;
+}
+
+/* Buttons Section */
+.guest-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  width: 100%;
+}
+
+.action-button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  width: 120px; /* Ensures equal button size */
+  text-align: center;
+}
+
+.edit-button {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.checkout-button {
+  background-color: #ff4444;
+  color: white;
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.15);
+}
