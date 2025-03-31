@@ -12,13 +12,6 @@ const AddFood = () => {
   });
   const [previewUrl, setPreviewUrl] = useState(null);
 
-  return (
-    <div>
-      These for adding food
-      </div>
-  )
-}
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
