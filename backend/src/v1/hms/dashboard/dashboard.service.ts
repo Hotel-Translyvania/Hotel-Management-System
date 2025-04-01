@@ -53,9 +53,9 @@ export class DashboardService {
     return stats;
   }
 
-  async getTotalBookings(hotelId: number): Promise<number> {
-    return this.bookingRepository.count({
-      where: { hotel: { id: hotelId } }, // Updated to use relation
-    });
-  }
+  // async getTotalBookings(hotelId: number): Promise<number> {
+  //   return this.bookingRepository.count({
+  //     where: { hotel: { id: hotelId } }, // Updated to use relation
+  //   });
+  // }
 }

@@ -35,14 +35,14 @@ export class DashboardController {
     };
   }
 
-  @Get('bookings')
-  async getTotalBookings(
-    @Query('hotelId') hotelId: number, // Changed from string to number
-  ): Promise<TotalBookingsResponse> {
-    const booked = await this.dashboardService.getTotalBookings(hotelId);
-    return {
-      success: true,
-      booked,
-    };
-  }
+  // @Get('bookings')
+  // async getTotalBookings(
+  //   @Query('hotelId') hotelId: number, // Changed from string to number
+  // ): Promise<TotalBookingsResponse> {
+  //   const booked = await this.dashboardService.getTotalBookings(hotelId);
+  //   return {
+  //     success: true,
+  //     booked,
+  //   };
+  // }
 }

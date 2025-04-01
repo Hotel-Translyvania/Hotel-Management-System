@@ -92,7 +92,7 @@ export class RoomsService {
       availableRooms.map(async (room) => {
         const overlappingBookings = await this.bookingRepository.count({
           where: {
-            roomId: { id: room.roomId },
+            // roomId: { id: room.roomId },
             checkIn: LessThan(checkOutDate) ,
             checkOut: MoreThan(checkInDate) ,
           },
