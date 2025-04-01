@@ -14,7 +14,7 @@ export default function GuestProfile(props) {
       backgroundColor: '#ffffff',
       border: '1px solid #f0f0f0',
       maxWidth: '320px',
-      margin: '0 auto'
+      margin: '10px auto'
     },
     imageContainer: {
       display: 'flex',
