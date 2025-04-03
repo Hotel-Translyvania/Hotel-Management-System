@@ -4,6 +4,7 @@ import { Manager } from './manager.entity';
 import { Assignment } from './assignments.entity';
 import { Staff } from './staff.entity';
 import { Food } from './food.entity';
+import { User } from './user.entity';
 
 @Entity('hotels')
 export class Hotel {
@@ -51,4 +52,7 @@ export class Hotel {
     
     @OneToMany(() => Food, food => food.hotel)
     foods: Food[];
+
+    @OneToMany(() => User, user => user.hotel)
+    guests: User[];
 }
