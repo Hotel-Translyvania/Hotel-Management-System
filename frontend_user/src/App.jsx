@@ -18,7 +18,6 @@ import BrowseHotels from "./pages/BrowseHotels";
 import SignUp from "./pages/SignUp";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
-import Payment from "./components/Payment/PaymentModal";
 
 import Menu from './pages/restaurant/Menu';
 
@@ -45,7 +44,7 @@ const App = () => (
             <Route path="/signup" element={<SignUp />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/payment" element={<Payment />} />
+     
             {/* These routes would be implemented later as the application grows */}
             <Route path="/user_rooms" element={<NotFound />} />
             <Route path="/user_rooms/:id" element={<NotFound />} />

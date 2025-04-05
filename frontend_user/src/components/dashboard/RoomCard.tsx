@@ -1,8 +1,7 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
 interface RoomCardProps {
   name: string;
   description: string;
@@ -11,6 +10,7 @@ interface RoomCardProps {
   amenities: string[];
   id: string;
 }
+
 
 const RoomCard: React.FC<RoomCardProps> = ({
   name,

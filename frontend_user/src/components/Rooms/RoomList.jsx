@@ -48,13 +48,15 @@ const RoomList = ({ rooms, onBookNow }) => {
       <Filter filters={filters} setFilters={setFilters} />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
         {filteredRooms.length > 0 ? (
-          filteredRooms.map(room => (
-            <RoomCard key={room.roomId} room={room} onBookNow={onBookNow} />
+          filteredRooms.map((room) => (
+            <RoomCard key={room.roomNum} room={room} onBookNow={onBookNow} />
           ))
         ) : (
           <div className="col-span-full text-center py-10">
             <p className="text-gray-500">
-              {rooms.length === 0 ? 'Loading rooms...' : 'No rooms match your filters.'}
+              {rooms.length === 0
+                ? "Loading rooms..."
+                : "No rooms match your filters."}
             </p>
           </div>
         )}
