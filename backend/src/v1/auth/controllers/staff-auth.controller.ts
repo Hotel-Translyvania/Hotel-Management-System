@@ -6,17 +6,11 @@ import {
   UseGuards,
   Req,
   Res,
-  Header,
 } from '@nestjs/common';
 import { StaffAuthService } from '../services/staff-auth.service';
 import { LoginDto } from '../dto/login.dto';
-import { JwtAuthGuard, StaffJwtAuthGuard } from '../guards/jwt-auth.guard';
+import { StaffJwtAuthGuard } from '../guards/jwt-auth.guard';
 import { Request, Response } from 'express';
-
-// Extend the Request interface to include the `user` property.
-interface AuthenticatedRequest extends Request {
-  user?: { sub: string; staffId: string };
-}
 import { ChangePasswordDto } from '../dto/change-password.dto';
 
 @Controller('auth/staff') // Base endpoint for staff authentication
@@ -42,28 +36,20 @@ export class StaffAuthController {
     // Return the token along with a success message.
     res.json({ success: true, message: 'Staff login successful', token });
   }
+
   // Change password endpoint for staff.
   @Patch('change-password')
   @UseGuards(StaffJwtAuthGuard) // Protect this route with the staff JWT authentication guard.
   async changePassword(
-    @Req() req: AuthenticatedRequest,
+    @Req() req: Request,
     @Body() changePasswordDto: ChangePasswordDto,
+    @Res() res: Response,
   ) {
-    console.log("req", req.user);
-
-    // Extract the staff's unique identifier (staffId) from the JWT payload attached to the request.
-    const staffId = req.user?.staffId;
-
-    if (!staffId) {
-      throw new Error('Staff ID is missing in the request');
-    }
-
-    console.log('Staff ID:', staffId);
-
-    // Call the service to change the password.
+    // Extract the staff's unique identifier (sub) from the JWT payload attached to req.user.
+    const staffId = (req.user as { sub: string })?.sub;
+    // Call the service to change the staff's password using the provided staffId and changePasswordDto.
     await this.staffAuthService.changePassword(staffId, changePasswordDto);
-
     // Respond with a success message.
-    return { success: true, message: 'Password changed successfully' };
+    res.json({ success: true, message: 'Password changed successfully' });
   }
 }
