@@ -2,23 +2,25 @@ import React, { useState, useEffect } from 'react';
 import RoomCard from './RoomCard';
 import Filter from '../ui/filter';
 
+
 const RoomList = ({ rooms, onBookNow }) => {
   const [filteredRooms, setFilteredRooms] = useState([]);
   const [filters, setFilters] = useState({
     roomNumber: '',
     roomType: '',
     bedType: '',
-    floor: '',
+    size: '',
     view: '',
     smoking: ''
   });
-
   // Initialize filteredRooms when rooms data is available
   useEffect(() => {
     if (rooms && rooms.length > 0) {
       setFilteredRooms(rooms);
     }
   }, [rooms]);
+
+ 
 
   // Apply filters when they change
   useEffect(() => {
@@ -27,10 +29,10 @@ const RoomList = ({ rooms, onBookNow }) => {
     let result = [...rooms];
     
     if (filters.roomNumber) {
-      result = result.filter(room => room.roomNum.toString().includes(filters.roomNumber));
+      result = result.filter(room => room.roomNumber.toString().includes(filters.roomNumber));
     }
     if (filters.roomType) {
-      result = result.filter(room => room.roomType.toLowerCase().includes(filters.roomType.toLowerCase()));
+      result = result.filter(room => room.type.toLowerCase().includes(filters.roomType.toLowerCase()));
     }
     if (filters.bedType) {
       result = result.filter(room => room.bedType?.toLowerCase().includes(filters.bedType.toLowerCase()));
@@ -49,7 +51,7 @@ const RoomList = ({ rooms, onBookNow }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
         {filteredRooms.length > 0 ? (
           filteredRooms.map(room => (
-            <RoomCard key={room.roomId} room={room} onBookNow={onBookNow} />
+            <RoomCard key={room.id} room={room} onBookNow={onBookNow} />
           ))
         ) : (
           <div className="col-span-full text-center py-10">
