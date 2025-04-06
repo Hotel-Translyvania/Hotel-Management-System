@@ -8,29 +8,11 @@ import "./Rooms_Booking.css";
 
 const RoomsPage = () => {
 
-  const { isLoading, error } = useBooking();
+  const { rooms, isLoading, error } = useBooking();
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [showBookingForm, setShowBookingForm] = useState(false);
-  const [rooms, setRooms] = useState([]); 
+
  
-  //  handle API call to get rooms
-    useEffect(() => {
-      const fetchRooms = async () => {
-        try {
-          const response = await fetch('http://localhost:3000/api/v1/hotels/1/rooms');
- 
-          const data = await response.json();
-          const { rooms: { data: rooms } } = data;
-          console.log('Rooms data:', rooms);
-          setRooms(rooms);
-        } catch (error) {
-          console.error('Error fetching rooms:', error);
-        }
-      };
-  
-      fetchRooms();
-  
-    }, [rooms]);
   const handleCloseForm = () => {
     setShowBookingForm(false);
     setSelectedRoom(null);
