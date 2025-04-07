@@ -75,8 +75,8 @@ export const BookingProvider = ({ children }) => {
     }
   ];
 
-  const [rooms, setRooms] = useState(mockRooms);
-  const [bookings, setBookings] = useState(mockBookings);
+  const [rooms, setRooms] = useState([]);
+  const [bookings, setBookings] = useState();
   const [currentBooking, setCurrentBooking] = useState(mockBookings[0]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -84,16 +84,25 @@ export const BookingProvider = ({ children }) => {
   // Mock API functions
   const fetchRooms = async () => {
     setIsLoading(true);
-    try {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      setRooms(mockRooms);
-    } catch (err) {
-      setError('Failed to load rooms');
-    } finally {
+    
+      try {
+        const response = await fetch('http://localhost:3000/api/v1/hotels/1/rooms');
+
+        const data = await response.json();
+        const { rooms: { data: rooms } } = data;
+        console.log(rooms);
+        setRooms(rooms);
+      } catch (error) {
+        setError('Failed to load rooms');
+      }
+   
+     finally {
       setIsLoading(false);
     }
   };
+   
+  
+  
 
   const fetchBookings = async () => {
     setIsLoading(true);

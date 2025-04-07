@@ -3,24 +3,24 @@ import { useBooking } from '@/hooks/useBooking';
 import RoomList from '@/components/Rooms/RoomList';
 import BookingForm from '@/components/Rooms/BookingForm';
 import Navbar from '@/components/Navbar/Navbar';
-
+import { useEffect } from 'react';
 import "./Rooms_Booking.css";
 
 const RoomsPage = () => {
+
   const { rooms, isLoading, error } = useBooking();
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [showBookingForm, setShowBookingForm] = useState(false);
 
-  const handleBookNow = (room) => {
-    setSelectedRoom(room);
-    setShowBookingForm(true);
-  };
-
+ 
   const handleCloseForm = () => {
     setShowBookingForm(false);
     setSelectedRoom(null);
   };
-
+  const handleBookNow = (room) => {
+    setSelectedRoom(room);
+    setShowBookingForm(true);
+  };
   return (
     <div className="min-h-screen bg-gray-100">
        <Navbar />
