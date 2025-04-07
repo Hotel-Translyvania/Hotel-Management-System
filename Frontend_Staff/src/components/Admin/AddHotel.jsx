@@ -25,18 +25,23 @@ const AddHotel = ({ onSuccess }) => {
       return;
     }
     data.picture = hotelImage;
-    console.log(data)
+    const formData = new FormData();
+    formData.append("name", data.hotelName);
+    formData.append("location", data.location);
+    formData.append("description", data.description);
+    formData.append("image", data.picture);
+    console.log(data.picture)
+    
 
-    const response = await api.post("/hotels", {
-      name: data.hotelName,
-      location: data.location,
-      description: data.description,
-      image: data.picture[0],
+    const response = await api.post("/hotels", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
+
 
     console.log(response);
 
-    console.log(data);
     onSuccess();
   };
   const [hotelImage, setHotelImage] = useState(null);

@@ -29,8 +29,8 @@ const GuestListPage = () => {
         const data = response.data?.data;
         const formattedGuest = data.map((guest) => ({
           id: guest.id,
-          firstName: guest.firstName,
-          lastName: guest.lastName,
+          firstName: guest.firstName || "John",
+          lastName: guest.lastName || "Doe",
           gender: guest.gender,
           email: guest.email,
           phone: guest.phone,

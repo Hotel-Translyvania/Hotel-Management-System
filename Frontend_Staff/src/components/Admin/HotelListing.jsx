@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import HotelCard from "./Hotels/hotelCard";
 import hotelData from "./Hotels/hotelData";
 import HotelPagination from "./Hotels/hotelPagination";
@@ -6,6 +6,12 @@ import HotelToolBar from "./Hotels/hotelToolBar";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import AddHotel from "./AddHotel";
 import EditHotel from "./EditHotel";
+import axios from "axios";
+import SpinPage from "@/components/Spin/Spin";
+
+export const api = axios.create({
+  baseURL: "http://localhost:3000/api/v1",
+});
 
 export const HotelListing = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -15,7 +21,53 @@ export const HotelListing = () => {
   const [editHotelOpen, setEditHotelOpen] = useState(false);
   const [currentHotel, setCurrentHotel] = useState(null);
 
-  const filteredHotels = hotelData.filter(
+
+
+  const [hotel, setHotel] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+
+  useEffect(() => {
+    const fetchHotel = async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.get("hotels");
+        const data = response.data.data;
+        const formattedHotel = data.map((hotel) => ({
+          id: hotel.id,
+          hotelName: hotel.name,
+          location: hotel.city + ", " + hotel.country,
+          description: hotel.description,
+          image: hotel.image,
+        }));
+        setHotel(formattedHotel);
+        setError(null);
+      } catch (error) {
+        console.error("Error fetching hotel:", error);
+        setError("Failed to load hotel");
+        setHotel([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchHotel();
+  }, []);
+
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center flex-col items-center p-10">
+        <div className="text-center text-gray-500">Loading hotel...</div>
+        <SpinPage />
+      </div>
+    );
+  }
+
+  console.log(hotel);
+
+  const filteredHotels = hotel.filter(
     (hotel) =>
       hotel.hotelName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       hotel.location.toLowerCase().includes(searchTerm.toLowerCase())
@@ -26,7 +78,6 @@ export const HotelListing = () => {
     currentPage * itemsPerPage,
     (currentPage + 1) * itemsPerPage
   );
-  console.log(hotelData);
 
   return (
     <div className="flex flex-col gap-6 p-4 rounded-lg bg-white">
@@ -69,6 +120,7 @@ export const HotelListing = () => {
           />
         </DialogContent>
       </Dialog>
+
     </div>
   );
 };

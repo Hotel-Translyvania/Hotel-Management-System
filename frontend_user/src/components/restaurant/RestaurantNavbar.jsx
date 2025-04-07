@@ -1,9 +1,11 @@
 // src/components/restaurant/RestaurantNavbar.jsx
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 export function RestaurantNavbar({ cartItemCount, onCartClick }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -34,10 +36,31 @@ export function RestaurantNavbar({ cartItemCount, onCartClick }) {
           <Link to="/restaurant/menu" className="text-sm font-medium transition-colors hover:text-blue-600">
             Menu
           </Link>
-          <Link to="/about" className="text-sm font-medium transition-colors hover:text-blue-600">
+          
+          <Link 
+            to="/restaurant/order" 
+            className={`text-sm font-medium transition-colors ${
+              location.pathname === '/restaurant/order' 
+                ? 'text-blue-600' 
+                : 'hover:text-blue-600'
+            }`}
+          >
+            Place Order
+          </Link>
+          <Link 
+            to="/restaurant/history" 
+            className={`text-sm font-medium transition-colors ${
+              location.pathname === '/restaurant/history' 
+                ? 'text-blue-600' 
+                : 'hover:text-blue-600'
+            }`}
+          >
+            Order History
+          </Link>
+          <Link to="../../#about" className="text-sm font-medium transition-colors hover:text-blue-600">
             About
           </Link>
-          <Link to="/contact" className="text-sm font-medium transition-colors hover:text-blue-600">
+          <Link to="../../#contact" className="text-sm font-medium transition-colors hover:text-blue-600">
             Contact
           </Link>
         </nav>

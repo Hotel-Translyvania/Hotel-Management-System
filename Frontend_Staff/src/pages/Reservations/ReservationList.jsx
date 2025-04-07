@@ -29,7 +29,8 @@ const ReservationListPage = () => {
         const formattedReservations = response.data.data.map((reservation) => ({
           bookingId: reservation.bookingId,
           guestId: reservation.guestId,
-          guestName: reservation.guestName || "Alice Johnson",
+          guestFirstName: reservation.guestFirstName,
+          guestLastName: reservation.guestLastName,
           roomNum: reservation.roomNum,
           roomType: reservation.roomType,
           checkIn: reservation.checkIn,

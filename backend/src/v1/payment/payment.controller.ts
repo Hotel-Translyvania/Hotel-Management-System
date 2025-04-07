@@ -4,8 +4,6 @@ import {
     Post,
     Body,
     Param,
-    InternalServerErrorException,
-    HttpCode,
     Req,
     Headers,
     RawBodyRequest,
@@ -20,18 +18,14 @@ import {
     @Post('initiate/:bookingId')
     async initiatePayment(
       @Param('bookingId') bookingId: string,
-      @Body() initiatePaymentDto: { price: number; currency?: string },
+      @Body() initiatePaymentDto: { price: number; currency: string },
     ) {
-      try {
-        const sessionUrl = await this.paymentService.createCheckoutSession(
+    
+        return await this.paymentService.createCheckoutSession(
           bookingId,
           initiatePaymentDto.price,
-          initiatePaymentDto.currency || 'usd',
+          initiatePaymentDto.currency,
         );
-        return { success: true, sessionUrl };
-      } catch (error) {
-        throw new InternalServerErrorException(error.message);
-      }
     }
 
       // Endpoint to handle Stripe webhook events

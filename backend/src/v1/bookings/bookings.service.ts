@@ -71,7 +71,6 @@ export class BookingService {
     async createBooking(
         hotelId: number,
         roomId: string,
-        guestId: string,
         createBookingDto: CreateBookingDto
     ): Promise<any> {
         try {
@@ -97,13 +96,12 @@ export class BookingService {
             // Fetch related entities
             const hotel = await this.bookingRepository.manager.findOne(Hotel, { where: { id: hotelId } });
             const room = await this.bookingRepository.manager.findOne(Room, { where: { id: roomId } });
-            const guest = await this.bookingRepository.manager.findOne(User, { where: { id: guestId } });
-    
+            const guest = await this.bookingRepository.manager.findOne(User, { where: { id: createBookingDto.guestId } });
             if (!hotel || !room || !guest) {
                 throw new Error('Invalid hotel, room, or guest ID');
             }
-    
-            // Create the booking
+  
+
             const booking = this.bookingRepository.create({
                 ...createBookingDto,
                 createdAt: new Date(),

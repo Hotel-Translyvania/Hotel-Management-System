@@ -21,7 +21,7 @@ export const reservationColumns = [
   },
   {
     id: "guestName",
-    accessorKey: "guestName",
+    accessorfn: (row) => `${row.guestFirstName} ${row.guestLastName}`,
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -34,7 +34,7 @@ export const reservationColumns = [
     cell: ({ row }) => (
       <div className="flex items-start flex-col">
         <div className="">
-          {row.original.guestName}
+          {row.original.guestFirstName} {row.original.guestLastName}
         </div>
         <div className="text-sm text-muted-foreground">
           {row.original.guestId}
@@ -158,8 +158,8 @@ export const reservationColumns = [
           <Edit className="h-4 w-4 text-blue-600" />
         </Button>
         <DeleteButton
-          onDelete={
-            () => alert(`Delete guest with ID: ${row.original.bookingId}`)
+          onDelete={() =>
+            alert(`Delete guest with ID: ${row.original.bookingId}`)
           }
         />
       </div>

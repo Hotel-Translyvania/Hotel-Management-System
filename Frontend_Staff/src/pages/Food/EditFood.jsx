@@ -2,6 +2,7 @@ import { useState } from "react";
 
 const EditFood = ({ onSuccess, foodItem: initialFoodItem }) => {
   const [activeTab, setActiveTab] = useState("basic");
+  console.log(initialFoodItem)
   const [foodItem, setFoodItem] = useState({
     id: initialFoodItem.id,
     name: initialFoodItem.Name,

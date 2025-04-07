@@ -1,13 +1,14 @@
 import React from "react";
 import { CustomTable } from "@/components/Table/Table";
 import { roomSelection } from "@/components/Room/roomSelection";
-import { roomDatabase } from "@/TestData/roomDataTest";
+// import { roomDatabase } from "@/TestData/roomDataTest";
 import { Button } from "@/components/ui/button";
 
 const RoomSelection = ({
   setSelectedRoom,
   handleRoomSelection,
   selectedRoom,
+  room,
 }) => {
   const handleSave = (e) => {
     e.preventDefault();
@@ -18,7 +19,7 @@ const RoomSelection = ({
   return (
     <div className="py-4 flex flex-col gap-2">
       <CustomTable
-        data={roomDatabase}
+        data={room}
         columns={roomSelection}
         EnableSelection={true}
         onSelectionChange={setSelectedRoom}

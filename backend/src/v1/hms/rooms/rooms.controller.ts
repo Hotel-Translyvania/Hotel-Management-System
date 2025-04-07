@@ -1,9 +1,9 @@
 
-import { 
-  Body, 
-  Controller, 
-  Post, 
-  UploadedFile, 
+import {
+  Body,
+  Controller,
+  Post,
+  UploadedFile,
   UseInterceptors,
   BadRequestException,
   InternalServerErrorException,
@@ -22,7 +22,7 @@ export class RoomsController {
   constructor(
     private readonly roomsService: RoomsService,
     private readonly cloudinaryService: ImageUploadService,
-  ) {}
+  ) { }
 
   @Post('rooms')
   @UseInterceptors(FileInterceptor('image', { dest: './uploads/' }))
@@ -49,16 +49,16 @@ export class RoomsController {
 
       createRoomDto.image = uploadResult;
       await this.roomsService.createRoom(hotelId, createRoomDto);
-      
+
       return {
-      success: true,
-      message: 'Room added successfully',
-      image: createRoomDto.image,
-    };
-  } catch (error) {
-    console.error('Error:', error.message);
-    throw new InternalServerErrorException('Failed to add room', { cause: error.message });
+        success: true,
+        message: 'Room added successfully',
+        image: createRoomDto.image,
+      };
+    } catch (error) {
+      console.error('Error:', error.message);
+      throw new InternalServerErrorException('Failed to add room', { cause: error.message });
+    }
   }
-}
 
 }

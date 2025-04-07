@@ -37,7 +37,7 @@ const AddStaff = ({ onSuccess }) => {
       formData.append("firstname", data.fname);
       formData.append("lastname", data.lname);
       formData.append("email", data.email);
-      // formData.append("dob", data.dob);
+      formData.append("dob", data.dob);
       // formData.append("address", data.address);
       formData.append("phonenumber", data.phone);
       formData.append("salary", data.salary);

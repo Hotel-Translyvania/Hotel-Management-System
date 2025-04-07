@@ -20,7 +20,7 @@ export const guestSelection = [
   },
   {
     id: "fullName",
-    accessorKey: "fullName",
+    accessorfn: (row) => `${row.firstName} ${row.lastName}`,
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -29,6 +29,11 @@ export const guestSelection = [
         Full Name
         <ArrowUpDown className="size-4" />
       </Button>
+    ),
+    cell: ({ row }) => (
+      <div className="flex items-center space-x-2">
+        {row.original.firstName} {row.original.lastName}
+      </div>
     ),
     size: 24,
   },

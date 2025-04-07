@@ -1,17 +1,25 @@
 import { useState } from "react";
+import axios from "axios";
+import SpinPage from "@/components/Spin/Spin";
+
+export const api = axios.create({
+  baseURL: "http://localhost:3000/api/v1",
+});
 
 const AddFood = ({ onSuccess }) => {
   const [activeTab, setActiveTab] = useState("basic");
   const [foodItem, setFoodItem] = useState({
     name: "",
     category: "",
-    status: "available",
     preparationTime: "",
-    ingreidients: "",
+    ingredients: "",
     price: "",
     image: null,
+    status: "available",
   });
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,15 +38,53 @@ const AddFood = ({ onSuccess }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!previewUrl) {
       alert("Please upload an image before submitting.");
       return;
     }
-    console.log(foodItem, previewUrl);
-    onSuccess();
+    const IngredientArray = foodItem.ingredients
+      .split(",")
+      .map((item) => item.trim());
+    console.log(foodItem);
+    const formData = new FormData();
+    formData.append("ingredients", JSON.stringify(IngredientArray));
+    formData.append("name", foodItem.name);
+    formData.append("category", foodItem.category);
+    formData.append("timeToMake", foodItem.preparationTime);
+    formData.append("price", foodItem.price);
+    formData.append("image", foodItem.image);
+    formData.append("status", foodItem.status);
+
+    setIsLoading(true);
+    try {
+      const response = await api.post("/hms/hotels/1/food", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log(response.data);
+      setError(null);
+      onSuccess();
+      alert("Food item added successfully!");
+    } catch (error) {
+      console.error("Error adding food item:", error);
+      setError("Failed to add food item. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center flex-col items-center p-10">
+        <div className="text-center text-gray-500">Adding food...</div>
+        <SpinPage />
+      </div>
+    );
+  }
 
   return (
     <div className=" p-6 ">
@@ -118,20 +164,6 @@ const AddFood = ({ onSuccess }) => {
 
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Status
-              </label>
-              <select
-                name="status"
-                value={foodItem.status}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border rounded"
-              >
-                <option value="available">Available</option>
-                <option value="out-of-stock">Out of Service</option>
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Preparation Time (in minutes)
               </label>
               <input
@@ -145,14 +177,32 @@ const AddFood = ({ onSuccess }) => {
                 required
               />
             </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Status
+              </label>
+              <select
+                name="status"
+                value={foodItem.status}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded"
+                required
+              >
+                <option value="available">Available</option>
+                <option value="unavailable">Unavailable</option>
+              </select>
+            </div>
+
             <button
               type="button"
               onClick={() => {
                 if (
                   foodItem.name &&
                   foodItem.category &&
+                  foodItem.preparationTime &&
                   foodItem.status &&
-                  foodItem.preparationTime
+                  foodItem.price
                 ) {
                   setActiveTab("details");
                 } else {
@@ -170,7 +220,7 @@ const AddFood = ({ onSuccess }) => {
           <div className="space-y-4 w-full">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Ingredients
+                ingredients
               </label>
               <textarea
                 name="ingredients"

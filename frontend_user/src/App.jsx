@@ -8,7 +8,6 @@ import Billing from "./pages/Billing";
 import NotFound from "./pages/NotFound";
 import ServicesPage from './pages/ServicesPage';
 import ServiceHistory from './components/Service/ServiceHistory';
-
 import RoomsPage from "./pages/RoomsPage";
 import BookingPage from "./pages/BookingPage";
 import BookingDetails from "./components/Rooms/BookingDetails";
@@ -20,6 +19,10 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import TestPaymentModal from "./pages/TestPaymentModals";
 import Menu from './pages/restaurant/Menu';
+import OrderHistory from './pages/restaurant/OrderHistory';
+import OrderForm from './pages/restaurant/OrderForm';
+import "./App.css";
+
 
 const queryClient = new QueryClient();
 
@@ -36,7 +39,13 @@ const App = () => (
             <Route path="/history" element={<ServiceHistory />} /> {/* Remove */}
             <Route path="/menu" element={<Menu />} /> {/* Remove */}
             <Route path="/billing" element={<Billing />} />
-            <Route path="/rooms" element={<RoomsPage />} /> {/* Remove */}
+            <Route path="/restaurant/menu" element={<Menu />} />
+            <Route path="/restaurant/history" element={<OrderHistory />} />
+            <Route path="/restaurant/order" element={<OrderForm />} />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/history" element={<ServiceHistory />} />
+            <Route path="/rooms" element={<RoomsPage />} />
+
             <Route path="/bookings" element={<BookingPage />} />
             <Route path="/bookings/:id" element={<BookingDetails />} />
             <Route path="/user_login" element={<UserLogin />} />

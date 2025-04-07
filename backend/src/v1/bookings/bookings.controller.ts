@@ -40,7 +40,6 @@ export class BookingController {
     @Param('hotelId') hotelId: number,
     @Param('roomId') roomId: string,
     @Body() createBookingDto: CreateBookingDto) {
-    const fakeGuestId = "7a1a9997-d16f-4bf5-8ba6-5eedf03b09f3"
-    return await this.bookingService.createBooking(hotelId, roomId, fakeGuestId, createBookingDto);
+    return await this.bookingService.createBooking(hotelId, roomId,createBookingDto);
   }
 }
