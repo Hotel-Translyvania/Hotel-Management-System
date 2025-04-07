@@ -10,7 +10,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       // Extract JWT token from the Authorization header ("Bearer <token>")
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       // Secret key for verifying the token; Non-null assertion used because it's assumed to be defined.
-      secretOrKey: process.env.JWT_SECRET,
+      secretOrKey: process.env.JWT_SECRET as string,
     });
   }
 
@@ -28,7 +28,7 @@ export class StaffJwtStrategy extends PassportStrategy(Strategy, 'staff-jwt') {
       // Extract JWT token from the Authorization header ("Bearer <token>")
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       // Secret key for verifying staff tokens; Non-null assertion used because it's assumed to be defined.
-      secretOrKey: process.env.STAFF_JWT_SECRET,
+      secretOrKey: process.env.STAFF_JWT_SECRET as string
     });
   }
 
