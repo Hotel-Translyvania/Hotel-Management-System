@@ -37,6 +37,6 @@ export class StaffJwtStrategy extends PassportStrategy(Strategy, 'staff-jwt') {
    * It receives the decoded JWT payload and returns a staff object containing
    */
   validate(payload: any) {
-    return { staffId: payload.sub, email: payload.email, role: payload.role };
+    return { sub: payload.sub, email: payload.email };
   }
 }

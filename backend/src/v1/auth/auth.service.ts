@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { User } from '../../common/entities/user.entity';
@@ -51,11 +51,12 @@ export class AuthService {
       return user;
     }
     // Return null if the user is not found or the password does not match.
-    return null;
+    throw new HttpException(
+      'Invalid credentials',HttpStatus.NOT_FOUND);
   }
 
   //Generates a JSON Web Token (JWT) for an authenticated user.
-  login(user: User): { token: string } {
+  generateToken(user: User): { token: string } {
     // Create a JWT payload containing the unique user identifier and email.
     const payload = { sub: user.id, email: user.email };
 
@@ -85,11 +86,12 @@ export class AuthService {
     if (staff && (await bcrypt.compare(password, staff.password))) {
       return staff;
     }
-    return null;
+    throw new HttpException(
+      'Invalid credentials',HttpStatus.NOT_FOUND);;
   }
 
   // Generates a JWT token for an authenticated staff member.
-  loginStaff(staff: Staff): { token: string } {
+  generateStaffToken(staff: Staff): { token: string } {
     // Create a payload with the staff's unique identifier and email.
     const payload = { sub: staff.id, email: staff.email };
     // Return a signed JWT token with an expiration time, using the secret from environment variables.
@@ -119,7 +121,7 @@ export class AuthService {
       changePasswordDto.oldPassword,
       staff.password,
     );
-    if (!isOldPasswordValid) throw new Error('Invalid old password');
+    if (!isOldPasswordValid) throw new BadRequestException('Invalid old password');
 
     // Hash the new password.
     staff.password = await bcrypt.hash(changePasswordDto.newPassword, 10);

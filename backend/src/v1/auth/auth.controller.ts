@@ -6,18 +6,18 @@ import {
   UseGuards,
   Req,
   Res,
-  Header,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
-import { JwtAuthGuard, StaffJwtAuthGuard } from './guards/jwt-auth.guard';
-import { Request, Response } from 'express';
+import { JwtAuthGuard,StaffJwtAuthGuard } from './guards/jwt-auth.guard';
 import { ChangePasswordDto } from './dto/change-password.dto'; 
 
 // Extend the Request interface to include the `user` property.
 interface AuthenticatedRequest extends Request {
-  user?: { sub: string; staffId: string };
+  user?: { sub: string;  };
 } 
 @Controller('auth') // Base route for all authentication-related endpoints
 export class AuthController {
@@ -25,18 +25,18 @@ export class AuthController {
 
   //Handles user signup requests.
   @Post('signup')
-  async signup(@Body() signupDto: SignupDto, @Res() res: Response) {
+  async signup(@Body() signupDto: SignupDto) {
     const data = await this.authService.signup(signupDto); // Call the signup service to register the user
-    res.json({
+    return {
       success: true,
       message: 'User registered successfully',
       data, // Return the registered user data
-    });
+    };
   }
 
   // Handles user login requests.
   @Post('login')
-  async login(@Body() loginDto: LoginDto, @Res() res: Response) {
+  async login(@Body() loginDto: LoginDto) {
     // Validate the user's credentials
     const user = await this.authService.validateUser(
       loginDto.email,
@@ -44,23 +44,22 @@ export class AuthController {
     );
     if (!user) {
       // If validation fails, return a 401 Unauthorized response
-      return res
-        .status(401)
-        .json({ success: false, message: 'Invalid credentials' });
+      throw new HttpException(
+        'Invalid credentials',HttpStatus.UNAUTHORIZED)
     }
 
     // Generate a JWT token for the authenticated user
-    const { token } = this.authService.login(user);
+    const { token } = this.authService.generateToken(user);
 
     // Return the token and a success message
-    res.json({ success: true, message: 'Login successful', token });
+    return { success: true, message: 'Login successful', token };
   }
 
 
 
   //Staff login endpoint.
   @Post('staff/login')
-  async loginStaff(@Body() loginDto: LoginDto, @Res() res: Response) {
+  async loginStaff(@Body() loginDto: LoginDto) {
     // Validate staff credentials using the service.
     const staff = await this.authService.validateStaff(
       loginDto.email,
@@ -68,14 +67,13 @@ export class AuthController {
     );
     // If credentials are invalid, return an unauthorized error.
     if (!staff) {
-      return res
-        .status(401)
-        .json({ success: false, message: 'Invalid credentials' });
+      throw new HttpException(
+        'Invalid credentials',HttpStatus.UNAUTHORIZED)
     }
     // Generate a JWT token for the validated staff.
-    const { token } = this.authService.loginStaff(staff);
+    const { token } = this.authService.generateStaffToken(staff);
     // Return the token along with a success message.
-    res.json({ success: true, message: 'Staff login successful', token });
+    return { success: true, message: 'Staff login successful', token };
   }
   // Change password endpoint for staff.
   @Patch('staff/change-password')
@@ -87,7 +85,7 @@ export class AuthController {
     console.log("req", req.user);
 
     // Extract the staff's unique identifier (staffId) from the JWT payload attached to the request.
-    const staffId = req.user?.staffId;
+    const staffId = req.user?.sub; 
 
     if (!staffId) {
       throw new Error('Staff ID is missing in the request');

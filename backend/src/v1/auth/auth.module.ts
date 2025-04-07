@@ -3,12 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
-import { AuthController } from '../auth.controller';
-import { StaffAuthController } from './controllers/staff-auth.controller';
+import { AuthController } from './auth.controller';
 import { User } from '../../common/entities/user.entity';
 import { Staff } from '../../common/entities/staff.entity';
 import { AuthService } from './auth.service';
-import { StaffAuthService } from './services/staff-auth.service';
 import { JwtStrategy, StaffJwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
@@ -31,9 +29,9 @@ import { JwtStrategy, StaffJwtStrategy } from './strategies/jwt.strategy';
     }),
   ],
   // Define the controllers for authentication-related endpoints.
-  controllers: [AuthController, StaffAuthController],
+  controllers: [AuthController],
 
   // Provide the services and strategies for dependency injection.
-  providers: [AuthService, StaffAuthService, JwtStrategy, StaffJwtStrategy],
+  providers: [AuthService, JwtStrategy, StaffJwtStrategy],
 })
 export class AuthModule {}
