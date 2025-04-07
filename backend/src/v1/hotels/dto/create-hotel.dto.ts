@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsUrl } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class CreateHotelDto {
   @IsNotEmpty()
@@ -13,7 +13,7 @@ export class CreateHotelDto {
   @IsString()
   description: string;
 
-  @IsNotEmpty()
-  @IsUrl()
-  image: string; // Ensures a valid URL is provided
+  @IsUrl({ protocols: ['https'], require_protocol: true })
+  @IsOptional() 
+  image?: string; 
 }

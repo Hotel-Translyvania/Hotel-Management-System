@@ -6,6 +6,7 @@ import SelectGuestAndBooking from "../Process/ReservationCreation";
 import EditBooking from "./EditBooking";
 import axios from "axios";
 import SpinPage from "@/components/Spin/Spin";
+import { set } from "react-hook-form";
 
 export const api = axios.create({
   baseURL: "http://localhost:3000/api/v1",
@@ -19,6 +20,8 @@ const ReservationListPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [refresh, setRefresh] = useState(false);
+
   useEffect(() => {
     const fetchReservations = async () => {
       try {
@@ -29,7 +32,8 @@ const ReservationListPage = () => {
         const formattedReservations = response.data.data.map((reservation) => ({
           bookingId: reservation.bookingId,
           guestId: reservation.guestId,
-          guestName: reservation.guestName || "Alice Johnson",
+          guestFirstName: reservation.guestFirstName,
+          guestLastName: reservation.guestLastName,
           roomNum: reservation.roomNum,
           roomType: reservation.roomType,
           checkIn: reservation.checkIn,
@@ -46,11 +50,12 @@ const ReservationListPage = () => {
         setReservations([]);
       } finally {
         setIsLoading(false);
+        setRefresh(false);
       }
     };
 
     fetchReservations();
-  }, []);
+  }, [refresh]);
 
   if (isLoading) {
     return (
@@ -86,6 +91,7 @@ const ReservationListPage = () => {
           <SelectGuestAndBooking
             onSuccess={() => {
               setIsAddBookOpen(false);
+              setRefresh(true);
             }}
           />
         </DialogContent>
@@ -99,6 +105,7 @@ const ReservationListPage = () => {
           <EditBooking
             onSuccess={() => {
               setIsEditReservationOpen(false);
+              setRefresh(true);
             }}
             reservationData={selectedReservation}
           />

@@ -8,7 +8,7 @@ import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Booking } from 'src/common/entities/booking.entity';
 import { Hotel } from 'src/common/entities/hotel.entity';
-
+import { RoomTypesResponseDto } from '../../hms/dashboard/dto/room-types-response.dto';
 
 
 @Injectable()
@@ -57,7 +57,7 @@ export class RoomsService {
   
     // Filter rooms based on occupancy
     let availableRooms = hotel.rooms.filter(
-      (room) => room.status !== 'occupied'
+      (room) => room.status !== 'available' 
     );
   
     // Check room availability by filtering out booked rooms
@@ -65,7 +65,7 @@ export class RoomsService {
       availableRooms.map(async (room) => {
         const overlappingBookings = await this.bookingRepository.count({
           where: {
-            // roomId: { id: room.roomId },
+            room: { id: room.id },
             checkIn: LessThan(checkOutDate) ,
             checkOut: MoreThan(checkInDate) ,
           },
@@ -80,40 +80,5 @@ export class RoomsService {
   
     return availableRooms as Room[];
   }
-  
-
-
-
-  
-  
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-  
+ 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

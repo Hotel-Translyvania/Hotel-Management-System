@@ -19,27 +19,55 @@ const AddHotel = ({ onSuccess }) => {
   });
   const { register, handleSubmit, formState } = form;
   const { errors } = formState;
+  const [hotelImage, setHotelImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const onSubmit = async (data) => {
     if (!hotelImage) {
       alert("Please upload a hotel image.");
       return;
     }
+
+    setIsLoading(true);
+    setError(null);
+
     data.picture = hotelImage;
-    console.log(data)
 
-    const response = await api.post("/hotels", {
-      name: data.hotelName,
-      location: data.location,
-      description: data.description,
-      image: data.picture[0],
-    });
+    try {
+      const formData = new FormData();
+      formData.append("name", data.hotelName);
+      formData.append("location", data.location);
+      formData.append("description", data.description);
+      formData.append("image", data.picture);
 
-    console.log(response);
+      // localhost:3000/api/v1/hotels
 
-    console.log(data);
-    onSuccess();
+      const response = await api.post("/hotels", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("Hotel added successfully:", response.data);
+
+      onSuccess()
+    } catch (error) {
+      console.error("Submission error:", error);
+      setError(error.message || "An error occurred while adding the hotel");
+      alert(error.message || "Failed to add hotel");
+    } finally {
+      setIsLoading(false);
+    }
   };
-  const [hotelImage, setHotelImage] = useState(null);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center flex-col items-center p-10">
+        <div className="text-center text-gray-500">Adding hotel...</div>
+        <SpinPage />
+      </div>
+    );
+  }
 
   const handleHotelImageChange = (event) => {
     const file = event.target.files[0];

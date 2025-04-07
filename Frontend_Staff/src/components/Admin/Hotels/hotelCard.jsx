@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 
 const HotelCard = ({ hotel, onEditClick }) => {
+  console.log(hotel)
   return (
     <div className="flex flex-col w-[245px] gap-2 rounded-lg overflow-hidden shadow-sm">
       <div className="shrink-0 overflow-hidden h-40">

@@ -65,6 +65,7 @@ export class StaffService {
       ...createStaffDto,
       hotel: targetHotel,
       isTemporaryPassword: true,
+      role: { name: createStaffDto.role } as any, // Adjust role to match the expected type
     });
     try {
       await this.staffRepository.save(staff);
@@ -173,7 +174,10 @@ export class StaffService {
     try{
       await this.staffRepository.update(
         { id, hotel: { id: hotelId } },
-        { ...updateStaffDto }
+        { 
+          ...updateStaffDto, 
+          role: updateStaffDto.role ? { name: updateStaffDto.role } as any : undefined 
+        }
       );
         
     } catch (error){

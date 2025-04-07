@@ -23,6 +23,8 @@ const StaffList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [refresh, setRefresh] = useState(false);
+
   useEffect(() => {
     const fetchStaff = async () => {
       try {
@@ -36,7 +38,7 @@ const StaffList = () => {
           phonenumber: staff.phonenumber,
           profilePic: staff.profilePic,
           staffRole: staff.staffRole,
-          staffStatus: staff.status, 
+          staffStatus: staff.status,
           employedAt: staff.employedAt,
           staffSalary: staff.staffSalary,
           assignedRoomId: staff.assignedRoomId,
@@ -52,11 +54,12 @@ const StaffList = () => {
         setStaff([]);
       } finally {
         setIsLoading(false);
+        setRefresh(false);
       }
     };
 
     fetchStaff();
-  }, []);
+  }, [refresh]);
   if (isLoading) {
     return (
       <div className="flex justify-center flex-col items-center p-10">
@@ -88,7 +91,9 @@ const StaffList = () => {
 
       <Dialog open={isAddStaffOpen} onOpenChange={setIsAddStaffOpen}>
         <DialogContent>
-          <AddStaff onSuccess={() => setIsAddStaffOpen(false)} />
+          <AddStaff onSuccess={() => {setIsAddStaffOpen(false);
+            setRefresh(true);
+          }} />
         </DialogContent>
       </Dialog>
 
@@ -100,6 +105,7 @@ const StaffList = () => {
               onSuccess={() => {
                 setIsEditStaffOpen(false);
                 setSelectedStaff(null);
+                setRefresh(true);
               }}
             />
           )}
@@ -114,6 +120,7 @@ const StaffList = () => {
               onSuccess={() => {
                 setIsAssignStaffOpen(false);
                 setSelectedStaff(null);
+                setRefresh(true);
               }}
             />
           )}

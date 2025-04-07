@@ -1,7 +1,7 @@
 import { CustomTable } from "@/components/Table/Table";
 import React from "react";
 import { guestSelection } from "@/components/Guests/GuestSelection";
-import { guestDatabase } from "@/TestData/dataTest";
+// import { guestDatabase } from "@/TestData/dataTest";
 import { Button } from "@/components/ui/button";
 
 const SelectGuest = ({
@@ -9,7 +9,9 @@ const SelectGuest = ({
   bookingFormData,
   handleBookingSubmit,
   handleBookingChange,
-  selectedGuest
+  selectedGuest,
+  guest
+
 }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -60,7 +62,7 @@ const SelectGuest = ({
         </div>
 
         <CustomTable
-          data={guestDatabase}
+          data={guest}
           columns={guestSelection}
           EnableSelection={true}
           onSelectionChange={setSelectedGuest}

@@ -1,6 +1,7 @@
 
-import { Controller, Get, Post, Param, Body, UseGuards,Query } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, UseGuards, Query, ParseIntPipe } from '@nestjs/common';
 import { CreateRoomDto } from './dto/create-room.dto';
+import { RoomTypesResponseDto } from '../../hms/dashboard/dto/room-types-response.dto'; // Ensure this path is correct
 import { RoomsService } from './rooms.service';
 
 @Controller('hotels/:hotelId')
@@ -42,13 +43,5 @@ export class RoomsController {
       data: availableRooms,
     };
   }
+
 }
-
-
-
-
-
- 
-
-
-

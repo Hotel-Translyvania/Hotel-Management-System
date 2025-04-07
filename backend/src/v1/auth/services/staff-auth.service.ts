@@ -34,7 +34,7 @@ export class StaffAuthService {
   // Generates a JWT token for an authenticated staff member.
   login(staff: Staff): { token: string } {
     // Create a payload with the staff's unique identifier and email.
-    const payload = { sub: staff.id, email: staff.email };
+    const payload = { sub: staff.id, email: staff.email, role: staff.role };
     // Return a signed JWT token with an expiration time, using the secret from environment variables.
     return {
       token: this.jwtService.sign(payload, {

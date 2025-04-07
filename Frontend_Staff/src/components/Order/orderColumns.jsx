@@ -34,6 +34,22 @@ export const foodOrderColumns = [
     id: "Item",
     accessorKey: "Item",
     header: "Food Name",
+    cell: ({ row }) => (
+      <div className="flex flex-col">
+        {row.original.Item.split(", ")
+          .slice(0, 3)
+          .map((item, index) => (
+            <div key={index}>
+              {item}
+              {index === 2 && row.original.Item.split(", ").length > 3 && (
+                <span className="text-gray-500 text-xs ml-2">
+                  +{row.original.Item.split(", ").length - 3} more
+                </span>
+              )}
+            </div>
+          ))}
+      </div>
+    ),
     size: 200,
   },
   {
@@ -41,6 +57,44 @@ export const foodOrderColumns = [
     accessorKey: "Qty",
     header: "Quantity",
     size: 80,
+    cell: ({ row }) => (
+      <div className="flex flex-col">
+        {row.original.Qty.split(", ")
+          .slice(0, 3)
+          .map((qty, index) => (
+            <div key={index}>
+              {qty}
+              {index === 2 && row.original.Qty.split(", ").length > 3 && (
+                <span className="text-gray-500 text-xs ml-2">
+                  +{row.original.Qty.split(", ").length - 3} more
+                </span>
+              )}
+            </div>
+          ))}
+      </div>
+    ),
+  },
+  {
+    id: "Price",
+    accessorKey: "Price",
+    header: "Price",
+    size: 80,
+    cell: ({ row }) => (
+      <div className="flex flex-col">
+        {row.original.Price.split(", ")
+          .slice(0, 3) // Match the same 3 items
+          .map((price, index) => (
+            <div key={index}>
+              {price} $
+              {index === 2 && row.original.Price.split(", ").length > 3 && (
+                <span className="text-gray-500 text-xs ml-2">
+                  +{row.original.Price.split(", ").length - 3} more
+                </span>
+              )}
+            </div>
+          ))}
+      </div>
+    ),
   },
   {
     id: "OrderTime",

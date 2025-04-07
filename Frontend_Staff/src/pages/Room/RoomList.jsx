@@ -19,6 +19,7 @@ const RoomList = () => {
   const [room, setRoom] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -35,11 +36,12 @@ const RoomList = () => {
         setRoom([]);
       } finally {
         setIsLoading(false);
+        setRefresh(false);
       }
     };
 
     fetchRooms();
-  }, []);
+  }, [refresh]);
 
   if (isLoading) {
     return (
@@ -69,13 +71,21 @@ const RoomList = () => {
       {console.log(selectedRoom)}
       <Dialog open={isAddRoomOpen} onOpenChange={setIsAddRoomOpen}>
         <DialogContent>
-          <AddRoom onSuccess={() => setIsAddRoomOpen(false)} />
+          <AddRoom
+            onSuccess={() => {
+              setIsAddRoomOpen(false);
+              setRefresh(true);
+            }}
+          />
         </DialogContent>
       </Dialog>
       <Dialog open={isEditRoomOpen} onOpenChange={setIsEditRoomOpen}>
         <DialogContent>
           <EditRoom
-            onSuccess={() => setIsEditRoomOpen(false)}
+            onSuccess={() => {
+              setIsEditRoomOpen(false);
+              setRefresh(true);
+            }}
             roomData={selectedRoom}
           />
         </DialogContent>

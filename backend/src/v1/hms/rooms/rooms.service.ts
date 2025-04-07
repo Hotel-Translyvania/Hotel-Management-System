@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { Room } from 'src/common/entities/room.entity';
 import { Amenity } from 'src/common/entities/amenities.entity';
+import { UpdateRoomDto } from './dto/update-room.dto';
 
 @Injectable()
 export class RoomsService {
@@ -13,7 +14,7 @@ export class RoomsService {
     private readonly roomRepository: Repository<Room>,
     @InjectRepository(Amenity)
     private readonly amenityRepository: Repository<Amenity>,
-  ) {}
+  ) { }
 
   async createRoom(hotelId: number, createRoomDto: CreateRoomDto) {
     const amenities: Amenity[] = [];
@@ -52,5 +53,51 @@ export class RoomsService {
     });
 
     return this.roomRepository.save(room);
+  }
+  async updateRoom(roomId: string, updateRoomDto: UpdateRoomDto) {
+    const room = await this.roomRepository.findOne({
+      where: { id: roomId },
+      relations: ['amenities'],
+    });
+
+    if (!room) {
+      throw new Error(`Room with ID ${roomId} not found`);
+    }
+
+    // Update amenities if provided
+    if (updateRoomDto.amenities) {
+      const amenities: Amenity[] = [];
+      for (const amenityDto of updateRoomDto.amenities) {
+        let amenity = await this.amenityRepository.findOne({
+          where: { name: amenityDto.amenityName },
+        });
+        if (!amenity) {
+          amenity = this.amenityRepository.create({
+            name: amenityDto.amenityName,
+          });
+          await this.amenityRepository.save(amenity);
+        }
+        amenities.push(amenity);
+      }
+      room.amenities = amenities;
+    }
+
+    // Update other fields
+    Object.assign(room, updateRoomDto);
+
+    return this.roomRepository.save(room);
+  }
+
+  async deleteRoom(roomId: string) {
+    const room = await this.roomRepository.findOne({
+      where: { id: roomId },
+    });
+
+    if (!room) {
+      throw new Error(`Room with ID ${ roomId } not found`);
+    }
+
+    await this.roomRepository.remove(room);
+    return { success: true, message: 'Room deleted successfully' };
   }
 }

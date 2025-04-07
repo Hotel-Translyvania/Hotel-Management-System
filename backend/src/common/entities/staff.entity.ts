@@ -13,6 +13,7 @@ import {
   import * as bcrypt from 'bcrypt';
   import { Hotel } from 'src/common/entities/hotel.entity';
 import { Assignment } from './assignments.entity';
+import { Role } from 'src/common/enums/role.enum';
   
   @Entity()
   export class Staff {
@@ -25,8 +26,12 @@ import { Assignment } from './assignments.entity';
     @Column()
     lastname: string;
   
-    @Column()
-    role: string;
+    @Column({
+      type: 'enum',
+      enum: Role,
+      default: Role.USER,
+    })
+    role: Role;
   
     @Column({ unique: true })
     email: string;

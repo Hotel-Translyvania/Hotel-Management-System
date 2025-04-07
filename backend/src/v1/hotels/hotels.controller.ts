@@ -1,47 +1,40 @@
 /* eslint-disable prettier/prettier */
-import { Controller } from '@nestjs/common';
+import { Controller, InternalServerErrorException, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { HotelService } from './hotels.service';
-import {Post, Body, Get, Param } from '@nestjs/common';
+import { Post, Body, Get, Param } from '@nestjs/common';
 import { CreateHotelDto } from './dto/create-hotel.dto';
-import { CreateOrderDto } from '../food-menu/dto/create-order.dto';
-import { create } from 'domain';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ImageUploadService } from 'src/common/services/image-upload.service';
 
 
 
 @Controller('hotels')
 export class HotelsController {
 
-   constructor(private hotelService : HotelService){}
+   constructor(
+      private hotelService: HotelService,
+      private cloudinaryService: ImageUploadService,
+   ) { }
 
    @Get()
-   async getHotel() {
-      const hotel = await this.hotelService.getHotel();
-      return { 
-         Sucess : true ,
-         data : hotel 
+   async getHotels() {
+      const hotel = await this.hotelService.getHotels();
+      return {
+         Sucess: true,
+         data: hotel
       }
-  }
-  @Post()
-  async CreateHotel(@Body() createhoteldto:CreateHotelDto) {
-     const hotel = await this.hotelService.createHotel(createhoteldto);
-     return { Sucess : true ,
-      data : hotel 
-     }
-  }
-
-  @Get(':hotelId/Menu')
-
-  async getAllFood() {
-   const foods = await this.hotelService.getAllFood();
-   return { 
-      Sucess : true ,
-      data :  foods
    }
-}
+   @Post()
+   @UseInterceptors(FileInterceptor('image', { dest: './uploads/' }))
+   async addHotel(
+      @UploadedFile() file: Express.Multer.File,
+      @Body() createHotelDto: CreateHotelDto,
+   ) {
 
+      const publicId = `hotels-${Date.now()}`;
+      const uploadResult = await this.cloudinaryService.uploadImage(file.path, publicId);
 
-
-
-
-
+      createHotelDto.image = uploadResult;
+      return await this.hotelService.createHotel(createHotelDto);
+   }
 }
