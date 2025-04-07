@@ -57,7 +57,7 @@ export class RoomsService {
   
     // Filter rooms based on occupancy
     let availableRooms = hotel.rooms.filter(
-      (room) => room.status !== 'occupied'
+      (room) => room.status !== 'available' 
     );
   
     // Check room availability by filtering out booked rooms
@@ -65,7 +65,7 @@ export class RoomsService {
       availableRooms.map(async (room) => {
         const overlappingBookings = await this.bookingRepository.count({
           where: {
-            // roomId: { id: room.roomId },
+            room: { id: room.id },
             checkIn: LessThan(checkOutDate) ,
             checkOut: MoreThan(checkInDate) ,
           },
