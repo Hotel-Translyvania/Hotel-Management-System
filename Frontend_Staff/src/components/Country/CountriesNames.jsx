@@ -10,6 +10,7 @@ const CountrySelect = ({ value, onChange }) => {
       name="nationality"
       value={value}
       onChange={onChange}
+      required
       className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-blue-300"
     >
       <option value="">Select nationality</option>

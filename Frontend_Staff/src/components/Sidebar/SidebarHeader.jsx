@@ -1,8 +1,10 @@
-const SidebarHeader = ({ isOpen, appName, onToggle }) => (
+const SidebarHeader = ({ isOpen, appName }) => (
   <div className="p-4 flex items-center justify-center border-b">
     {isOpen ? (
-      <div className="flex items-center flex-row gap-3">
-        <img src="hotel.png" alt="hotel" className="w-12 h-12" />
+      <div className="flex items-center flex-row gap-4">
+        {appName !== "Administration" && (
+          <img src="hotel.png" alt="hotel" className="w-12 h-12" />
+        )}
         <div className="flex items-center">
           <h1 className="text-xl font-bold font-serif text-blue-500">
             {appName}

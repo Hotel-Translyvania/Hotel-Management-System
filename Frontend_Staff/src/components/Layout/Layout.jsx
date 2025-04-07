@@ -21,9 +21,8 @@ const Layout = () => {
         onToggle={() => setSidebarOpen(!sidebarOpen)}
       />
 
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex flex-col flex-1 overflow-hidden border-l border-gray-200">
         <Topbar
-          isSidebarOpen={sidebarOpen}
           user={userProfile}
           currentNavItem={activeNavItem.name}
         />

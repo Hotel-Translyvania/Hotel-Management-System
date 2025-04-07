@@ -1,11 +1,9 @@
-import { useState } from "react";
-import { HiMenu, HiSearch } from "react-icons/hi";
 import { FiUser } from "react-icons/fi";
-import { MdSettings, MdNotifications } from "react-icons/md";
+import { MdNotifications } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
-const Topbar = ({ isSidebarOpen, user, currentNavItem }) => {
-  // const [searchQuery, setSearchQuery] = useState("");
-
+const Topbar = ({ user, currentNavItem }) => {
+  const Navigate = useNavigate();
   return (
     <header className="bg-white shadow-sm py-3 px-6 flex items-center justify-between">
       <div>
@@ -19,18 +17,14 @@ const Topbar = ({ isSidebarOpen, user, currentNavItem }) => {
           aria-label="Notification-Bell-Button"
           size={20}
         />
-        <MdSettings
-          className="cursor-pointer text-gray-600 hover:text-gray-300"
-          onClick={() => alert("Settings clicked.")}
-          aria-label="Settings-Button"
-          size={20}
-        />
 
-
-        <div className="flex items-center space-x-2 hover:bg-gray-100 p-1 rounded-full cursor-pointer">
-          {user?.avatar ? (
+        <div
+          className="flex items-center space-x-2 hover:bg-gray-100 p-1 rounded-full cursor-pointer"
+          onClick={() => Navigate("/setting")}
+        >
+          {user?.picture ? (
             <img
-              src={user.avatar}
+              src={user.picture}
               alt={user.name}
               className="w-8 h-8 rounded-full object-cover"
             />

@@ -12,8 +12,7 @@ const Sidebar = ({ appName, navItems, isOpen, onToggle, activeNavItem }) => {
     >
       <SidebarHeader 
         isOpen={isOpen} 
-        appName={appName} 
-        onToggle={onToggle} 
+        appName={appName}
       />
       
       <SidebarNav 

@@ -3,11 +3,13 @@ import React from "react";
 const RoomDetail = ({ row }) => {
   return (
     <div className="flex flex-row items-start gap-3">
-      <img
-        src={row.original.picture}
-        alt="Room"
-        className="object-cover size-24 rounded-lg shrink-0"
-      />
+      <div className="shrink-0 size-24 rounded-lg overflow-hidden border">
+        <img
+          src={row.original.image}
+          alt={`Room ${row.original.roomNumber}`}
+          className="w-full h-full object-cover"
+        />
+      </div>
 
       <div className="flex flex-col gap-1">
         <p className=" text-sm text-gray-600 whitespace-normal break-words">
@@ -22,7 +24,7 @@ const RoomDetail = ({ row }) => {
 
           <div className="flex items-center gap-1">
             <img src="/occupancy.svg" alt="Occupancy" className="size-4" />
-            <span>Max {row.original.maxOccupancy} people</span>
+            <span>Max {row.original.occupancy} people</span>
           </div>
         </div>
 

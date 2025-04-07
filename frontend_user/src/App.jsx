@@ -1,35 +1,81 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Index from "./pages/Index";
+import Billing from "./pages/Billing";
+import NotFound from "./pages/NotFound";
+import ServicesPage from './pages/ServicesPage';
+import ServiceHistory from './components/Service/ServiceHistory';
+import RoomsPage from "./pages/RoomsPage";
+import BookingPage from "./pages/BookingPage";
+import BookingDetails from "./components/Rooms/BookingDetails";
+import { BookingProvider } from "./data/BookingContext";
+import UserLogin from "./pages/userLogin";
+import BrowseHotels from "./pages/BrowseHotels";
+import SignUp from "./pages/SignUp";
+import Profile from "./pages/Profile";
+import Login from "./pages/Login";
+import TestPaymentModal from "./pages/TestPaymentModals";
+import Menu from './pages/restaurant/Menu';
+import OrderHistory from './pages/restaurant/OrderHistory';
+import OrderForm from './pages/restaurant/OrderForm';
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+const queryClient = new QueryClient();
 
-export default App
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <BookingProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/services" element={<ServicesPage />} /> {/* Remove */}
+            <Route path="/history" element={<ServiceHistory />} /> {/* Remove */}
+            <Route path="/menu" element={<Menu />} /> {/* Remove */}
+            <Route path="/billing" element={<Billing />} />
+            <Route path="/restaurant/menu" element={<Menu />} />
+            <Route path="/restaurant/history" element={<OrderHistory />} />
+            <Route path="/restaurant/order" element={<OrderForm />} />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/history" element={<ServiceHistory />} />
+            <Route path="/rooms" element={<RoomsPage />} />
+
+            <Route path="/bookings" element={<BookingPage />} />
+            <Route path="/bookings/:id" element={<BookingDetails />} />
+            <Route path="/user_login" element={<UserLogin />} />
+            <Route path="/browse_hotels" element={<BrowseHotels />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/payment_modal" element={<TestPaymentModal />} />
+            {/* These routes would be implemented later as the application grows */}
+            <Route path="/user_rooms" element={<NotFound />} />
+            <Route path="/user_rooms/:id" element={<NotFound />} />
+            <Route path="/user_bookings" element={<NotFound />} />
+            <Route path="/user_bookings/:id" element={<NotFound />} />
+            <Route path="/user_services" element={<NotFound />} />
+            <Route path="/offers" element={<NotFound />} />
+            <Route path="/offers/:id" element={<NotFound />} />
+            <Route path="/profile" element={<NotFound />} />
+            <Route path="/settings" element={<NotFound />} />
+            <Route path="/destinations" element={<NotFound />} />
+            <Route path="/support" element={<NotFound />} />
+            <Route path="/rewards" element={<NotFound />} />
+            <Route path="*" element={<NotFound />} />
+            {/* Catch-all 404 route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BookingProvider>
+
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
+
+export default App;

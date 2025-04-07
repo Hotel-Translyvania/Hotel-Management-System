@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, ArrowUpDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { DeleteButton } from "../Delete/DeleteButton";
 
 export const reservationColumns = [
   {
-    id: "id",
-    accessorKey: "id",
+    id: "bookingId",
+    accessorKey: "bookingId",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -20,7 +21,7 @@ export const reservationColumns = [
   },
   {
     id: "guestName",
-    accessorFn: (row) => `${row.first_name} ${row.last_name}`,
+    accessorfn: (row) => `${row.guestFirstName} ${row.guestLastName}`,
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -30,11 +31,21 @@ export const reservationColumns = [
         <ArrowUpDown className="size-4" />
       </Button>
     ),
+    cell: ({ row }) => (
+      <div className="flex items-start flex-col">
+        <div className="">
+          {row.original.guestFirstName} {row.original.guestLastName}
+        </div>
+        <div className="text-sm text-muted-foreground">
+          {row.original.guestId}
+        </div>
+      </div>
+    ),
     size: 150,
   },
   {
-    id: "room_id",
-    accessorKey: "room_id",
+    id: "roomNum",
+    accessorKey: "roomNum",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -47,8 +58,8 @@ export const reservationColumns = [
     size: 100,
   },
   {
-    id: "room_type",
-    accessorKey: "room_type",
+    id: "roomType",
+    accessorKey: "roomType",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -61,8 +72,8 @@ export const reservationColumns = [
     size: 100,
   },
   {
-    id: "check_in",
-    accessorKey: "check_in",
+    id: "checkIn",
+    accessorKey: "checkIn",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -75,8 +86,8 @@ export const reservationColumns = [
     size: 100,
   },
   {
-    id: "check_out",
-    accessorKey: "check_out",
+    id: "checkOut",
+    accessorKey: "checkOut",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -88,37 +99,37 @@ export const reservationColumns = [
     ),
     size: 100,
   },
-  //   {
-  //     id: "booking_status",
-  //     accessorKey: "booking_status",
-  //     header: ({ column }) => (
-  //       <Button
-  //         variant="ghost"
-  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-  //       >
-  //         Status
-  //         <ArrowUpDown className="size-4" />
-  //       </Button>
-  //     ),
-  //     size: 100,
-  //   },
   {
-    id: "booking_via",
-    accessorKey: "booking_via",
+    id: "bookingStatus",
+    accessorKey: "bookingStatus",
     header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Booked Via
+        Status
         <ArrowUpDown className="size-4" />
       </Button>
     ),
     size: 100,
   },
+  // {
+  //   id: "booking_via",
+  //   accessorKey: "booking_via",
+  //   header: ({ column }) => (
+  //     <Button
+  //       variant="ghost"
+  //       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+  //     >
+  //       Booked Via
+  //       <ArrowUpDown className="size-4" />
+  //     </Button>
+  //   ),
+  //   size: 100,
+  // },
   {
-    id: "created_at",
-    accessorKey: "created_at",
+    id: "createdAt",
+    accessorKey: "createdAt",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -133,35 +144,27 @@ export const reservationColumns = [
   {
     id: "actions",
     header: "Quick Action",
-    cell: ({ row }) => (
+    cell: ({ row, table }) => (
       <div className="flex space-x-2">
         <Button
           variant="ghost"
           size="sm"
-          onClick={useEditReservation(row.original.id)}
-          className="text-sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            table.options.meta?.onEditClick?.(row.original);
+          }}
+          className="text-sm hover:bg-gray-200"
         >
           <Edit className="h-4 w-4 text-blue-600" />
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => alert(`Delete: ${row.original.id}`)}
-          className="hover:bg-gray-200"
-        >
-          <Trash2 className="h-4 w-4 text-red-600" />
-        </Button>
+        <DeleteButton
+          onDelete={() =>
+            alert(`Delete guest with ID: ${row.original.bookingId}`)
+          }
+        />
       </div>
     ),
     enableSorting: false,
     size: 100,
   },
 ];
-
-export const useEditReservation = (reservationId) => {
-  const navigate = useNavigate();
-  const handleEditReservation = () => {
-    navigate(`/reservations/edit-booking/${reservationId}`);
-  };
-  return handleEditReservation;
-};

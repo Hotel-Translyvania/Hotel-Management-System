@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import RoomDetail from "@/pages/Room/RoomDetail";
 import { Edit, Trash2, ArrowUpDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { DeleteButton } from "../Delete/DeleteButton";
 
 export const roomColumns = [
   {
@@ -20,8 +21,8 @@ export const roomColumns = [
     size: 100,
   },
   {
-    id: "roomType",
-    accessorKey: "roomType",
+    id: "type",
+    accessorKey: "type",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -35,15 +36,6 @@ export const roomColumns = [
   },
 
   {
-    id: "roomDetails",
-    header: "Room Details",
-    cell: ({ row }) => (
-      <RoomDetail row={row} />
-    ),
-    size: 300,
-    enableSorting: false,
-  },
-  {
     id: "bedType",
     accessorKey: "bedType",
     header: ({ column }) => (
@@ -55,7 +47,14 @@ export const roomColumns = [
         <ArrowUpDown className="size-4" />
       </Button>
     ),
-    size: 90,
+    size: 100,
+  },
+  {
+    id: "roomDetails",
+    header: "Room Details",
+    cell: ({ row }) => <RoomDetail row={row} />,
+    size: 400,
+    enableSorting: false,
   },
   {
     id: "status",
@@ -69,7 +68,21 @@ export const roomColumns = [
         <ArrowUpDown className="size-4" />
       </Button>
     ),
-    cell: ({ row }) => <span>{row.original.status}</span>,
+    cell: ({ row }) => (
+      <div
+        className={`${
+          row.original.status === "occupied"
+            ? "bg-red-100 "
+            : row.original.status === "available"
+            ? "bg-green-100 "
+            : row.original.status === "maintenance"
+            ? "bg-yellow-100 "
+            : "bg-gray-100"
+        } p-1 rounded-full flex items-center justify-center w-full `}
+      >
+        <span>{row.original.status}</span>
+      </div>
+    ),
     size: 100,
   },
   {
@@ -90,37 +103,27 @@ export const roomColumns = [
   {
     id: "actions",
     header: "Quick Action",
-    cell: ({ row }) => (
-      <div className="flex  justify-between">
+    cell: ({ row, table }) => (
+      <div className="flex justify-between">
         <Button
           variant="ghost"
           size="sm"
-          onClick={useEditRoom(row.original.roomNumber)}
-          className="text-blue-600 hover:bg-blue-50"
+          onClick={
+            (e) => {table.options.meta.onEditClick(row.original); e.stopPropagation();}
+          }
+          className=" hover:bg-gray-200"
         >
-          <Edit className="size-4" />
+          <Edit className="size-4 text-blue-600" />
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => alert(`Delete: ${row.original.roomNumber}`)}
-          className="text-red-600 hover:bg-red-50"
-        >
-          <Trash2 className="size-4" />
-        </Button>
+        <DeleteButton
+          onDelete={
+            () => alert(`Delete guest with ID: ${row.original.roomNumber}`)
+          }
+        />
       </div>
     ),
     enableSorting: false,
-    size: 90,
+    size: 80,
   },
 ];
 
-
-export const useEditRoom = (guestId) => {
-    // console.log(guestId)
-    const navigate = useNavigate();
-    const handleEditGuest = () => {
-      navigate(`/rooms/edit-room/${guestId}`);
-    };
-    return handleEditGuest;
-  };

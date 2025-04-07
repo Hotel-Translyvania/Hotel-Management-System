@@ -19,8 +19,8 @@ import { TableToolbar } from "./TableToolbar";
 import { TablePagination } from "./TablePagination";
 
 export const CustomTable = ({
-  data,
-  columns,
+  data = [],
+  columns = [],
   defaultSort = [],
   pageSize = 10,
   addButtonText,
@@ -28,6 +28,7 @@ export const CustomTable = ({
   EnableSelection = false,
   onAddClick = () => {},
   onSelectionChange = () => {},
+  meta = {},
 }) => {
   const [sorting, setSorting] = useState(defaultSort);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -47,8 +48,8 @@ export const CustomTable = ({
                 setSelectedRowId(row.id);
                 onSelectionChange(row.original);
               }}
-              onClick={(e) => e.stopPropagation()} // what does this do ->
-              className="h-4 w-4"
+              onClick={(e) => e.stopPropagation()}
+              className="size-4"
             />
           ),
           size: 40,
@@ -60,6 +61,7 @@ export const CustomTable = ({
   const table = useReactTable({
     data,
     columns: tableColumns,
+    meta,
     state: {
       sorting,
       columnFilters,
@@ -125,7 +127,7 @@ export const CustomTable = ({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className={`py-2 pl-4 truncate max-w-${maxWidth} font-serif`}
+                      className={`py-2 pl-4 truncate max-w-32 font-serif`}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,

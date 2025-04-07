@@ -17,7 +17,14 @@ export const TableToolbar = ({ table, addButtonText, onAddClick }) => {
 
   const filterableColumns = table
     .getAllColumns()
-    .filter((column) => column.getCanFilter() && column.id !== "actions");
+    .filter(
+      (column) =>
+        column.getCanFilter() &&
+        column.id !== "actions" &&
+        column.id !== "select" &&
+        column.id !== "picture" &&
+        column.id !== "roomDetails"
+    );
 
   const handleFilterChange = (value) => {
     setFilterField(value);
