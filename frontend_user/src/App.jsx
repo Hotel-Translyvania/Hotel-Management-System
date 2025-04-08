@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Billing from "./pages/Billing";
 import NotFound from "./pages/NotFound";
-import ServicesPage from './pages/ServicesPage';
+import ServicesPage from "./pages/ServicesPage";
 import ServiceHistory from './components/Service/ServiceHistory';
 import RoomsPage from "./pages/RoomsPage";
 import BookingPage from "./pages/BookingPage";
