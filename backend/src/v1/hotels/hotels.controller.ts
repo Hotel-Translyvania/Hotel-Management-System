@@ -20,7 +20,7 @@ export class HotelsController {
    async getHotels() {
       const hotel = await this.hotelService.getHotels();
       return {
-         Sucess: true,
+         Success: true,
          data: hotel
       }
    }

@@ -128,7 +128,7 @@ const UserProfileAndBooking = ({ onSuccess }) => {
   if (isLoading) {
     return (
       <div className="flex justify-center flex-col items-center p-10">
-        <div className="text-center text-gray-500">Loading Room...</div>
+        <div className="text-center text-gray-500">Loading...</div>
         <SpinPage />
       </div>
     );

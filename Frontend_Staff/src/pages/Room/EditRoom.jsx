@@ -1,6 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import axios from "axios";
+import SpinPage from "@/components/Spin/Spin";
 
+const api = axios.create({
+  baseURL: "http://localhost:3000/api/v1",
+});
 const EditRoom = ({ onSuccess, roomData }) => {
   console.log(roomData);
   const {
@@ -27,6 +32,10 @@ const EditRoom = ({ onSuccess, roomData }) => {
 
   const picture = watch("picture");
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [refresh, setRefresh] = useState(false);
+
   useEffect(() => {
     if (roomData) {
       reset({
@@ -38,7 +47,7 @@ const EditRoom = ({ onSuccess, roomData }) => {
         status: roomData.status,
         price: roomData.price,
         maxOccupancy: roomData.occupancy,
-        picture: roomData.picture || null,
+        picture: roomData.image || null,
         amenities: roomData.amenities.join(", "),
       });
     }
@@ -59,12 +68,58 @@ const EditRoom = ({ onSuccess, roomData }) => {
     }
   };
 
-  const onSubmit = (data) => {
-    console.log("Room Data Submitted:", data);
-    onSuccess();
-    alert("Room updated successfully!");
+  const onSubmit = async (data) => {
+    // console.log("Room Data Submitted:", data);
+    setLoading(true);
+    const amenitiesArray = data.amenities
+      .split(",")
+      .filter((item) => item.trim() !== "")
+      .map((item) => ({ amenityName: item.trim() }));
+
+    const formData = new FormData();
+    // only if the file is edited
+    formData.append("price", String(data.price));
+    formData.append("occupancy", String(data.maxOccupancy));
+    formData.append("bedType", data.bedType);
+    formData.append("description", data.description);
+    formData.append("size", String(data.size));
+    formData.append("roomNumber", data.roomNumber);
+
+    // formData.append("image", data.image);
+    console.log(formData.get("type"));
+
+    try {
+      // localhost:3000/api/v1/hms/hotels/1/rooms/:roomId
+      const response = await api.patch(
+        `/hms/hotels/1/rooms/${roomData.id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Room updated successfully:", response.data);
+
+      onSuccess();
+      alert("Room updated successfully!");
+    } catch (error) {
+      console.error("Error updating room:", error);
+      setError("Failed to update room. Please try again.");
+    } finally {
+      setRefresh(true);
+      setLoading(false);
+    }
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center flex-col items-center p-10">
+        <div className="text-center text-gray-500">Loading...</div>
+        <SpinPage />
+      </div>
+    );
+  }
   return (
     <div className="space-y-4 rounded-lg p-8 w-full">
       <h2 className="text-2xl font-semibold text-center">Edit Room</h2>

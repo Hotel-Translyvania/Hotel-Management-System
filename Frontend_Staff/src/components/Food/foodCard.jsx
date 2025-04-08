@@ -1,8 +1,11 @@
 import { Edit, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
+import axios from "axios";
 
-const FoodCard = ({ food, onEditClick }) => {
+
+const FoodCard = ({ food, onEditClick, onDeleteClick }) => {
   const visibleIngredients = food.Ingredients.slice(0, 4);
+
 
   return (
     <div className="flex flex-col w-[245px] gap-1 rounded-lg overflow-hidden shadow-sm">
@@ -30,7 +33,7 @@ const FoodCard = ({ food, onEditClick }) => {
               variant="ghost"
               size="sm"
               className="text-sm"
-              onClick={onEditClick}
+              onClick={onDeleteClick}
             >
               <Trash2 className="h-4 w-4 text-red-600" />
             </Button>

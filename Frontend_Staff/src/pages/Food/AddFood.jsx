@@ -51,7 +51,7 @@ const AddFood = ({ onSuccess }) => {
     const formData = new FormData();
     formData.append("ingredients", JSON.stringify(IngredientArray));
     formData.append("name", foodItem.name);
-    formData.append("categories", foodItem.category);
+    formData.append("category", foodItem.category);
     formData.append("timeToMake", foodItem.preparationTime);
     formData.append("price", foodItem.price);
     formData.append("image", foodItem.image);

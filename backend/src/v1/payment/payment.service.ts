@@ -68,7 +68,7 @@ export class PaymentService {
         success_url: `${process.env.FRONTEND_SUCCESS_URL}`,
         cancel_url: `${process.env.FRONTEND_FAILURE_URL}`,
       });
-
+      console.log('Stripe session created:', session);
       return {
         success: true,
         sessionUrl: session.url ?? '',

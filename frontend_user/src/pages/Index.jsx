@@ -1,7 +1,7 @@
 
 import Navbar from "@/components/home/Navbar";
 import Hero from "@/components/home/Hero";
-import TopHotels from "@/components/home/TopHotels";
+import TopHotels from "@/components/Home/TopHotels";
 import Testimonials from "@/components/home/Testimonials";
 import Features from "@/components/home/Features";
 import Footer from "@/components/home/Footer";

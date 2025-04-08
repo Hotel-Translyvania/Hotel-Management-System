@@ -28,8 +28,10 @@ export function RestaurantNavbar({ cartItemCount, onCartClick }) {
         </div>
 
         <nav className={`${isMenuOpen ? 'flex' : 'hidden'} md:flex absolute md:relative top-16 md:top-0 left-0 right-0 md:right-auto bg-white md:bg-transparent flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 p-4 md:p-0 border-b md:border-0`}>
+
           <Link to="/restaurant/Menu" className={`text-sm font-medium transition-colors ${
-            location.pathname === '/restaurant' ? 'text-blue-600' : 'hover:text-blue-600'
+         main
+            location.pathname === '/restaurant/Menu' ? 'text-blue-600' : 'hover:text-blue-600'
 
           }`}>
             Menu

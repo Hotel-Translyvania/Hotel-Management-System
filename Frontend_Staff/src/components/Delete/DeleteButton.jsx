@@ -10,8 +10,28 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
+import SpinPage from "../Spin/Spin";
+
 export const DeleteButton = ({ onDelete }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleDelete = async () => {
+    setIsLoading(true);
+    try {
+      await onDelete();
+      setIsOpen(false);
+      setError(null);
+    } catch (err) {
+      console.error("Error deleting item:", err);
+      setError("Failed to delete item");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
 
   return (
     <div>
@@ -41,10 +61,8 @@ export const DeleteButton = ({ onDelete }) => {
             <Button
               variant="default"
               className="bg-blue-700 hover:bg-blue-800 text-white"
-              onClick={() => {
-                onDelete();
-                setIsOpen(false);
-              }}
+              onClick={handleDelete}
+              disabled={isLoading}
             >
               Delete
             </Button>

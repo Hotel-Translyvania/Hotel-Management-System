@@ -19,7 +19,7 @@ const Navbar = () => {
           to="/" 
           className="text-xl font-bold text-blue-600 hover:text-blue-800"
         >
-          TravelStay
+          EzyStay
         </Link>
 
         {/* Search Bar */}

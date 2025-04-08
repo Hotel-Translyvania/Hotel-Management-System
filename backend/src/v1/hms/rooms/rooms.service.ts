@@ -65,22 +65,22 @@ export class RoomsService {
     }
 
     // Update amenities if provided
-    if (updateRoomDto.amenities) {
-      const amenities: Amenity[] = [];
-      for (const amenityDto of updateRoomDto.amenities) {
-        let amenity = await this.amenityRepository.findOne({
-          where: { name: amenityDto.amenityName },
-        });
-        if (!amenity) {
-          amenity = this.amenityRepository.create({
-            name: amenityDto.amenityName,
-          });
-          await this.amenityRepository.save(amenity);
-        }
-        amenities.push(amenity);
-      }
-      room.amenities = amenities;
-    }
+    // if (updateRoomDto.amenities) {
+    //   const amenities: Amenity[] = [];
+    //   for (const amenityDto of updateRoomDto.amenities) {
+    //     let amenity = await this.amenityRepository.findOne({
+    //       where: { name: amenityDto.amenityName },
+    //     });
+    //     if (!amenity) {
+    //       amenity = this.amenityRepository.create({
+    //         name: amenityDto.amenityName,
+    //       });
+    //       await this.amenityRepository.save(amenity);
+    //     }
+    //     amenities.push(amenity);
+    //   }
+    //   room.amenities = amenities;
+    // }
 
     // Update other fields
     Object.assign(room, updateRoomDto);

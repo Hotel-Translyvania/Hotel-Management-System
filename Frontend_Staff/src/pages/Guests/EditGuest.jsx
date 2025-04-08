@@ -2,13 +2,20 @@ import { Button } from "@/components/ui/button";
 import React from "react";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import axios from "axios";
+import SpinPage from "@/components/Spin/Spin";
+
+const api = axios.create({
+  baseURL: "http://localhost:3000/api/v1",
+});
 
 const EditGuest = ({ guestData, onSuccess }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const form = useForm({
     defaultValues: {
       fname: guestData.firstName,
       lname: guestData.lastName,
-      dob: guestData.dob,
       gender: guestData.gender,
       email: guestData.email,
       phone: guestData.phone,
@@ -26,7 +33,6 @@ const EditGuest = ({ guestData, onSuccess }) => {
       reset({
         fname: guestData.firstName,
         lname: guestData.lastName,
-        dob: guestData.dob,
         gender: guestData.gender,
         email: guestData.email,
         phone: guestData.phone,
@@ -37,11 +43,43 @@ const EditGuest = ({ guestData, onSuccess }) => {
     }
   }, [guestData, reset]);
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    setIsLoading(true);
+
+    try {
+      const guest = {
+        firstName: data.fname,
+        lastName: data.lname,
+        gender: data.gender,
+        email: data.email,
+        phone: data.phone,
+        nationality: data.nationality,
+        identificationType: data.idType,
+        identificationNumber: data.idNumber,
+      };
+
+      const response = await api.patch(`/hotels/1/guest/${guestData.id}`, {
+        ... guest,
+      });
+      console.log("Guest updated successfully:", response.data);
+    } catch (error) {
+      console.error("Error updating guest:", error);
+      setError("Failed to update guest");
+    } finally {
+      setIsLoading(false);
+    }
+
     onSuccess();
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center flex-col items-center p-10">
+        <div className="text-center text-gray-500">Loading...</div>
+        <SpinPage />
+      </div>
+    );
+  }
   return (
     <div className="flex items-center flex-col justify-center font-serif p-6 gap-3">
       <h2 className="text-2xl font-semibold">Edit Guest</h2>
@@ -75,21 +113,6 @@ const EditGuest = ({ guestData, onSuccess }) => {
                 },
               })}
               placeholder="Last Name"
-              className="rounded-xl p-3 border w-full"
-            />
-          </div>
-
-          <div className="flex flex-col items-start justify-center gap-2">
-            <label className="text-[#232323] ">Date of Birth</label>
-            <input
-              type="date"
-              id="dob"
-              {...register("dob", {
-                required: {
-                  value: true,
-                  message: "Date of Birth is required",
-                },
-              })}
               className="rounded-xl p-3 border w-full"
             />
           </div>
@@ -184,7 +207,7 @@ const EditGuest = ({ guestData, onSuccess }) => {
             >
               <option value="">Select ID Type</option>
               <option value="Passport">Passport</option>
-              <option value="Driving License">Driving License</option>
+              <option value="Driver's License">Driving License</option>
               <option value="National ID">National ID</option>
             </select>
           </div>

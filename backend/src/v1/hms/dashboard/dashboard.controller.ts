@@ -85,4 +85,6 @@ export class DashboardController {
     ): Promise<RoomTypesResponseDto> {
       return this.dashboardService.getRoomTypesWithNumbers(hotelId);
     }
+
+    
 }

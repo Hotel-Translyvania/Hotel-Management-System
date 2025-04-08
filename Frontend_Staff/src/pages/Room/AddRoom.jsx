@@ -39,7 +39,7 @@ const AddRoom = ({ onSuccess }) => {
   if (isLoading) {
     return (
       <div className="flex justify-center flex-col items-center p-10">
-        <div className="text-center text-gray-500">Loading reservations...</div>
+        <div className="text-center text-gray-500">Loading rooms...</div>
         <SpinPage />
       </div>
     );
@@ -93,7 +93,7 @@ const AddRoom = ({ onSuccess }) => {
       });
 
       console.log("Room added successfully:", response.data);
-      onSuccess?.();
+      onSuccess();
       reset();
     } catch (error) {
       console.error("Error adding room:", error);

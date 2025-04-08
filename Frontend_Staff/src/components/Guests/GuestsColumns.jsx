@@ -2,6 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Edit, Trash2, ArrowUpDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { DeleteButton } from "../Delete/DeleteButton";
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: "http://localhost:3000/api/v1",
+});
 
 export const guestColumns = [
   {
@@ -153,10 +158,9 @@ export const guestColumns = [
           <Edit className="h-4 w-4 text-blue-600" />
         </Button>
         <DeleteButton
-          onDelete={
-            () => alert(`Delete guest with ID: ${row.original.id}`)
-            // backend team space to implement delete functionality
-          }
+          onDelete={async () => {
+            await handleDelete(row.original.id);
+          }}
         />
       </div>
     ),
@@ -164,3 +168,15 @@ export const guestColumns = [
     size: 100,
   },
 ];
+
+const handleDelete = async (id) => {
+  try {
+    const response = await api.delete(`/hotels/1/guest/${id}`);
+    console.log("Delete Response:", response.data);
+    alert("Guest deleted successfully!");
+    // Handle success (e.g., show a success message, refresh the table, etc.)
+  } catch (error) {
+    console.error("Error deleting guest:", error);
+    // Handle error (e.g., show an error message)
+  }
+};

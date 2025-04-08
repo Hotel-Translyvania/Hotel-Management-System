@@ -2,6 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Edit, ArrowUpDown } from "lucide-react";
 import { DeleteButton } from "../Delete/DeleteButton";
 
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: "http://localhost:3000/api/v1",
+});
+
 const ManagersColumns = [
   {
     id: "picture",
@@ -13,7 +19,7 @@ const ManagersColumns = [
         className="size-24 rounded-full object-cover"
       />
     ),
-    size: 110,
+    size: 150,
     enableSorting: false,
   },
   {
@@ -28,7 +34,7 @@ const ManagersColumns = [
         <ArrowUpDown className="ml-2 size-4" />
       </Button>
     ),
-    size: 200,
+    size: 150,
   },
   {
     id: "hotel",
@@ -74,7 +80,21 @@ const ManagersColumns = [
     size: 150,
   },
   {
-    id: "employedDate",
+    id: "address",
+    accessorKey: "address",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Address
+        <ArrowUpDown className="ml-2 size-4" />
+      </Button>
+    ),
+    size: 150,
+  },
+  {
+    id: "registeredAt",
     accessorKey: "registeredAt",
     header: ({ column }) => (
       <Button
@@ -94,8 +114,9 @@ const ManagersColumns = [
     cell: ({ row }) => (
       <div className="flex space-x-2">
         <DeleteButton
-          onDelete={() => {
-            alert(`Deleted Manager ID ${row.original.id}`);
+          onDelete={async () => {
+            // console.log("Delete button clicked for ID:", row.original.id);
+            await handleDelete(row.original.id);
           }}
         />
       </div>
@@ -106,3 +127,12 @@ const ManagersColumns = [
 ];
 
 export default ManagersColumns;
+
+const handleDelete = async (id) => {
+  try {
+    const response = await api.delete(`/manager/${id}`);
+    console.log(response.data);
+  } catch (error) {
+    console.error("Error deleting manager:", error);
+  }
+};

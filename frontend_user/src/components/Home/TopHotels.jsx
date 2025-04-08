@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Button } from "@/components/ui/button";
 import HotelCard from "./HotelCard";
+import api from "@/api";
 
 const TopHotels = () => {
   const [hotels, setHotels] = useState([]);
@@ -11,28 +11,34 @@ const TopHotels = () => {
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const res = await axios.get("/api/top-hotels");
-        const rawHotels = res.data;
+        const res = await api.get("/hotels");
 
+        // Log the full response to understand its structure
+        console.log("API Response:", res.data);
+
+        // Access the array of hotels inside the 'data' property
+        const rawHotels = res.data.data; // 'data' contains the array of hotels
+
+        // Map over the hotels array to clean and structure it
         const cleaned = rawHotels.map((hotel) => ({
           id: hotel.id,
-          name: hotel.namee,
+          name: hotel.name, // Adjust the field name as needed
           description: hotel.description,
           address: hotel.address,
           city: hotel.city,
           country: hotel.country,
-          pricePerNight: hotel["price per night"],
-          isActive: hotel.isActIve,
+          pricePerNight: hotel["pricePerNight"], // Adjust this field if necessary
+          isActive: hotel.isActive, // Adjust field names according to the API response
           location: hotel.location ?? `${hotel.city}, ${hotel.country}`,
-          image: hotel.image
+          image: hotel.image,
         }));
 
-        setHotels(cleaned);
+        setHotels(cleaned); // Set the cleaned data in state
       } catch (err) {
         setError("Failed to load hotels.");
-        console.error(err);
+        console.error(err); // Log any errors for better debugging
       } finally {
-        setLoading(false);
+        setLoading(false); // Stop the loading spinner or message
       }
     };
 

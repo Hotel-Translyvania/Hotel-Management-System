@@ -1,6 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Edit, ArrowUpDown } from "lucide-react";
 import { DeleteButton } from "../Delete/DeleteButton";
+import axios from "axios";
+
+export const api = axios.create({
+  baseURL: "http://localhost:3000/api/v1",
+});
 
 const staffColumns = [
   {
@@ -152,10 +157,9 @@ const staffColumns = [
           />
         </Button>
         <DeleteButton
-          onDelete={
-            () => alert(`Delete guest with ID: ${row.original.id}`)
-            // backend team space to implement delete functionality
-          }
+          onDelete={async () => {
+            await handleDelete(row.original.id);
+          }}
         />
       </div>
     ),
@@ -165,3 +169,12 @@ const staffColumns = [
 ];
 
 export default staffColumns;
+
+export const handleDelete = async (id) => {
+  try {
+    const response = await api.delete(`/hms/hotels/1/staff/${id}`);
+    console.log("Delete Response:", response.data);
+  } catch (error) {
+    console.error("Error deleting staff:", error);
+  }
+};

@@ -1,8 +1,12 @@
 import { Button } from "@/components/ui/button";
 import RoomDetail from "@/pages/Room/RoomDetail";
 import { Edit, Trash2, ArrowUpDown } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { DeleteButton } from "../Delete/DeleteButton";
+import axios from "axios";
+
+export const api = axios.create({
+  baseURL: "http://localhost:3000/api/v1",
+});
 
 export const roomColumns = [
   {
@@ -108,16 +112,20 @@ export const roomColumns = [
         <Button
           variant="ghost"
           size="sm"
-          onClick={
-            (e) => {table.options.meta.onEditClick(row.original); e.stopPropagation();}
-          }
+          onClick={(e) => {
+            table.options.meta.onEditClick(row.original);
+            e.stopPropagation();
+          }}
           className=" hover:bg-gray-200"
         >
           <Edit className="size-4 text-blue-600" />
         </Button>
         <DeleteButton
           onDelete={
-            () => alert(`Delete guest with ID: ${row.original.roomNumber}`)
+            async () => {
+              console.log(row.original);
+              await handleDelete(row.original.id);
+            }
           }
         />
       </div>
@@ -127,3 +135,12 @@ export const roomColumns = [
   },
 ];
 
+const handleDelete = async (room_id) => {
+  try {
+    console.log(`/hms/hotels/1/rooms/${room_id}`)
+    const response = await api.delete(`/hms/hotels/1/rooms/${room_id}`);
+    console.log("Room deleted:", response.data);
+  } catch (error) {
+    console.error("Error deleting room:", error);
+  }
+};
