@@ -11,7 +11,7 @@ const TopHotels = () => {
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const res = await axios.get("/api/top-hotels");
+        const res = await axios.get("/api/v1/hotels");
         const rawHotels = res.data;
 
         const cleaned = rawHotels.map((hotel) => ({
@@ -80,3 +80,5 @@ const TopHotels = () => {
 };
 
 export default TopHotels;
+ 
+   

@@ -1,6 +1,6 @@
 export const foodItems = [
     {
-      id: 1,
+      id: "83c63d78-a9ab-4ec8-8836-60dc97992538",
       name: "Doro Wat",
       description: "Ethiopian best delicious food - Spicy chicken stew with berbere spice, served with injera bread.",
       price: 14.99,

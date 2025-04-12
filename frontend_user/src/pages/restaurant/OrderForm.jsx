@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { RestaurantNavbar } from '../../components/restaurant/RestaurantNavbar';
 import { foodItems } from '../../data/foodItems';
+import { placeOrder } from '../../api'; // ✅ Add this line
 
 export default function OrderForm() {
   const navigate = useNavigate();
@@ -53,47 +54,52 @@ export default function OrderForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+  
+    // Check if required fields are filled
     if (!bookingId || !name || !roomNumber || selectedItems.length === 0) {
       alert('Please fill in all required fields and add at least one item');
       return;
     }
-    
+  
     setIsSubmitting(true);
-    
+  
+    // Prepare the order data with transformed item structure
+    const orderData = {
+      bookingId,
+      name,
+      roomNumber,
+      items: Array.isArray(selectedItems) ? selectedItems.map(item => ({
+        foodId: item.id,  // Transform "id" to "foodId"
+        quantity: item.quantity  // Keep "quantity"
+      })) : [], // Ensure that items is an array
+      specialInstructions,
+      total: calculateTotal(),
+      orderDate: new Date().toISOString()
+    };
+  
+    // Log the order data before sending it
+    console.log('Order data to be sent to the backend:', orderData);
+  
     try {
-      // In a real app, you would send this data to your API
-      const orderData = {
-        bookingId,
-        name,
-        roomNumber,
-        items: selectedItems.map(item => ({
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity
-        })),
-        specialInstructions,
-        total: calculateTotal(),
-        orderDate: new Date().toISOString()
-      };
-      
-      console.log('Order data:', orderData);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Redirect to order history page after successful submission
+      // Call the placeOrder function (which sends a POST request)
+      const response = await placeOrder(bookingId, orderData.items);  // Pass only `items` here
+    
+      // Log the response from the backend after it's returned
+      console.log('Response from backend:', response);
+  
+      // If successful, show a success message and navigate
       alert('Order placed successfully!');
       navigate('/restaurant/history');
       
     } catch (error) {
-      console.error('Error submitting order:', error);
+      // Log any errors that occur during the API call
+      console.error('Error submitting order:', error.response ? error.response.data : error.message);
       alert('Failed to place order. Please try again.');
+      
     } finally {
       setIsSubmitting(false);
     }
-  };
+  };      
 
   return (
     <div className="flex min-h-screen flex-col">

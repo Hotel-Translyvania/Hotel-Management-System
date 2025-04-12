@@ -2,7 +2,6 @@ import { IsNotEmpty, IsUUID, IsArray, ValidateNested, Min } from 'class-validato
 import { Type } from 'class-transformer';
 
 class OrderItemDto {
-  @IsUUID()
   @IsNotEmpty()
   foodId: string;
 
@@ -11,7 +10,6 @@ class OrderItemDto {
 }
 
 export class CreateOrderDto {
-  @IsUUID()
   @IsNotEmpty()
   bookingId: string;
 
