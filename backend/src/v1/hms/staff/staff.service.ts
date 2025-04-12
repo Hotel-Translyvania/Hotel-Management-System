@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
-  InternalServerErrorException
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId, Repository } from 'typeorm';
@@ -27,12 +27,17 @@ export class StaffService {
     private hotelRepository: Repository<Hotel>,
     private readonly emailService: EmailService,
     private imageUploadService: ImageUploadService,
-  ) { }
+  ) {}
 
-  async createStaff(createStaffDto: CreateStaffDto, hotelId: number): Promise<{ success: boolean; message: string }> {
+  async createStaff(
+    createStaffDto: CreateStaffDto,
+    hotelId: number,
+  ): Promise<{ success: boolean; message: string }> {
     // Check if email already exists
 
-    const targetHotel = await this.hotelRepository.findOne({ where: { id: hotelId } });
+    const targetHotel = await this.hotelRepository.findOne({
+      where: { id: hotelId },
+    });
     if (!targetHotel) {
       throw new NotFoundException('Hotel not found');
     }
@@ -48,28 +53,30 @@ export class StaffService {
     }
     // 3. Generate and hash password
 
-
-    const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
-    const temporaryPassword = Array.from(crypto.getRandomValues(new Uint32Array(12)))
+    const charset =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+    const temporaryPassword = Array.from(
+      crypto.getRandomValues(new Uint32Array(12)),
+    )
       .map((x) => charset[x % charset.length])
       .join('');
     const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
 
     createStaffDto.password = hashedPassword;
 
-
     //upload image
-    const imageUrl = await this.imageUploadService.uploadImage(createStaffDto.profilePic, `staff-${Date.now()}`);
+    const imageUrl = await this.imageUploadService.uploadImage(
+      createStaffDto.profilePic,
+      `staff-${Date.now()}`,
+    );
     createStaffDto.profilePic = imageUrl;
     const staff = this.staffRepository.create({
       ...createStaffDto,
       hotel: targetHotel,
-      isTemporaryPassword: true,
-      role: { name: createStaffDto.role } as any, // Adjust role to match the expected type
+      isTemporaryPassword: true, // Adjust role to match the expected type
     });
     try {
       await this.staffRepository.save(staff);
-
     } catch (error) {
       console.error('Error saving staff:', error);
       throw new InternalServerErrorException('Failed to save staff member');
@@ -79,7 +86,7 @@ export class StaffService {
       const emailResponse = await this.emailService.sendStaffWelcomeEmail(
         createStaffDto.email,
         `${createStaffDto.firstname} ${createStaffDto.lastname}`,
-        temporaryPassword
+        temporaryPassword,
       );
       console.log('Email sent successfully:', emailResponse);
     } catch (error) {
@@ -89,14 +96,14 @@ export class StaffService {
     // Send email with temporary password
     return {
       success: true,
-      message: 'Staff member invited successfully. Temporary password sent via email.',
-
+      message:
+        'Staff member invited successfully. Temporary password sent via email.',
     };
   }
 
   async assignTask(
     id: string,
-    assignTaskDto: AssignTaskDto
+    assignTaskDto: AssignTaskDto,
   ): Promise<{ success: boolean; message: string }> {
     const staff = await this.staffRepository.findOne({ where: { id } });
 
@@ -118,14 +125,14 @@ export class StaffService {
 
   async getAllStaff(getStaffDto: GetStaffDto): Promise<{
     success: boolean;
-    data: any[]
+    data: any[];
   }> {
     const staffMembers = await this.staffRepository.find({
       where: { hotel: { id: Number(getStaffDto.hotelId) } },
       relations: ['hotel'],
     });
 
-    const formattedStaff = staffMembers.map(staff => ({
+    const formattedStaff = staffMembers.map((staff) => ({
       staffId: staff.id,
       staffName: `${staff.firstname} ${staff.lastname}`,
       staffRole: staff.role,
@@ -143,7 +150,10 @@ export class StaffService {
       data: formattedStaff,
     };
   }
-  async deleteStaff(id: string, hotelId: number): Promise<{ success: boolean; message: string }> {
+  async deleteStaff(
+    id: string,
+    hotelId: number,
+  ): Promise<{ success: boolean; message: string }> {
     const staff = await this.staffRepository.findOne({
       where: { id, hotel: { id: hotelId } },
       relations: ['hotel'],
@@ -159,34 +169,38 @@ export class StaffService {
       success: true,
       message: 'Staff member deleted successfully',
     };
-
   }
 
-  async updateStaff(id:string,hotelId:number, updateStaffDto:UpdateStaffDto): Promise<{ success:boolean,message:string}>{
+  async updateStaff(
+    id: string,
+    hotelId: number,
+    updateStaffDto: UpdateStaffDto,
+  ): Promise<{ success: boolean; message: string }> {
     const staff = await this.staffRepository.findOne({
-      where: {id, hotel: {id:hotelId}},
-      relations: ['hotel']
-    })
+      where: { id, hotel: { id: hotelId } },
+      relations: ['hotel'],
+    });
 
-    if(!staff){
-      throw new NotFoundException('Staff member not found')
+    if (!staff) {
+      throw new NotFoundException('Staff member not found');
     }
-    try{
+    try {
       await this.staffRepository.update(
         { id, hotel: { id: hotelId } },
-        { 
-          ...updateStaffDto, 
-          role: updateStaffDto.role ? { name: updateStaffDto.role } as any : undefined 
-        }
+        {
+          ...updateStaffDto,
+          role: updateStaffDto.role
+            ? ({ name: updateStaffDto.role } as any)
+            : undefined,
+        },
       );
-        
-    } catch (error){
-      throw new InternalServerErrorException('Staff update failed')
+    } catch (error) {
+      throw new InternalServerErrorException('Staff update failed');
     }
-    
+
     return {
       success: true,
-      message:"staff memeber successfuly updated"
+      message: 'staff memeber successfuly updated',
     };
   }
 }

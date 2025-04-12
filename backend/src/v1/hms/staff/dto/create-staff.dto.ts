@@ -1,16 +1,17 @@
 // src/hms/staff/dto/create-staff.dto.ts
-import { 
-  IsEmail, 
-  IsNotEmpty, 
-  IsString, 
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
   IsNumber,
   IsPhoneNumber,
   IsUrl,
   IsDateString,
   IsEnum,
-  IsOptional
+  IsOptional,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { Role } from 'src/common/enums/role.enum';
 
 export class CreateStaffDto {
   @IsNotEmpty()
@@ -24,9 +25,8 @@ export class CreateStaffDto {
   @IsString()
   password: string;
 
-  @IsNotEmpty()
-  @IsString()
-  role: string;
+  @IsEnum(Role)
+  role: Role;
 
   @IsNotEmpty()
   @IsEmail()
