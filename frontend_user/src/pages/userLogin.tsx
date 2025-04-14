@@ -1,4 +1,11 @@
 
+
+import { jwtDecode } from "jwt-decode";
+
+import axios from "axios";
+
+import { ProfileData } from "@/types/profile";
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Navbar from '@/components/Navbar/Navbar';
 import Footer from "../components/layout/Footer";
@@ -24,23 +31,47 @@ const UserLogin = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const { firstName, hasActiveBooking, hasPastBookings } = userData;
+  const navigate = useNavigate();
+  const [guestId, setGuestId] = useState<string | null>(null);
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
+useEffect(() => {
+    const token = localStorage.getItem("token");
 
-  useEffect(() => {
-    // Simulate data loading
-    const timer = setTimeout(() => {
-      setLoading(false);
-      
-      // Welcome toast notification
-      toast({
-        title: "Welcome back!",
-        description: "It's great to see you again. Explore our latest offers.",
-        duration: 5000,
-      });
-    }, 1000);
+    if (!token) {
+      navigate("/login");
+      return;
+    }
 
-    return () => clearTimeout(timer);
-  }, [toast]);
+    try {
+      const decoded: any = jwtDecode(token);
+      console.log("Decoded token:", decoded);
+      const guestId = decoded.sub;
+      setGuestId(guestId);
+    
 
+      axios
+        .get("http://localhost:3000/api/v1/hotels/1/me",{
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          console.log("token:", token);
+          const {data} = res.data;
+          console.log("Response data:", data);
+          setProfileData(data);
+          console.log("Profile data:", data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch user:", err);
+          navigate("/login");
+        });
+    } catch (error) {
+      console.error("Invalid token:", error);
+      navigate("/login");
+    }
+  }, [navigate]);
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -60,7 +91,7 @@ const UserLogin = () => {
         {/* Welcome Section */}
         <section className="mb-10">
           <WelcomeMessage 
-            firstName={firstName} 
+            firstName={profileData.firstName} 
             hasActiveBooking={hasActiveBooking} 
           />
         </section>

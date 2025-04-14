@@ -1,11 +1,8 @@
-function App() {
-  return (
-    <div className="min-h-screen">
-      <Navbar />
-    </div>
-  );
-}
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,40 +13,7 @@ import UserAvatar from "@/components/Profile/UserAvatar";
 import ProfileField from "@/components/Profile/ProfileField";
 import EditProfileForm from "@/components/Profile/EditProfileForm";
 import DeleteAccountDialog from "@/components/Profile/DeleteAccountDialog";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { jwtDecode } from "jwt-decode";
-
-// Utility functions
-const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString();
-
-const displayGender = (gender: string) =>
-  gender === "M" ? "Male" : gender === "F" ? "Female" : "Other";
-
-const displayIdType = (type: string) => {
-  switch (type) {
-    case "passport":
-      return "Passport";
-    case "driver_license":
-      return "Driver's License";
-    default:
-      return "Other";
-  }
-};
-
-interface ProfileData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  gender: string;
-  address: string;
-  nationality: string;
-  dateOfBirth: string;
-  idType: string;
-  identificationNumber: string;
-  fullName?: string;
-}
+import { ProfileData } from "@/types/profile";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -59,122 +23,178 @@ const Profile = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-
+  const [guestId, setGuestId] = useState<string | null>(null);
   useEffect(() => {
     const token = localStorage.getItem("token");
+
     if (!token) {
       navigate("/login");
       return;
     }
 
     try {
-      const decoded: { sub: string } = jwtDecode(token);
+      const decoded: any = jwtDecode(token);
+      console.log("Decoded token:", decoded);
       const guestId = decoded.sub;
+      setGuestId(guestId);
     
-      const config = {
-        headers: { Authorization: `Bearer ${token}` },
-      };
-    
-      console.log("Sending request to /me endpoint with config:", config);
-    
+
       axios
-        .get("http://localhost:3000/api/v1/hotels/1/me", config)
+        .get("http://localhost:3000/api/v1/hotels/1/me",{
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         .then((res) => {
-          console.log("Response from /me endpoint:", res);
-    
-          const data = res.data.data;
-          const fullName = `${data.firstName} ${data.lastName}`;
-          setProfileData({ ...data, fullName });
+          console.log("token:", token);
+          const {data} = res.data;
+          console.log("Response data:", data);
+          setProfileData(data);
+          console.log("Profile data:", data);
           setLoading(false);
         })
         .catch((err) => {
-          console.error("Failed to fetch user:", err?.response || err);
-          toast({
-            title: "Session expired",
-            description: "Please log in again",
-            variant: "destructive",
-          });
+          console.error("Failed to fetch user:", err);
           navigate("/login");
         });
     } catch (error) {
       console.error("Invalid token:", error);
+      navigate("/login");
+    }
+  }, [navigate]);
+  const handleSaveProfile = async (updatedFields: Partial<ProfileData>) => {
+    setLoading(true)
+    const token = localStorage.getItem("token");
+    console.log("updatedFields:", updatedFields);
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+  
+    try {
+      // Clean object: remove undefined and null fields
+      const cleanedData: Record<string, any> = {};
+  
+      // Split fullName into firstName and lastName
+      if (updatedFields.fullName) {
+        const [firstName, ...lastNameParts] = updatedFields.fullName.split(" ");
+        const lastName = lastNameParts.join(" "); // Join the remaining parts as the last name
+        cleanedData.firstName = firstName;
+        cleanedData.lastName = lastName;
+      }
+  
+      // Loop through other fields and add to cleanedData
+      for (const key in updatedFields) {
+        if (key !== "fullName" && key !== "idType" && key !== "image" && updatedFields[key as keyof ProfileData] !== undefined && updatedFields[key as keyof ProfileData] !== null) {
+          cleanedData[key] = updatedFields[key as keyof ProfileData];
+        }
+      }
+      console.log("Cleaned data:", cleanedData);
+      // Send PATCH request with only cleaned data
+      const response = await axios.patch(
+        `http://localhost:3000/api/v1/hotels/1/guest/${guestId}`,
+        cleanedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      ).then((res) => setLoading(false));
+  
       toast({
-        title: "Invalid session",
-        description: "Please log in again",
+        title: "Profile updated",
+        description: "Your profile has been successfully updated.",
+      });
+  
+      setIsEditDialogOpen(false);
+      setProfileData((prev) => ({
+        ...prev!,
+        ...cleanedData,
+      }));
+    } catch (err: any) {
+      console.error("Failed to update profile:", err?.response?.data || err.message);
+  
+      toast({
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
         variant: "destructive",
       });
-      navigate("/login");
-    }    
-  }, [navigate, toast]);
-
-  const handleSaveProfile = async (updatedFields: Partial<ProfileData>) => {
+    }
+  };
+  
+  const handleDeleteAccount = async () => {
+    setLoading(true)
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
       return;
     }
-
+  
     try {
-      const cleanedData: Record<string, any> = {};
-      for (const key in updatedFields) {
-        const value = updatedFields[key as keyof ProfileData];
-        if (value !== undefined && value !== null) {
-          cleanedData[key] = value;
-        }
-      }
-
-      await axios.patch("http://localhost:3000/api/v1/hotels/1/me", cleanedData, {
+      await axios.delete(`http://localhost:3000/api/v1/hotels/1/guest/${guestId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      });
-
-      toast({ title: "Profile updated successfully" });
-
-      // Update fullName if firstName or lastName changes
-      setProfileData((prev) => {
-        if (!prev) return null;
-        const updated = { ...prev, ...cleanedData };
-        updated.fullName = `${updated.firstName} ${updated.lastName}`;
-        return updated;
-      });
-    } catch (error) {
-      console.error("Failed to update profile:", error);
+      }).then((res) => setLoading(false));
+  
       toast({
-        title: "Error",
-        description: "Failed to update profile",
-        variant: "destructive",
+        title: "Account deleted",
+        description: "Your account has been permanently deleted.",
       });
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    try {
-      await axios.delete("http://localhost:3000/api/v1/hotels/1/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      toast({ title: "Account deleted successfully" });
+  
       localStorage.removeItem("token");
-      navigate("/signup");
-    } catch (error) {
-      console.error("Failed to delete account:", error);
+      window.location.href = "/";
+    } catch (err) {
+      console.error("Failed to delete account:", err);
       toast({
         title: "Error",
-        description: "Failed to delete account",
+        description: "Failed to delete account. Please try again.",
         variant: "destructive",
       });
     }
   };
+  
+  const displayIdType = (type: string) => {
+    switch (type) {
+      case "passport":
+        return "Passport";
+      case "national-id":
+        return "National ID";
+      case "drivers-license":
+        return "Driver's License";
+      default:
+        return type;
+    }
+  };
 
-  if (loading || !profileData) return <div className="text-center py-20">Loading...</div>;
+  const displayGender = (gender: string) => {
+    switch (gender) {
+      case "male":
+        return "Male";
+      case "female":
+        return "Female";
+      case "other":
+        return "Other";
+      case "prefer-not-to-say":
+        return "Prefer not to say";
+      default:
+        return gender;
+    }
+  };
 
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  if (loading || !profileData) return <div className="p-8 text-center">Loading...</div>;
+  console.log("Profile data:", profileData);
+  console.log("Profile data:", profileData.fullName);
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -189,7 +209,8 @@ const Profile = () => {
           <CardContent className="p-0">
             <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-6">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                <UserAvatar name={profileData.fullName || ""} />
+              <UserAvatar name={profileData.firstName + " " + profileData.lastName} imageSrc={profileData.image} className="sm:h-20 sm:w-20 h-16 w-16"/>
+
                 <div>
                   <h2 className="text-xl font-semibold">{profileData.fullName}</h2>
                   <p className="text-gray-600">{profileData.email}</p>
@@ -207,9 +228,9 @@ const Profile = () => {
               </div>
 
               <Separator className="mb-6" />
-
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
-                <ProfileField label="Full Name" value={profileData.fullName || ""} />
+                <ProfileField label="Full Name" value={profileData.firstName + " "+ profileData.lastName} />
                 <ProfileField label="Email" value={profileData.email} />
                 <ProfileField label="Phone Number" value={profileData.phone} />
                 <ProfileField label="Gender" value={displayGender(profileData.gender)} />

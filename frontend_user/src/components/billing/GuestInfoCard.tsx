@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { GuestInfo, ServiceDetails } from '../data/mockData';
+import { GuestInfo, ServiceDetails } from '../../data/mockData';
 import { Calendar, CreditCard, User, Phone, Mail, Clock, Home, Tag, Map, Users } from 'lucide-react';
 
 interface GuestInfoCardProps {

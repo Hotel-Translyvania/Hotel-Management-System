@@ -1,18 +1,48 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useBooking } from '@/hooks/useBooking';
 import RoomList from '@/components/Rooms/RoomList';
 import BookingForm from '@/components/Rooms/BookingForm';
 import Navbar from '@/components/Navbar/Navbar';
 import { Link } from 'react-router-dom';
 import restaurantImage from '@/assets/restaurant.jpg';
-import servicesImage from '@/assets/services.jpg'; // Add your services image
-//import "./Rooms_Booking.css";
+import servicesImage from '@/assets/services.jpg';
+import { useParams } from "react-router-dom";
 
 const RoomsPage = () => {
-  const { rooms, isLoading, error } = useBooking();
+  const { hotelName, hotelId } = useParams(); 
+
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [showBookingForm, setShowBookingForm] = useState(false);
+  const [isLoading, setLoading] = useState(true); 
+  const [error, setError] = useState("");
+  const [rooms, setRooms] = useState([]); 
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+       const response = await fetch(`http://localhost:3000/api/v1/hotels/${hotelId}/rooms`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        console.log("API Response:", data);
+        const { rooms: { data: rooms } } = data;
+        console.log("Rooms Data:", rooms); 
+        setRooms(rooms); 
+      } catch (err) {
+        setError("Failed to load rooms.");
+        console.error(err); // Log any errors for better debugging
 
+        // Handle error if needed
+      }
+      finally {
+        setLoading(false); // Stop the loading spinner or message
+      }
+    };
+    fetchRooms();
+  }, []);
+    
   const handleBookNow = (room) => {
     setSelectedRoom(room);
     setShowBookingForm(true);
@@ -41,6 +71,7 @@ const RoomsPage = () => {
 
       <div className="container mx-auto px-4 py-6">
         <RoomList 
+        key={rooms._id}
           rooms={rooms} 
           onBookNow={handleBookNow} 
         />
