@@ -1,8 +1,8 @@
 
 import { useState } from 'react';
-import { BillingHistory as BillingHistoryType, ChargeItem } from '../data/mockData';
+import { BillingHistory as BillingHistoryType, ChargeItem } from '../../data/mockData';
 import { ChevronDown, ChevronUp, Search, Calendar, Filter } from 'lucide-react';
-
+import React from 'react';
 interface BillingHistoryProps {
   history: BillingHistoryType[];
   currentInvoiceId: string;

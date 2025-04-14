@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { BillingSummary as BillingSummaryType } from '../data/mockData';
+import { BillingSummary as BillingSummaryType } from '../../data/mockData';
 import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
