@@ -1,8 +1,9 @@
+// src/pages/restaurant/OrderForm.jsx
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Navbar from '@/components/Navbar/Navbar';
 import { RestaurantNavbar } from '../../components/restaurant/RestaurantNavbar';
 import { foodItems } from '../../data/foodItems';
+ 
 
 export default function OrderForm() {
   const navigate = useNavigate();
@@ -53,54 +54,56 @@ export default function OrderForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+  
+    // Check if required fields are filled
     if (!bookingId || !name || !roomNumber || selectedItems.length === 0) {
       alert('Please fill in all required fields and add at least one item');
       return;
     }
-    
+  
     setIsSubmitting(true);
-    
+  
+    // Prepare the order data with transformed item structure
+    const orderData = {
+      bookingId,
+      name,
+      roomNumber,
+      items: Array.isArray(selectedItems) ? selectedItems.map(item => ({
+        foodId: item.id,  // Transform "id" to "foodId"
+        quantity: item.quantity  // Keep "quantity"
+      })) : [], // Ensure that items is an array
+      specialInstructions,
+      total: calculateTotal(),
+      orderDate: new Date().toISOString()
+    };
+  
+    // Log the order data before sending it
+    console.log('Order data to be sent to the backend:', orderData);
+  
     try {
-      const orderData = {
-        bookingId,
-        name,
-        roomNumber,
-        items: selectedItems.map(item => ({
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity
-        })),
-        specialInstructions,
-        total: calculateTotal(),
-        orderDate: new Date().toISOString()
-      };
-      
-      console.log('Order data:', orderData);
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      alert('Order placed successfully!');
-      navigate('/restaurant/history');
+      const response = await fetch('localhost:3000/api/v1/hotels/1/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
       
     } catch (error) {
-      console.error('Error submitting order:', error);
+      // Log any errors that occur during the API call
+      console.error('Error submitting order:', error.response ? error.response.data : error.message);
       alert('Failed to place order. Please try again.');
+      
     } finally {
       setIsSubmitting(false);
     }
-  };
+  };      
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Common Navbar */}
-      <Navbar />
-      
-      {/* Restaurant-Specific Navbar */}
-      <RestaurantNavbar cartItemCount={selectedItems.reduce((count, item) => count + item.quantity, 0)} />
+      <RestaurantNavbar cartItemCount={0} />
 
-      {/* Main Content */}
-      <main className="flex-1 container mx-auto px-4 py-8 mt-32">
+      <main className="flex-1 container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Place an Order</h1>
           <Link 
@@ -222,7 +225,7 @@ export default function OrderForm() {
           </div>
           
           <div>
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-48">
+            <div className="bg-white rounded-lg shadow-md p-6 sticky top-20">
               <h2 className="text-xl font-semibold mb-4">Your Order</h2>
               
               {selectedItems.length === 0 ? (

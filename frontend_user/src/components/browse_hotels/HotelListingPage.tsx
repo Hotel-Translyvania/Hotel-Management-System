@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Filter } from 'lucide-react';
 import Navbar from '@/components/Navbar/Navbar';
 import SearchBar from './SearchBar';
@@ -6,7 +6,6 @@ import FiltersSidebar from './FiltersSidebar';
 import HotelCard from './HotelCard';
 import EmptyState from './EmptyState';
 import Pagination from './Pagination';
-import { hotels as hotelData } from '@/data/hotels';
 import { Button } from '@/components/ui/button';
 
 interface FiltersState {
@@ -18,65 +17,97 @@ interface FiltersState {
 }
 
 const HotelListingPage: React.FC = () => {
+  const [hotelData, setHotelData] = useState<any[]>([]);
+  const [filteredHotels, setFilteredHotels] = useState<any[]>([]);
   const [filterSidebarOpen, setFilterSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [appliedFilters, setAppliedFilters] = useState<FiltersState>({
     priceRange: [0, 500],
-    starRating: [1, 2, 3, 4, 5], // All ratings selected by default
-    roomType: [], // Empty by default since roomType is optional
+    starRating: [1, 2, 3, 4, 5],
+    roomType: [],
     amenities: {
       wifi: false,
       pool: false,
       parking: false,
       gym: false,
     },
-    sortBy: 'popularity'
+    sortBy: 'popularity',
   });
-  const [filteredHotels, setFilteredHotels] = useState(hotelData);
-  const [showEmptyState] = useState(false);
+
+  const [showEmptyState, setShowEmptyState] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const hotelsPerPage = 8;
-  const totalPages = Math.ceil(filteredHotels.length / hotelsPerPage);
 
-  // Get current hotels
+  useEffect(() => {
+    const fetchHotels = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/v1/hotels');
+        const hotel = await response.json();
+        const { data } = hotel;
+        console.log('Fetched hotels:', data);
+        setHotelData(data);
+        setFilteredHotels(data); // Set filteredHotels initially to all fetched hotels
+      } catch (error) {
+        console.error('Error fetching hotels:', error);
+      }
+    };
+    fetchHotels();
+  }, []);
+
+  useEffect(() => {
+    setShowEmptyState(filteredHotels.length === 0);
+  }, [filteredHotels]);
+
+  const totalPages = Math.ceil(filteredHotels.length / hotelsPerPage);
   const indexOfLastHotel = currentPage * hotelsPerPage;
   const indexOfFirstHotel = indexOfLastHotel - hotelsPerPage;
   const currentHotels = filteredHotels.slice(indexOfFirstHotel, indexOfLastHotel);
 
-  // Function to apply filters
+  // Apply filters and search term
   const applyFilters = (filters: FiltersState) => {
     setAppliedFilters(filters);
     let filtered = [...hotelData];
 
     // Price range filter
-    filtered = filtered.filter(hotel =>
-      hotel.price >= filters.priceRange[0] && hotel.price <= filters.priceRange[1]
+    filtered = filtered.filter(
+      (hotel) => hotel.price >= filters.priceRange[0] && hotel.price <= filters.priceRange[1]
     );
 
-    // Star rating filter (round to nearest integer for comparison)
+    // Star rating filter
     if (filters.starRating.length > 0) {
-      filtered = filtered.filter(hotel =>
+      filtered = filtered.filter((hotel) =>
         filters.starRating.includes(Math.round(hotel.rating))
-    )}
-
-    // Room type filter (if roomType exists on hotel)
-    if (filters.roomType.length > 0) {
-      filtered = filtered.filter(hotel =>
-        hotel.roomType && filters.roomType.includes(hotel.roomType))
+      );
     }
 
-    // Amenities filter (case insensitive)
+    // Room type filter
+    if (filters.roomType.length > 0) {
+      filtered = filtered.filter((hotel) =>
+        hotel.roomType && filters.roomType.includes(hotel.roomType)
+      );
+    }
+
+    // Amenities filter
     const selectedAmenities = Object.entries(filters.amenities)
       .filter(([_, value]) => value)
       .map(([key]) => key.toLowerCase());
 
     if (selectedAmenities.length > 0) {
-      filtered = filtered.filter(hotel =>
-        selectedAmenities.every(amenity => 
-          hotel.amenities.some(hotelAmenity => 
+      filtered = filtered.filter((hotel) =>
+        selectedAmenities.every((amenity) =>
+          hotel.amenities.some((hotelAmenity) =>
             hotelAmenity.toLowerCase().includes(amenity)
           )
         )
+      );
+    }
+
+    // Search functionality
+    if (searchTerm) {
+      filtered = filtered.filter((hotel) =>
+        hotel.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        hotel.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -84,7 +115,7 @@ const HotelListingPage: React.FC = () => {
     filtered = sortHotels(filtered, filters.sortBy);
 
     setFilteredHotels(filtered);
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page
   };
 
   // Sort hotels based on selected option
@@ -98,14 +129,12 @@ const HotelListingPage: React.FC = () => {
         return [...hotels].sort((a, b) => b.rating - a.rating);
       case 'popularity':
       default:
-        // Fallback to rating if popularity doesn't exist
-        return [...hotels].sort((a, b) => 
-          (b.popularity || b.rating) - (a.popularity || a.rating)
+        return [...hotels].sort(
+          (a, b) => (b.popularity || b.rating) - (a.popularity || a.rating)
         );
     }
   };
 
-  // Handle clear filters
   const handleClearFilters = () => {
     const defaultFilters = {
       priceRange: [0, 500],
@@ -117,10 +146,10 @@ const HotelListingPage: React.FC = () => {
         parking: false,
         gym: false,
       },
-      sortBy: 'popularity'
+      sortBy: 'popularity',
     };
     setAppliedFilters(defaultFilters);
-    setFilteredHotels(hotelData);
+    setFilteredHotels(hotelData); // Reset to original data
     setCurrentPage(1);
   };
 
@@ -152,7 +181,7 @@ const HotelListingPage: React.FC = () => {
 
       <div className="container mx-auto px-4">
         {/* Search Bar */}
-        <SearchBar />
+        <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} onSearch={() => applyFilters(appliedFilters)} />
 
         {/* Main Content */}
         <div className="flex flex-col md:flex-row gap-6 mt-8">

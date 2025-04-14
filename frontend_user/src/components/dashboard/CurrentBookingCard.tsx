@@ -73,17 +73,7 @@ const CurrentBookingCard: React.FC<CurrentBookingCardProps> = ({
           </div>
         </div>
       </CardContent>
-      <CardFooter className="bg-gray-50 p-4">
-        <div className="w-full flex justify-end">
-          <Button
-            variant="outline"
-            className="bg-white text-hotel-primary border-hotel-primary hover:bg-hotel-primary hover:text-white"
-            asChild
-          >
-            <Link to={`/bookings/${bookingId}`}>View Booking Details</Link>
-          </Button>
-        </div>
-      </CardFooter>
+      
     </Card>
   );
 };

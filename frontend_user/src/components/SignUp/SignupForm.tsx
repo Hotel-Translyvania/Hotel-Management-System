@@ -34,7 +34,7 @@ import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import FormStepper from "./FormStepper";
 import { toast } from "@/hooks/use-toast";
-import { signup } from "../../api"; // Import the signup API function
+import { signup } from '@//components/api/api'; // Import the signup API function
 
 const STEPS = ["Personal Info", "Contact", "Identity", "Security"] as const;
 const NATIONALITIES = ["Ethiopian", "American", "Australian", "British", "Canadian", "Chinese", "French", "German", "Indian", "Italian", "Japanese", "Mexican", "Spanish", "Other"] as const;

@@ -51,7 +51,7 @@ const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
           {hotel.description}
         </p>
         
-        {/* Amenities */}
+        {/* Amenities
         <div className="flex flex-wrap gap-2 mb-4">
           {hotel.amenities.map((amenity, index) => (
             <span 
@@ -61,7 +61,7 @@ const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
               {amenity}
             </span>
           ))}
-        </div>
+        </div> */}
         
         <div className="flex justify-between items-center mt-4">
           <Button variant="outline" className="text-sm">View Details</Button>

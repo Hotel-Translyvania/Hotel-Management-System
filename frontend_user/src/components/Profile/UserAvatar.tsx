@@ -9,6 +9,7 @@ interface UserAvatarProps {
 }
 
 const UserAvatar = ({ name, imageSrc, className }: UserAvatarProps) => {
+  console.log("UserAvatar props:", name);
   const initials = name
     .split(" ")
     .map((n) => n[0])

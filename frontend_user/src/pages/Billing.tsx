@@ -1,11 +1,4 @@
-function App() {
-  return (
-    <div className="min-h-screen">
-      <Navbar />
-    </div>
-  );
-}
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar/Navbar';
 import GuestInfoCard from '@/components/billing/GuestInfoCard';
 import BillingSummary from '@/components/billing/BillingSummary';
@@ -13,32 +6,83 @@ import PaymentSection from '@/components/billing/PaymentSection';
 import ItemizedCharges from '@/components/billing/ItemizedCharges';
 import BillingHistory from '@/components/billing/BillingHistory';
 import ServiceSelector from '@/components/billing/ServiceSelector';
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+
+import axios from "axios";
 import { mockBillingData, updateServiceDetails, BillingData, ServiceType } from '@/data/mockData';
 import "../index.css";
 
 const Billing = () => {
   const [billingData, setBillingData] = useState<BillingData>(mockBillingData);
+  const [loading, setLoading] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true); // New state
+  const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+
+  //   if (!token) {
+  //     navigate("/login");
+  //     return;
+  //   }
+
+  //   try {
+  //     const decoded: any = jwtDecode(token);
+  //     const email = decoded.email;
+
+  //     axios
+  //     .get("http://localhost:3000/api/v1/hotels/1/me",{
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       }
+  //     })
+  //       .then((res) => {
+  //         setBillingData(res.data);
+  //         setLoading(false);
+  //         setCheckingAuth(false); // auth verified
+  //       })
+  //       .catch((err) => {
+  //         console.error("Failed to fetch user:", err);
+  //         navigate("/login");
+  //       });
+  //   } catch (error) {
+  //     console.error("Invalid token:", error);
+  //     navigate("/login");
+  //   }
+  // }, [navigate]);
+
+  // if (checkingAuth) {
+  //   return null; // Don't render anything until auth check is done
+  // }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-700 text-lg">Loading billing information...</p>
+      </div>
+    );
+  }
 
   const handleServiceTypeChange = (type: ServiceType) => {
     const updatedService = updateServiceDetails(type);
-    
     setBillingData({
       ...billingData,
-      service: updatedService
+      service: updatedService,
     });
   };
 
   const handleUpdateSummary = (summary: typeof billingData.summary) => {
     setBillingData({
       ...billingData,
-      summary
+      summary,
     });
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
-      
+
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Billing Statement</h1>
@@ -49,38 +93,34 @@ const Billing = () => {
           currentType={billingData.service.type} 
           onServiceChange={handleServiceTypeChange} 
         />
-        
+
         <GuestInfoCard 
           guest={billingData.guest} 
           service={billingData.service} 
         />
-        
+
         <div className="md:flex md:space-x-6">
           <div className="md:w-2/3">
-            <ItemizedCharges 
-              charges={billingData.charges} 
-            />
-            
+            <ItemizedCharges charges={billingData.charges} />
             <BillingHistory 
-              history={billingData.history}
-              currentInvoiceId={billingData.id}
+              history={billingData.history} 
+              currentInvoiceId={billingData.id} 
             />
           </div>
-          
+
           <div className="md:w-1/3 space-y-6">
             <BillingSummary 
               summary={billingData.summary} 
-              onUpdateSummary={handleUpdateSummary}
+              onUpdateSummary={handleUpdateSummary} 
             />
-            
             <PaymentSection 
-              summary={billingData.summary}
-              onUpdateSummary={handleUpdateSummary}
+              summary={billingData.summary} 
+              onUpdateSummary={handleUpdateSummary} 
             />
           </div>
         </div>
       </main>
-      
+
       <footer className="bg-white border-t border-gray-200 py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">

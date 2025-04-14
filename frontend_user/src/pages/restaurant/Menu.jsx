@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar/Navbar';
 import { RestaurantNavbar } from '@/components/restaurant/RestaurantNavbar';
 import { FoodCategories } from '../../components/restaurant/FoodCategories';
 import { FoodItems } from '../../components/restaurant/FoodItems';
 import { Cart } from '../../components/restaurant/Cart';
 import { OrderConfirmation } from '../../components/restaurant/OrderConfirmation';
-import { foodItems, categories } from '../../data/foodItems';
+// import { categories } from '../../data/foodItems';
 
 export default function Menu() {
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -13,6 +13,43 @@ export default function Menu() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [showOrderConfirmation, setShowOrderConfirmation] = useState(false);
   const [orderNumber, setOrderNumber] = useState(null);
+  const [foodItems, setFoodItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [categories, setCategories] = useState([]);
+  // Fetch menu items from API
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        const response = await fetch('http://localhost:3000/api/v1/hotels/1/menu', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch menu items');
+        }
+
+        const data = await response.json();
+        setFoodItems(data);
+        setCategories(["All", "Popular", ...Array.from(new Set(data.map((item) => item.category)))]);
+      } catch (err) {
+        setError(err.message);
+        console.error('Error fetching menu items:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMenuItems();
+  }, []);
 
   const filteredItems =
     selectedCategory === "All"
@@ -42,7 +79,9 @@ export default function Menu() {
       ]);
     }
   };
-
+  const orderData = (data) => {
+    
+  };
   const removeFromCart = (cartItemId) => {
     setCartItems(cartItems.filter((item) => item.id !== cartItemId));
   };
@@ -72,6 +111,28 @@ export default function Menu() {
     setOrderNumber(null);
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <Navbar />
+        <main className="flex-1 container mx-auto px-4 py-8 mt-32 flex justify-center items-center">
+          <div className="text-xl">Loading menu...</div>
+        </main>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <Navbar />
+        <main className="flex-1 container mx-auto px-4 py-8 mt-32 flex justify-center items-center">
+          <div className="text-xl text-red-500">Error: {error}</div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       {/* Common Navbar */}
@@ -98,6 +159,7 @@ export default function Menu() {
 
       <Cart
         isOpen={isCartOpen}
+        boookingId={orderNumber}
         onClose={() => setIsCartOpen(false)}
         cartItems={cartItems}
         onUpdateQuantity={updateCartItemQuantity}

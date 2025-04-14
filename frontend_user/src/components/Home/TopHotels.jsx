@@ -1,44 +1,43 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import HotelCard from "./HotelCard";
-import api from "@/api";
-
-const TopHotels = () => {
+import api from "@/components/api/api";
+import { Link } from "react-router-dom";
+const TopHotels = ({ onHotelClick }) => {
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  const [hotelId, setHotelId] = useState(null); 
   useEffect(() => {
     const fetchHotels = async () => {
       try {
         const res = await api.get("/hotels");
 
-        // Log the full response to understand its structure
         console.log("API Response:", res.data);
 
-        // Access the array of hotels inside the 'data' property
-        const rawHotels = res.data.data; // 'data' contains the array of hotels
+        const rawHotels = res.data.data;
 
-        // Map over the hotels array to clean and structure it
         const cleaned = rawHotels.map((hotel) => ({
           id: hotel.id,
-          name: hotel.name, // Adjust the field name as needed
+          name: hotel.name,
           description: hotel.description,
           address: hotel.address,
           city: hotel.city,
           country: hotel.country,
-          pricePerNight: hotel["pricePerNight"], // Adjust this field if necessary
-          isActive: hotel.isActive, // Adjust field names according to the API response
+          pricePerNight: hotel["pricePerNight"],
+          isActive: hotel.isActive,
           location: hotel.location ?? `${hotel.city}, ${hotel.country}`,
           image: hotel.image,
+          rating: hotel.rating, // Include rating if available
         }));
 
-        setHotels(cleaned); // Set the cleaned data in state
+        setHotels(cleaned);
+        
       } catch (err) {
         setError("Failed to load hotels.");
-        console.error(err); // Log any errors for better debugging
+        console.error(err);
       } finally {
-        setLoading(false); // Stop the loading spinner or message
+        setLoading(false);
       }
     };
 
@@ -62,23 +61,30 @@ const TopHotels = () => {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {hotels.map((hotel) => (
-              <HotelCard
+              <div
                 key={hotel.id}
-                image={hotel.image}
-                name={hotel.name}
-                location={hotel.location}
-                rating={hotel.rating || 4.5} // fallback to 0 if rating is not available
-                price={hotel.pricePerNight}
-                description={hotel.description}
-              />
+                className="cursor-pointer hover:scale-[1.02] transition-transform"
+                onClick={() => {
+                  onHotelClick(hotel.name, hotel.id);
+                }} 
+              >
+                <HotelCard
+                  image={hotel.image}
+                  name={hotel.name}
+                  location={hotel.location}
+                  rating={hotel.rating || 4.5}
+                  price={hotel.pricePerNight}
+                  description={hotel.description}
+                />
+              </div>
             ))}
           </div>
         )}
 
         <div className="text-center">
-          <Button className="rounded-full px-8 py-6 text-lg bg-primary hover:bg-primary/90">
+          <Link to="browse_hotels"><Button className="rounded-full px-8 py-6 text-lg bg-primary hover:bg-primary/90">
             View All Hotels
-          </Button>
+          </Button></Link>
         </div>
       </div>
     </section>

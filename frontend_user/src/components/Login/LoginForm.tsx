@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/components/ui/use-toast';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
-import { login } from '@/api'; // Import the login function from your API file
+import { login } from '@//components/api/api'; // Import the login function from your API file
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const LoginForm = () => {
@@ -56,6 +56,7 @@ const LoginForm = () => {
 
       // Store the token or handle response as necessary
       // For example, storing the token in localStorage or a global state
+      console.log('Login response:', response.token);
       localStorage.setItem('token', response.token); // Assuming the response contains a 'token'
 
       // Redirect to the /user_login page after successful login

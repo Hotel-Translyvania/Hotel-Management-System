@@ -26,10 +26,10 @@ export class Manager{
     @Column()
     address: string;
 
-    @Column()
+    @Column({ type: 'datetime', nullable: false, default: () => "'2000-01-01 00:00:00'" })
     dateOfBirth: Date;
 
-    @Column()
+    @Column({ type: 'datetime', nullable: false, default: () => "'2000-01-01 00:00:00'" })
     registrationDate: Date;
 
     @Column({nullable: true})
