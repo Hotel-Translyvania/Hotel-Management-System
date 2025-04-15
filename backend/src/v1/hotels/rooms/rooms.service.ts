@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Room } from 'src/common/entities/room.entity';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { ImageUploadService } from '../../../common/services/image-upload.service';
-import { Repository,LessThan,MoreThan } from 'typeorm';
+import { Repository, LessThan, MoreThan } from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Booking } from 'src/common/entities/booking.entity';
@@ -57,7 +57,7 @@ export class RoomsService {
   
     // Filter rooms based on occupancy
     let availableRooms = hotel.rooms.filter(
-      (room) => room.status !== 'available' 
+      (room) => room.status === 'available'
     );
   
     // Check room availability by filtering out booked rooms

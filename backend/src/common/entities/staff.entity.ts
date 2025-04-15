@@ -23,7 +23,7 @@ import { Role } from '../../common/enums/role.enum';
     lastname: string;
   
     @Column({
-      type: 'varchar',
+      type: 'enum',
       enum: Role,
       default: Role.USER,
     })
