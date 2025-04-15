@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Logo from '@/components/Login/Logo';
 import LoginForm from '@/components/Login/LoginForm';
 
@@ -32,10 +33,19 @@ const Login = () => {
           </div>
         </div>
       </div>
-
+    
       {/* Right side - Login Form */}
       <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-6 md:p-12 bg-white">
         <div className="w-full max-w-md">
+           {/* "Back to Home" link (top-right corner) */}
+           <div className="flex justify-end mb-4">
+            <Link 
+              to="/" 
+              className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+            >
+              ← Back to Home
+            </Link>
+          </div>
           {/* Only show logo on mobile screens */}
           <div className="md:hidden mb-8 flex justify-center">
             <Logo />

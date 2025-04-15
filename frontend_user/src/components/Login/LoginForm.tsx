@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -155,11 +156,14 @@ const LoginForm = () => {
         </Button>
 
         <div className="text-center text-gray-600 text-sm">
-          Don't have an account?{' '}
-          <a href="#" className="text-primary hover:text-primary/80 font-medium">
-            Sign up
-          </a>
-        </div>
+        Don't have an account?{' '}
+        <Link 
+        to="/signup" 
+        className="text-primary hover:text-primary/80 font-medium"
+        >
+        Sign up
+        </Link>
+      </div>
       </form>
     </div>
   );

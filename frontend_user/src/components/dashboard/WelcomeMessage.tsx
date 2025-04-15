@@ -21,7 +21,7 @@ const WelcomeMessage: React.FC<WelcomeMessageProps> = ({
   return (
     <div className="animate-fade-in">
       <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">
-        Welcome back, {firstName}!
+        Welcome back!
       </h1>
       <p className="mt-2 text-lg text-gray-600">
         {getSecondaryMessage()}

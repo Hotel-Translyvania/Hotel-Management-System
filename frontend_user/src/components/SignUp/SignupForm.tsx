@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from 'react-router-dom';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -73,7 +74,7 @@ const formSchema = z.object({
   }),
   password: z.string().min(8, {
     message: "Password must be at least 8 characters.",
-  }).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, {
+  }).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/, {
     message: "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
   }),
   confirmPassword: z.string(),
@@ -287,8 +288,21 @@ const SignupForm: React.FC = () => {
                             date > new Date() || date < new Date("1900-01-01")
                           }
                           initialFocus
-                          className={cn("p-3 pointer-events-auto")}
+                          captionLayout="dropdown-buttons"
+                          showYearDropdown
+                          fromYear={1900}
+                          toYear={new Date().getFullYear()}
+                          className="rounded-md border"
+                          components={{
+                             Dropdown: (props) =>
+                              props.name === 'month' ? null : (
+                              <select
+                              {...props}
+                              className={cn("p-3 pointer-events-auto")}
                         />
+                              ),
+                              }}
+                              />
                       </PopoverContent>
                     </Popover>
                     <FormDescription>
@@ -536,14 +550,16 @@ const SignupForm: React.FC = () => {
         </form>
       </Form>
       
-      <div className="text-center mt-8">
-        <p className="text-gray-600">
-          Already have an account?{" "}
-          <a href="#" className="text-primary font-medium hover:underline">
-            Log In
-          </a>
-        </p>
+      <div className="text-center text-gray-600 text-sm">
+        Already have an account?{' '}
+        <Link 
+        to="/Login" 
+        className="text-primary hover:text-primary/80 font-medium"
+        >
+        Login
+        </Link>
       </div>
+      
     </div>
   );
 };

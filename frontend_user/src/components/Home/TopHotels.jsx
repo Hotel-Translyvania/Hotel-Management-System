@@ -70,8 +70,8 @@ const TopHotels = () => {
                 name={hotel.name}
                 location={hotel.location}
                 rating={hotel.rating}
-                price={hotel.pricePerNight}
-                description={hotel.description}
+                //price={hotel.pricePerNight}
+                //description={hotel.description}
               />
             ))}
           </div>

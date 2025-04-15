@@ -94,7 +94,7 @@ const RoomsPage = () => {
           
           <div className="w-full max-w-3xl mr-auto">
             <Link 
-              to="/ServicesPage" 
+              to="/Services" 
               className="block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 group"
             >
               <div className="flex flex-col md:flex-row">

@@ -38,8 +38,8 @@ const HotelCard = ({ image, name, location, rating, price, description, discount
         
         <div className="flex justify-between items-center pt-2 border-t">
           <div>
-            <span className="text-lg font-bold text-primary">${price}</span>
-            <span className="text-muted-foreground text-sm"> / night</span>
+            <span className="text-lg font-bold text-primary">{price}</span>
+            <span className="text-muted-foreground text-sm"> </span>
           </div>
           <button className="text-primary font-medium text-sm hover:underline">
             View Details

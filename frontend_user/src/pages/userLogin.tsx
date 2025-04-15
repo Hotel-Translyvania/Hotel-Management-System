@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import Navbar from '@/components/Navbar/Navbar';
+import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/layout/Footer";
 import WelcomeMessage from "../components/dashboard/WelcomeMessage";
 import CurrentBookingCard from "../components/dashboard/CurrentBookingCard";
