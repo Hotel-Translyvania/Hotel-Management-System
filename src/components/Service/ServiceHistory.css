@@ -1,0 +1,85 @@
+ .service-history {
+    background-color: white;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .no-requests {
+    color: #7f8c8d;
+    text-align: center;
+    margin: 2rem 0;
+  }
+  
+  .requests-list {
+    margin-top: 1.5rem;
+  }
+  
+  .request-card {
+    display: flex;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    transition: box-shadow 0.2s;
+  }
+  
+  .request-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .request-details {
+    flex: 1;
+  }
+  
+  .request-details h4 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+  }
+  
+  .request-details p {
+    color: #7f8c8d;
+    margin: 0.3rem 0;
+    font-size: 0.9rem;
+  }
+  
+  .request-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+  
+  .status-badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  
+  .status-badge.completed {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .status-badge.in-progress {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+  
+  .complete-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    transition: background-color 0.2s;
+  }
+  
+  .complete-button:hover {
+    background-color: #218838;
+  }
