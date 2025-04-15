@@ -23,9 +23,9 @@ export class Order {
   @Column({ type: 'text', nullable: true })
   specialRequest?: string;
   @Column({
-    type: 'timestamp',
+  type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP', // No (6) here
-  })
+ })
   createdAt: Date;
 
 }

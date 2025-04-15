@@ -4,7 +4,8 @@ import {
     PrimaryGeneratedColumn, 
     Column, 
     ManyToOne,
-    OneToMany
+    OneToMany,
+    CreateDateColumn
   } from 'typeorm';
 import { Hotel } from '../../common/entities/hotel.entity';
 import { Assignment } from './assignments.entity';
@@ -22,7 +23,7 @@ import { Role } from '../../common/enums/role.enum';
     lastname: string;
   
     @Column({
-      type: 'enum',
+      type: 'varchar',
       enum: Role,
       default: Role.USER,
     })
@@ -60,8 +61,8 @@ import { Role } from '../../common/enums/role.enum';
     @Column({ type: 'date' })
     employedAt: Date;
   
-    // @CreateDateColumn({ name: 'created_at' })
-    // createdAt: Date;
+    @CreateDateColumn({ name: 'created_at' })
+     createdAt: Date;
   
     // @UpdateDateColumn({ name: 'updated_at' })
     // updatedAt: Date;

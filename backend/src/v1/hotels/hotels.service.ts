@@ -21,7 +21,7 @@ export class HotelService {
       return this.hotelRepository.save(hotel);      //Saves the hotel data in the database
     } catch (error) {
       console.error('Error:', error.message);
-      throw new InternalServerErrorException('Failed to add hotel', { cause: error.message });
+      throw new InternalServerErrorException('Failed to create hotel');
 
     }
   }
