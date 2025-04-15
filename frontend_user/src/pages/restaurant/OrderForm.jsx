@@ -1,6 +1,6 @@
-// src/pages/restaurant/OrderForm.jsx
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Navbar from '@/components/Navbar/Navbar';
 import { RestaurantNavbar } from '../../components/restaurant/RestaurantNavbar';
 import { foodItems } from '../../data/foodItems';
 
@@ -62,7 +62,6 @@ export default function OrderForm() {
     setIsSubmitting(true);
     
     try {
-      // In a real app, you would send this data to your API
       const orderData = {
         bookingId,
         name,
@@ -79,11 +78,8 @@ export default function OrderForm() {
       };
       
       console.log('Order data:', orderData);
-      
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Redirect to order history page after successful submission
       alert('Order placed successfully!');
       navigate('/restaurant/history');
       
@@ -97,9 +93,14 @@ export default function OrderForm() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <RestaurantNavbar cartItemCount={0} />
+      {/* Common Navbar */}
+      <Navbar />
+      
+      {/* Restaurant-Specific Navbar */}
+      <RestaurantNavbar cartItemCount={selectedItems.reduce((count, item) => count + item.quantity, 0)} />
 
-      <main className="flex-1 container mx-auto px-4 py-8">
+      {/* Main Content */}
+      <main className="flex-1 container mx-auto px-4 py-8 mt-32">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Place an Order</h1>
           <Link 
@@ -221,7 +222,7 @@ export default function OrderForm() {
           </div>
           
           <div>
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-20">
+            <div className="bg-white rounded-lg shadow-md p-6 sticky top-48">
               <h2 className="text-xl font-semibold mb-4">Your Order</h2>
               
               {selectedItems.length === 0 ? (

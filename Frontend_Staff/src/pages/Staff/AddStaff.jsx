@@ -28,6 +28,10 @@ const AddStaff = ({ onSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const onSubmit = async (data) => {
+    if (!profileImage){
+      setError("Please select a profile picture");
+      return;
+    }
     try {
       setIsLoading(true);
       
@@ -37,7 +41,7 @@ const AddStaff = ({ onSuccess }) => {
       formData.append("firstname", data.fname);
       formData.append("lastname", data.lname);
       formData.append("email", data.email);
-      formData.append("dob", data.dob);
+      formData.append("dateOfBirth", data.dob);
       // formData.append("address", data.address);
       formData.append("phonenumber", data.phone);
       formData.append("salary", data.salary);
@@ -57,7 +61,7 @@ const AddStaff = ({ onSuccess }) => {
       onSuccess();
       setError(null);
     } catch (error) {
-      console.error("Error adding staff:", error.message);
+      console.error("Error adding staff:", error);
       setError("Failed to add staff");
     } finally {
       setIsLoading(false);
@@ -229,7 +233,7 @@ const AddStaff = ({ onSuccess }) => {
               />
             </div>
             <div className="flex flex-col items-start justify-center gap-2">
-              <label className="text-[#232323] ">Role</label>
+              <label className="text-[#232323] ">Position</label>
               <input
                 type="text"
                 id="role"

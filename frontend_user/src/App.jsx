@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Billing from "./pages/Billing";
 import NotFound from "./pages/NotFound";
-import ServicesPage from './pages/ServicesPage';
+import ServicesPage from "./pages/ServicesPage";
 import ServiceHistory from './components/Service/ServiceHistory';
 import RoomsPage from "./pages/RoomsPage";
 import BookingPage from "./pages/BookingPage";
@@ -17,12 +17,12 @@ import BrowseHotels from "./pages/BrowseHotels";
 import SignUp from "./pages/SignUp";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
-import TestPaymentModal from "./pages/TestPaymentModals";
+import TestSuccessModal from "./pages/PaymentSuccess"
+import "./App.css";
+
 import Menu from './pages/restaurant/Menu';
 import OrderHistory from './pages/restaurant/OrderHistory';
 import OrderForm from './pages/restaurant/OrderForm';
-import "./App.css";
-
 
 const queryClient = new QueryClient();
 
@@ -45,7 +45,6 @@ const App = () => (
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/history" element={<ServiceHistory />} />
             <Route path="/rooms" element={<RoomsPage />} />
-
             <Route path="/bookings" element={<BookingPage />} />
             <Route path="/bookings/:id" element={<BookingDetails />} />
             <Route path="/user_login" element={<UserLogin />} />
@@ -53,7 +52,7 @@ const App = () => (
             <Route path="/signup" element={<SignUp />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/payment_modal" element={<TestPaymentModal />} />
+            <Route path="/payment_success" element={<TestSuccessModal />} />
             {/* These routes would be implemented later as the application grows */}
             <Route path="/user_rooms" element={<NotFound />} />
             <Route path="/user_rooms/:id" element={<NotFound />} />
@@ -72,7 +71,15 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BookingProvider>
+          <Routes>
+          {/* Restaurant routes */}
+          <Route path="/restaurant/menu" element={<Menu />} />
+          <Route path="/restaurant/history" element={<OrderHistory />} />
+          <Route path="/restaurant/order" element={<OrderForm />} />
 
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

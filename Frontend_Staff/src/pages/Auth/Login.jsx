@@ -1,12 +1,39 @@
 import { useForm } from "react-hook-form";
-import InputField from "../../components/SignUp/InputField";
 import Button from "../../components/SignUp/Button";
-import SubmissionStatus from "../../components/SignUp/SubmissionStatus";
-import { useState } from "react";
+import { use, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaLock, FaEnvelope, FaHome } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { color, motion } from "framer-motion";
 import ResetPassword from "../../components/login/ResetPassword.jsx";
+import { useAuthStore } from "@/components/Auth/authStore";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
+const SimpleSubmissionStatus = ({ status, onClose }) => {
+  if (!status) return null;
+
+  const bgColor =
+    status.type === "success"
+      ? "bg-green-100 border-green-400 text-green-700"
+      : "bg-red-100 border-red-400 text-red-700";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className={`border px-4 py-3 rounded relative mt-4 ${bgColor}`}
+      role="alert"
+    >
+      <span className="block sm:inline">{status.message}</span>
+      <button
+        onClick={onClose}
+        className="absolute top-0 bottom-0 right-0 px-4 py-3"
+      >
+        <span className="text-2xl leading-none">×</span>
+      </button>
+    </motion.div>
+  );
+};
 
 const Login = () => {
   const {
@@ -17,24 +44,32 @@ const Login = () => {
 
   const navigate = useNavigate();
   const [submissionStatus, setSubmissionStatus] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { loading, login, user, isAuthenticated } = useAuthStore();
+  const [userType, setUserType] = useState("staff");
 
   const onSubmit = async (data) => {
-    setLoading(true);
+    setSubmissionStatus(null);
+    console.log(userType, "user type");
     try {
-      console.log(data);
+      const { email, password } = data;
+      const res = await login(email, password);
       setSubmissionStatus({
         type: "success",
         message: "Login successful! Redirecting...",
       });
-      setTimeout(() => navigate("/dashboard"), 2000);
+      // if (user) {
+      //   console.log(user.role, isAuthenticated)
+      //   if (user.role === "admin") {
+      //     navigate("/admin/hotels");
+      //   } else {
+      //     navigate("/dashboard");
+      //   }
+      // }
     } catch (error) {
       setSubmissionStatus({
         type: "error",
-        message: error.message || "Login failed. Please try again.",
+        message: error.response?.data?.message || "Login failed!",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -52,9 +87,7 @@ const Login = () => {
 
   return (
     <div className="flex min-h-screen w-full bg-gray-100 overflow-hidden">
-      {/* Left Side - Background Color & Content */}
       <div className="hidden md:flex w-1/2 bg-gradient-to-br from-blue-900 to-teal-500 relative">
-        {/* Content Over Gradient */}
         <motion.div
           className="absolute inset-0 flex items-center justify-center p-10 text-center"
           variants={slideInLeft}
@@ -81,7 +114,11 @@ const Login = () => {
                 animate: {
                   y: [0, -10, 0],
                   opacity: 1,
-                  transition: { duration: 1, repeat: Infinity, repeatType: "reverse" },
+                  transition: {
+                    duration: 1,
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                  },
                 },
               }}
               animate="animate"
@@ -115,19 +152,22 @@ const Login = () => {
                 "The key is not to prioritize what's on your schedule, but to
                 schedule your priorities."
               </p>
-              <span className="block mt-2 text-sm text-gray-300">- Mahder Tesfaye</span>
+              <span className="block mt-2 text-sm text-gray-300">
+                - Mahder Tesfaye
+              </span>
             </motion.div>
           </div>
         </motion.div>
       </div>
 
-      {/* Right Side - Login Form */}
       <div className="w-full md:w-1/2 bg-white py-12 px-6 flex items-center justify-center">
-        {/* Form Container */}
         <div className="w-full max-w-md">
-          {/* Logo - Using hotelicon.svg from public folder */}
-          <div className="flex justify-center mb-8">
-            <img src="/hotelicon.svg" alt="Hotel Logo" className="h-16" />
+          <div className="flex justify-center">
+            <img
+              src="/hotelicon.svg"
+              alt="Hotel Logo"
+              className="h-32 w-full"
+            />
           </div>
 
           <motion.h1
@@ -140,8 +180,11 @@ const Login = () => {
           </motion.h1>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Email Input with Icon */}
-            <motion.div variants={fadeInAnimation} initial="initial" animate="animate">
+            <motion.div
+              variants={fadeInAnimation}
+              initial="initial"
+              animate="animate"
+            >
               <label
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700"
@@ -155,7 +198,9 @@ const Login = () => {
                 <input
                   type="email"
                   id="email"
-                  className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-3 py-2 sm:text-sm border-gray-300 rounded-md"
+                  className={`focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-3 py-2 sm:text-sm border rounded-md ${
+                    errors.email ? "border-red-500" : "border-gray-300"
+                  }`}
                   placeholder="you@example.com"
                   {...register("email", {
                     required: "Email is required",
@@ -164,6 +209,7 @@ const Login = () => {
                       message: "Invalid email address",
                     },
                   })}
+                  aria-invalid={errors.email ? "true" : "false"}
                 />
               </div>
               {errors.email && (
@@ -173,8 +219,11 @@ const Login = () => {
               )}
             </motion.div>
 
-            {/* Password Input with Icon */}
-            <motion.div variants={fadeInAnimation} initial="initial" animate="animate">
+            <motion.div
+              variants={fadeInAnimation}
+              initial="initial"
+              animate="animate"
+            >
               <label
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-700"
@@ -189,8 +238,13 @@ const Login = () => {
                   type="password"
                   id="password"
                   placeholder="********"
-                  className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-3 py-2 sm:text-sm border-gray-300 rounded-md"
-                  {...register("password", { required: "Password is required" })}
+                  className={`focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-3 py-2 sm:text-sm border rounded-md ${
+                    errors.password ? "border-red-500" : "border-gray-300"
+                  }`}
+                  {...register("password", {
+                    required: "Password is required",
+                  })}
+                  aria-invalid={errors.password ? "true" : "false"}
                 />
               </div>
               {errors.password && (
@@ -200,9 +254,41 @@ const Login = () => {
               )}
             </motion.div>
 
-            {/* Remember Me & Forgot Password */}
-            <motion.div variants={fadeInAnimation} initial="initial" animate="animate">
-              <div className="flex items-center justify-between">
+            {/* <motion.div
+              variants={fadeInAnimation}
+              initial="initial"
+              animate="animate"
+              className="flex flex-row gap-2 items-center"
+            >
+              <label className=" text-sm font-medium text-gray-700 w-full">
+                User Type
+              </label>
+              <RadioGroup
+                defaultValue="staff"
+                onValueChange={setUserType}
+                className="flex space-x-4 "
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="admin" id="admin"/>
+                  <label className="cursor-pointer">Admin</label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="manager" id="manager" />
+                  <label className="cursor-pointer">Manager</label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="staff" id="staff" />
+                  <label className="cursor-pointer">Staff</label>
+                </div>
+              </RadioGroup>
+            </motion.div> */}
+
+            <motion.div
+              variants={fadeInAnimation}
+              initial="initial"
+              animate="animate"
+            >
+              <div className="flex items-end justify-between">
                 <label className="flex items-center text-sm text-gray-700">
                   <input
                     type="checkbox"
@@ -215,11 +301,19 @@ const Login = () => {
               </div>
             </motion.div>
 
-            {/* Login Button */}
-            <motion.div variants={fadeInAnimation} initial="initial" animate="animate">
+            <SimpleSubmissionStatus
+              status={submissionStatus}
+              onClose={() => setSubmissionStatus(null)}
+            />
+
+            <motion.div
+              variants={fadeInAnimation}
+              initial="initial"
+              animate="animate"
+            >
               <Button
                 type="submit"
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-md shadow-md transition duration-300 ease-in-out"
+                className="w-full flex justify-center items-center bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-md shadow-md transition duration-300 ease-in-out disabled:opacity-50"
                 disabled={loading}
               >
                 {loading ? (
@@ -251,14 +345,6 @@ const Login = () => {
                 )}
               </Button>
             </motion.div>
-
-            {/* Wrap adjacent elements */}
-            <>
-              <SubmissionStatus
-                status={submissionStatus}
-                onClose={() => setSubmissionStatus(null)}
-              />
-            </>
           </form>
         </div>
       </div>

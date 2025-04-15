@@ -3,23 +3,45 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
+import axios from "axios";
+import SpinPage from "@/components/Spin/Spin";
+
+const api = axios.create({
+  baseURL: "http://localhost:3000/api/v1",
+});
+
 const EditStaff = ({ staffData, onSuccess }) => {
   const [profileImage, setProfileImage] = useState(null);
-  const [existingImage, setExistingImage] = useState(staffData?.picture || null);
+  const [existingImage, setExistingImage] = useState(
+    staffData?.picture || null
+  );
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  console.log("staffData", staffData);
+
+  // "staffId": "80d77d0c-edf1-4db3-86e2-0b58e4399356",
+  // "staffName": "Christopher Johnson",
+  // "staffRole": "user",
+  // "staffSalary": "456.00",
+  // "status": "available",
+  // "employedAt": "2025-04-24",
+  // "profilePic": "https://res.cloudinary.com/dznryrysy/image/upload/v1744015496/staff-1744015495498.png",
+  // "phonenumber": "+251 92 177 8842",
+  // "email": "ralim71244@carspure.com",
+  // "assignedRoomId": null
 
   const form = useForm({
     defaultValues: {
-      fname: staffData.firstName,
-      lname: staffData.lastName,
       email: staffData.email,
-      dob: staffData.dob,
-      address: staffData.address,
-      phone: staffData.phone,
-      salary: staffData.salary,
-      role: staffData.role,
-      employed_at: staffData.employedDate,
-      status: staffData.status,
-      profile_picture: staffData.picture,
+      phone: staffData.phonenumber,
+      salary: staffData.staffSalary,
+      role: staffData.staffRole,
+      employed_at: staffData.employedAt,
+      status: staffData.staffStatus,
+      profile_picture: staffData.profilePic,
+      fname: staffData.staffName.split(" ")[0],
+      lname: staffData.staffName.split(" ")[1],
     },
   });
 
@@ -29,17 +51,15 @@ const EditStaff = ({ staffData, onSuccess }) => {
   useEffect(() => {
     if (staffData) {
       reset({
-        fname: staffData.firstName,
-        lname: staffData.lastName,
+        fname: staffData.staffName.split(" ")[0],
+        lname: staffData.staffName.split(" ")[1],
         email: staffData.email,
-        dob: staffData.dob,
-        address: staffData.address,
-        phone: staffData.phone,
-        salary: staffData.salary,
-        role: staffData.role,
-        employed_at: staffData.employedDate,
-        status: staffData.status,
-        profile_picture: staffData.picture,
+        phone: staffData.phonenumber,
+        salary: staffData.staffSalary,
+        role: staffData.staffRole,
+        employed_at: staffData.employedAt,
+        status: staffData.staffStatus,
+        profile_picture: staffData.profilePic,
       });
       setExistingImage(staffData.picture);
     }
@@ -54,6 +74,8 @@ const EditStaff = ({ staffData, onSuccess }) => {
   };
 
   const onSubmit = (data) => {
+    setLoading(true);
+
     onSuccess();
   };
 
@@ -144,38 +166,6 @@ const EditStaff = ({ staffData, onSuccess }) => {
                 className="rounded-xl p-3 border w-full"
               />
             </div>
-
-            <div className="flex flex-col items-start justify-center gap-2">
-              <label className="text-[#232323] ">Date of Birth</label>
-              <input
-                type="date"
-                id="dob"
-                {...register("dob", {
-                  required: {
-                    value: true,
-                    message: "Date of Birth is required",
-                  },
-                })}
-                className="rounded-xl p-3 border w-full"
-              />
-            </div>
-            <div className="flex flex-col items-start justify-center gap-2">
-              <label className="text-[#232323] ">Address</label>
-              <input
-                type="text"
-                id="address"
-                placeholder="Address"
-                {...register("address", {
-                  required: {
-                    value: true,
-                    message: "Address is required",
-                  },
-                })}
-                className="rounded-xl p-3 border w-full"
-              />
-            </div>
-          </div>
-          <div className="flex flex-col gap-3 w-1/2">
             <div className="flex flex-col items-start justify-center gap-2">
               <label className="text-[#232323] ">Phone Number</label>
               <input
@@ -188,13 +178,16 @@ const EditStaff = ({ staffData, onSuccess }) => {
                     message: "Phone Number is required",
                   },
                   pattern: {
-                    value: /^\+?\d{1,3}[-.\s]?\(?\d{1,4}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/,
+                    value:
+                      /^\+?\d{1,3}[-.\s]?\(?\d{1,4}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/,
                     message: "Invalid Phone Number",
                   },
                 })}
                 className="rounded-xl p-3 border w-full"
               />
             </div>
+          </div>
+          <div className="flex flex-col gap-3 w-1/2">
             <div className="flex flex-col items-start justify-center gap-2">
               <label className="text-[#232323] ">Salary</label>
               <input
@@ -241,8 +234,10 @@ const EditStaff = ({ staffData, onSuccess }) => {
             </div>
             <div className="flex flex-col items-start justify-center gap-2">
               <label className="text-[#232323] ">Status</label>
-              <select
+              <input
+                type="text"
                 id="status"
+                placeholder="Status"
                 {...register("status", {
                   required: {
                     value: true,
@@ -250,12 +245,7 @@ const EditStaff = ({ staffData, onSuccess }) => {
                   },
                 })}
                 className="rounded-xl p-3 border w-full"
-              >
-                <option value="">Select Status</option>
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-                <option value="On Leave">On Leave</option>
-              </select>
+              />
             </div>
             <div className="flex w-full justify-end gap-4">
               <Button

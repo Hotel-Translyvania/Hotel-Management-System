@@ -8,7 +8,7 @@ import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Booking } from 'src/common/entities/booking.entity';
 import { Hotel } from 'src/common/entities/hotel.entity';
-
+import { RoomTypesResponseDto } from '../../hms/dashboard/dto/room-types-response.dto';
 
 
 @Injectable()
@@ -80,40 +80,5 @@ export class RoomsService {
   
     return availableRooms as Room[];
   }
-  
-
-
-
-  
-  
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-  
+ 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

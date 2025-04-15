@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, ArrowUpDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { DeleteButton } from "../Delete/DeleteButton";
+import { DeleteButton } from "../Confirmation/DeleteButton";
 
 export const guestSelection = [
   {
@@ -20,7 +20,7 @@ export const guestSelection = [
   },
   {
     id: "fullName",
-    accessorfn: (row) => `${row.firstName} ${row.lastName}`,
+    accessorFn: (row) => `${row.firstName} ${row.lastName}`,
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -29,11 +29,6 @@ export const guestSelection = [
         Full Name
         <ArrowUpDown className="size-4" />
       </Button>
-    ),
-    cell: ({ row }) => (
-      <div className="flex items-center space-x-2">
-        {row.original.firstName} {row.original.lastName}
-      </div>
     ),
     size: 24,
   },

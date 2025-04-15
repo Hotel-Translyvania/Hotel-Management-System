@@ -3,19 +3,22 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 const ProfileSetting = ({ userProfile }) => {
+  console.log(userProfile);
   const form = useForm({
     defaultValues: {
-      fname: userProfile.firstName,
-      lname: userProfile.lastName,
-      email: userProfile.email,
-      phone: userProfile.phone,
-      dob: userProfile.dob,
-      address: userProfile.address,
-      salary: userProfile.salary,
-      role: userProfile.role,
-      employed_at: userProfile.employedDate,
-      status: userProfile.status,
-      picture: userProfile.picture,
+      fname: userProfile?.firstName,
+      lname: userProfile?.lastName,
+      email: userProfile?.email,
+      phone: userProfile?.phone,
+      // userProfile.dateOfBirth: "2025-03-31T21:00:00.000Z" in this format, change in date format
+      dob: userProfile?.dateOfBirth.split("T")[0],
+      // dob: userProfile.dateOfBirth,
+      address: userProfile?.address,
+      salary: userProfile?.salary,
+      role: userProfile?.role,
+      employed_at: userProfile?.employedAt,
+      status: userProfile?.status,
+      picture: userProfile?.profilePic,
     },
   });
   const { register, handleSubmit, formState, reset } = form;
@@ -24,17 +27,17 @@ const ProfileSetting = ({ userProfile }) => {
   useEffect(() => {
     if (userProfile) {
       form.reset({
-        fname: userProfile.firstName,
-        lname: userProfile.lastName,
-        email: userProfile.email,
-        phone: userProfile.phone,
-        dob: userProfile.dob,
-        address: userProfile.address,
-        salary: userProfile.salary,
-        role: userProfile.role,
-        employed_at: userProfile.employedDate,
-        status: userProfile.status,
-        picture: userProfile.picture,
+        fname: userProfile?.firstName,
+        lname: userProfile?.lastName,
+        email: userProfile?.email,
+        phone: userProfile?.phone,
+        dob: userProfile?.dateOfBirth.split("T")[0],
+        address: userProfile?.address,
+        salary: userProfile?.salary,
+        role: userProfile?.role,
+        employed_at: userProfile?.employedAt,
+        status: userProfile?.status.toLowerCase(),
+        picture: userProfile?.profilePic,
       });
     }
   }, [userProfile, reset]);
@@ -43,7 +46,7 @@ const ProfileSetting = ({ userProfile }) => {
     console.log(data);
   };
   const [profileImage, setProfileImage] = useState(
-    userProfile.picture ? userProfile.picture : null
+    userProfile?.profilePic ? userProfile?.profilePic : null
   );
 
   const handleProfilePictureChange = (event) => {
@@ -143,7 +146,9 @@ const ProfileSetting = ({ userProfile }) => {
           </div>
 
           <div className="flex flex-col items-start justify-center gap-2">
-            <label className="text-[#232323] font-semibold">Date of Birth</label>
+            <label className="text-[#232323] font-semibold">
+              Date of Birth
+            </label>
             <input
               type="date"
               id="dob"
@@ -268,7 +273,7 @@ const ProfileSetting = ({ userProfile }) => {
               className="rounded-xl p-3 border w-full"
             >
               <option value="">Select Status</option>
-              <option value="active">Active</option>
+              <option value="available">Active</option>
               <option value="inactive">Inactive</option>
               <option value="on Leave">On Leave</option>
             </select>

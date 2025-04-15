@@ -17,6 +17,8 @@ import * as bcrypt from 'bcrypt';
 import { create } from 'domain';
 import { ImageUploadService } from 'src/common/services/image-upload.service';
 import { UpdateStaffDto } from './dto/update-staff.dto';
+import { Assignment } from 'src/common/entities/assignments.entity';
+import { Room } from 'src/common/entities/room.entity';
 
 @Injectable()
 export class StaffService {
@@ -25,6 +27,10 @@ export class StaffService {
     private staffRepository: Repository<Staff>,
     @InjectRepository(Hotel)
     private hotelRepository: Repository<Hotel>,
+    @InjectRepository(Assignment)
+    private assignmentRepository: Repository<Assignment>,
+    @InjectRepository(Room)
+    private roomRepository: Repository<Room>,
     private readonly emailService: EmailService,
     private imageUploadService: ImageUploadService,
   ) { }
@@ -65,6 +71,7 @@ export class StaffService {
       ...createStaffDto,
       hotel: targetHotel,
       isTemporaryPassword: true,
+      // role : createStaffDto.role
     });
     try {
       await this.staffRepository.save(staff);
@@ -97,11 +104,32 @@ export class StaffService {
     id: string,
     assignTaskDto: AssignTaskDto
   ): Promise<{ success: boolean; message: string }> {
-    const staff = await this.staffRepository.findOne({ where: { id } });
+    const staff = await this.staffRepository.findOne({ where: { id }, relations: ['hotel'] });
 
     if (!staff) {
       throw new NotFoundException('Staff member not found');
     }
+    const room = await this.roomRepository.findOne({
+      where: { id: assignTaskDto.roomId },
+      relations: ['hotel'],
+    });
+    if (!room) {
+      throw new NotFoundException('Room not found');
+    }
+
+    const assignment = new Assignment();
+    assignment.task = assignTaskDto.task;
+    assignment.description = assignTaskDto.description;
+    assignment.startTime = assignTaskDto.startTime 
+    assignment.endTime = assignTaskDto.endTime;
+    assignment.hotel = staff.hotel;
+    assignment.staff = staff;
+    assignment.assignedAt = new Date(); // Set the assignedAt timestamp
+    console.log('room', room)
+    if (room) {
+      assignment.room = room;
+    }
+    await this.assignmentRepository.save(assignment);
 
     staff.assignedRoomId = assignTaskDto.roomId;
     staff.currentTask = assignTaskDto.task;
@@ -173,7 +201,10 @@ export class StaffService {
     try{
       await this.staffRepository.update(
         { id, hotel: { id: hotelId } },
-        { ...updateStaffDto }
+        { 
+          ...updateStaffDto, 
+          role: updateStaffDto.role ? { name: updateStaffDto.role } as any : undefined 
+        }
       );
         
     } catch (error){

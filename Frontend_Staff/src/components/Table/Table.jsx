@@ -7,6 +7,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useAuthStore } from "../Auth/authStore";
 import {
   Table,
   TableBody,
@@ -80,6 +81,7 @@ export const CustomTable = ({
       },
     },
   });
+  const {user} = useAuthStore();
 
   return (
     <div className="space-y-4">
@@ -87,6 +89,7 @@ export const CustomTable = ({
         table={table}
         addButtonText={addButtonText}
         onAddClick={onAddClick}
+        role = {user?.role}
       />
 
       <div className="rounded-md border bg-white shadow-sm overflow-hidden">

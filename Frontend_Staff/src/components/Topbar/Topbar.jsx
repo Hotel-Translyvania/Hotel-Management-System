@@ -1,8 +1,13 @@
 import { FiUser } from "react-icons/fi";
-import { MdNotifications } from "react-icons/md";
+import { MdNotifications, MdLogout } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { Button } from "../ui/button";
+import { useAuthStore } from "../Auth/authStore";
+import { LogoutConfirmation } from "../Confirmation/Logout";
+import { PlusCircle } from "lucide-react";
 
-const Topbar = ({ user, currentNavItem }) => {
+const Topbar = ({ currentNavItem }) => {
+  const { user, logout } = useAuthStore();
   const Navigate = useNavigate();
   return (
     <header className="bg-white shadow-sm py-3 px-6 flex items-center justify-between">
@@ -20,12 +25,14 @@ const Topbar = ({ user, currentNavItem }) => {
 
         <div
           className="flex items-center space-x-2 hover:bg-gray-100 p-1 rounded-full cursor-pointer"
-          onClick={() => Navigate("/setting")}
+          onClick={() => {
+            console.log(user?.role);
+            Navigate(user?.role === "admin" ? "/admin/settings" : "/setting");
+          }}
         >
-          {user?.picture ? (
+          {user?.profilePic ? (
             <img
-              src={user.picture}
-              alt={user.name}
+              src={user?.profilePic}
               className="w-8 h-8 rounded-full object-cover"
             />
           ) : (
@@ -34,6 +41,25 @@ const Topbar = ({ user, currentNavItem }) => {
             </div>
           )}
         </div>
+        {/* 
+        if user?.role is admin, add a new button to add another admin and redirect to /admin/signup        
+        */}
+        {user?.role === "admin" && (
+          <Button
+            variant="outline"
+            className="bg-blue-500 text-white hover:bg-blue-600"
+            onClick={() => Navigate("/admin/signup")}
+          >
+            <PlusCircle size={16} />
+          </Button>
+        )}
+
+        <LogoutConfirmation
+          onLogout={async () => {
+            await logout();
+            Navigate("/login");
+          }}
+        />
       </div>
     </header>
   );

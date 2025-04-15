@@ -1,4 +1,3 @@
-
 export interface Hotel {
   id: number;
   name: string;
@@ -8,6 +7,8 @@ export interface Hotel {
   description: string;
   image: string;
   amenities: string[];
+  popularity?: number;
+  roomType?: string;
 }
 
 export const hotels: Hotel[] = [
@@ -19,7 +20,9 @@ export const hotels: Hotel[] = [
     price: 250,
     description: "Experience luxury in the heart of the city with stunning views and world-class service. Our rooms offer ultimate comfort for business and leisure travelers.",
     image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=300",
-    amenities: ["Wi-Fi", "Pool", "Spa", "Gym"]
+    amenities: ["Wifi", "Pool", "Parking", "Gym"],
+    popularity: 4.8,
+    roomType: "Suite"
   },
   {
     id: 2,
@@ -29,7 +32,9 @@ export const hotels: Hotel[] = [
     price: 320,
     description: "Oceanfront resort with private beach access and panoramic bay views. Enjoy spacious suites with balconies overlooking the Pacific.",
     image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=300",
-    amenities: ["Beach Access", "Restaurant", "Bar", "Free Parking"]
+    amenities: ["Wifi", "Parking", "Gym"],
+    popularity: 4.5,
+    roomType: "Single"
   },
   {
     id: 3,
@@ -39,7 +44,9 @@ export const hotels: Hotel[] = [
     price: 480,
     description: "Cozy mountain lodge surrounded by pine forests. Perfect for outdoor enthusiasts with ski-in/ski-out access and roaring fireplaces.",
     image: "https://images.unsplash.com/photo-1586611292717-f828b167408c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=300",
-    amenities: ["Fireplace", "Ski Access", "Hot Tub", "Restaurant"]
+    amenities: ["Wifi", "Pool", "Parking"],
+    popularity: 4.9,
+    roomType: "Double"
   },
   {
     id: 4,
@@ -49,7 +56,9 @@ export const hotels: Hotel[] = [
     price: 210,
     description: "Contemporary beachfront hotel featuring sleek design and Miami's vibrant culture. Relax by our infinity pool with handcrafted cocktails.",
     image: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=300",
-    amenities: ["Beach", "Pool", "Nightclub", "Restaurant"]
+    amenities: ["Pool", "Parking", "Gym"],
+    popularity: 4.3,
+    roomType: "Family"
   },
   {
     id: 5,
@@ -59,7 +68,9 @@ export const hotels: Hotel[] = [
     price: 290,
     description: "Urban luxury in downtown Chicago with award-winning dining and elegant rooms. Walking distance to major attractions and business centers.",
     image: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=300",
-    amenities: ["Business Center", "Gym", "Spa", "Fine Dining"]
+    amenities: ["Wifi", "Pool", "Gym"],
+    popularity: 4.6,
+    roomType: "Suite"
   },
   {
     id: 6,
@@ -69,7 +80,9 @@ export const hotels: Hotel[] = [
     price: 325,
     description: "Luxurious desert retreat with adobe-inspired architecture. Enjoy multiple pools, cactus gardens, and spectacular sunset views.",
     image: "https://images.unsplash.com/photo-1540541338287-41700207dee6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=300",
-    amenities: ["Pool", "Golf", "Spa", "Desert Tours"]
+    amenities: ["Wifi", "Pool", "Parking", "Gym"],
+    popularity: 4.7,
+    roomType: "Single"
   },
   {
     id: 7,
@@ -79,7 +92,9 @@ export const hotels: Hotel[] = [
     price: 190,
     description: "Charming boutique hotel in a restored 19th-century building. Experience Boston's history with modern comforts and personalized service.",
     image: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=300",
-    amenities: ["Breakfast", "Bar", "Walking Tours", "Bike Rental"]
+    amenities: ["Wifi", "Gym"],
+    popularity: 4.0,
+    roomType: "Double"
   },
   {
     id: 8,
@@ -89,7 +104,9 @@ export const hotels: Hotel[] = [
     price: 275,
     description: "Serene lakefront property with breathtaking mountain views. Enjoy water activities, hiking trails, and cozy accommodations.",
     image: "https://images.unsplash.com/photo-1615460549969-36fa19521a4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=300",
-    amenities: ["Lake Access", "Kayaking", "Nature Trails", "Restaurant"]
+    amenities: ["Wifi", "Pool", "Parking"],
+    popularity: 4.5,
+    roomType: "Suite"
   },
   {
     id: 9,
@@ -99,7 +116,9 @@ export const hotels: Hotel[] = [
     price: 180,
     description: "Eco-friendly boutique hotel with locally sourced materials and artisanal furnishings. Experience Portland's vibrant culture.",
     image: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=300",
-    amenities: ["Bicycle Rental", "Organic Breakfast", "Local Art", "Rooftop Bar"]
+    amenities: ["Wifi", "Pool"],
+    popularity: 4.2,
+    roomType: "Family"
   },
   {
     id: 10,
@@ -109,7 +128,9 @@ export const hotels: Hotel[] = [
     price: 340,
     description: "Elegant hotel with French Quarter charm and lush courtyard gardens. Experience luxury with a touch of Southern hospitality.",
     image: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=300",
-    amenities: ["Courtyard", "Jazz Bar", "Fine Dining", "Concierge"]
+    amenities: ["Pool", "Gym"],
+    popularity: 4.9,
+    roomType: "Single"
   },
   {
     id: 11,
@@ -119,7 +140,9 @@ export const hotels: Hotel[] = [
     price: 230,
     description: "Modern all-suite hotel with breathtaking city and mountain views. Spacious accommodations perfect for extended stays.",
     image: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=300",
-    amenities: ["Kitchen", "Workspace", "Laundry", "Gym"]
+    amenities: ["Wifi", "Pool", "Parking", "Gym"],
+    popularity: 4.1,
+    roomType: "Suite"
   },
   {
     id: 12,
@@ -129,6 +152,8 @@ export const hotels: Hotel[] = [
     price: 195,
     description: "Charming coastal inn just steps from the beach. Enjoy fresh sea air, stunning sunsets, and comfortable accommodations.",
     image: "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=300",
-    amenities: ["Ocean View", "Breakfast", "Beach Chairs", "Parking"]
+    amenities: ["Pool", "Parking"],
+    popularity: 3.9,
+    roomType: "Family"
   }
 ];

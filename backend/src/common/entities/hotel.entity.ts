@@ -11,20 +11,14 @@ export class Hotel {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: 'varchar', length: 255 })
+    @Column()
     name: string;
 
-    @Column({ type: 'text', nullable: true })
+    @Column()
     description: string;
 
-    @Column({ type: 'varchar', length: 100, nullable: false })
-    city: string;
-
-    @Column({ type: 'varchar', length: 100, nullable: false })
-    country: string;
-
-    @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
-    pricePerNight: number;
+    @Column()
+    location: string;
 
     @Column({ type: 'boolean', default: true })
     isActive: boolean;
@@ -35,8 +29,6 @@ export class Hotel {
     @OneToOne(() => Manager, (manager) => manager.hotel, { onDelete: "SET NULL" })
     manager: Manager;
 
-    @Column()
-    location: string;
 
     @OneToMany(() => Assignment, (assignment) => assignment.hotel)
     assignments: Assignment[];
@@ -44,7 +36,7 @@ export class Hotel {
     @OneToMany(() => Staff, (staff) => staff.hotel)
     staff: Staff[];
 
-    @Column({ type: 'varchar', length: 255, nullable: true })
+    @Column()
     image: string;
     
     @OneToMany(() => Food, food => food.hotel)

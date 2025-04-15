@@ -1,8 +1,11 @@
-
 import { useState } from 'react';
-import { BillingSummary, PaymentMethod } from '../data/mockData';
+import { BillingSummary, PaymentMethod } from '../../data/mockData';
 import { CreditCard, DollarSign, Download, Mail, Printer } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import axios from 'axios';
+const api = axios.create({
+  baseURL: "http://localhost:3000/api/v1",
+});
 
 interface PaymentSectionProps {
   summary: BillingSummary;
@@ -11,6 +14,7 @@ interface PaymentSectionProps {
 
 const PaymentSection = ({ summary, onUpdateSummary }: PaymentSectionProps) => {
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | undefined>(summary.paymentMethod);
+  const [loading, setLoading] = useState(false);
 
   const handleSelectPaymentMethod = (method: PaymentMethod) => {
     setSelectedMethod(method);
@@ -20,7 +24,7 @@ const PaymentSection = ({ summary, onUpdateSummary }: PaymentSectionProps) => {
     });
   };
 
-  const handleProcessPayment = () => {
+  const handleProcessPayment = async () => {
     if (!selectedMethod) {
       toast({
         title: "Payment method required",
@@ -30,26 +34,62 @@ const PaymentSection = ({ summary, onUpdateSummary }: PaymentSectionProps) => {
       return;
     }
 
-    // Simulate payment processing
-    toast({
-      title: "Processing payment",
-      description: "Your payment is being processed...",
-    });
+    if (selectedMethod === "card") {
+      try {
+        setLoading(true);
+        toast({
+          title: "Redirecting...",
+          description: "Taking you to the payment gateway.",
+        });
 
-    // Simulate successful payment after 2 seconds
-    setTimeout(() => {
-      onUpdateSummary({
-        ...summary,
-        status: 'paid',
-        paymentMethod: selectedMethod
-      });
+        const bookingId = "011f0ff1-4298-47c8-9933-3bf71c68ae68"; // fallback
+        const payload = {
+          price: (summary.serviceCharge + summary.subtotal + summary.tax) * 100, // example amount in cents
+          currency: "usd",
+        };
+        console.log('subtotal',summary.subtotal);
+        console.log('total',summary.total);
 
+
+        const response = await api.post(`/payments/initiate/${bookingId}`, payload);
+        console.log(response);  
+        const sessionUrl = response.data?.url || response.data?.sessionUrl;
+
+        if (sessionUrl) {
+          window.location.href = sessionUrl;
+        } else {
+          throw new Error("No session URL returned from API.");
+        }
+      } catch (error: any) {
+        toast({
+          title: "Payment initiation failed",
+          description: error?.response?.data?.message || "Something went wrong.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      // Simulate other methods
       toast({
-        title: "Payment successful",
-        description: "Thank you for your payment!",
-        variant: "default",
+        title: "Processing payment",
+        description: "Your payment is being processed...",
       });
-    }, 2000);
+
+      setTimeout(() => {
+        onUpdateSummary({
+          ...summary,
+          status: 'paid',
+          paymentMethod: selectedMethod
+        });
+
+        toast({
+          title: "Payment successful",
+          description: "Thank you for your payment!",
+          variant: "default",
+        });
+      }, 2000);
+    }
   };
 
   const handleDownloadInvoice = () => {
@@ -118,7 +158,7 @@ const PaymentSection = ({ summary, onUpdateSummary }: PaymentSectionProps) => {
             >
               <div className="flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M20.067 8.478c.492.88.556 2.014.3 3.327-.74 3.806-3.276 5.12-6.514 5.12h-.5a.805.805 0 0 0-.794.68l-.04.22-.63 4.084-.024.13a.804.804 0 0 1-.794.68h-2.52a.5.5 0 0 1-.488-.62l.04-.22 1.006-6.5.022-.14a.795.795 0 0 1 .79-.68h2.5c2.152 0 3.85-.346 5.1-1.084 1.21-.716 2.166-1.825 2.794-3.293.266-.623.439-1.198.53-1.714.056-.32.08-.604.077-.845v-.36c0-.664-.29-1.254-.718-1.676.17-.42.378-.794.648-1.1.693.44 1.217 1.072 1.519 1.8.3.784.224 1.734-.195 2.725-.02.061-.05.18-.05.18zm-10.06 5.423a.805.805 0 0 1-.794.68h-.5c-3.238 0-5.776-1.314-6.516-5.12-.256-1.313-.19-2.447.3-3.327-.419.991-.495 1.94-.197 2.725.245.64.67 1.204 1.266 1.635-.46.42-.73 1.01-.73 1.676v.36c-.001 2.407 1.615 4.927 4.76 4.927h3.273a.55.55 0 0 0 .546-.459l.678-4.35a.5.5 0 0 0-.487-.62h-1.647l.046-.218z" />
+                  <path d="M20.067 8.478c.492.88.556 2.014.3 3.327..."/>
                 </svg>
                 <span>PayPal</span>
               </div>
@@ -129,14 +169,14 @@ const PaymentSection = ({ summary, onUpdateSummary }: PaymentSectionProps) => {
         <div className="mt-8">
           <button
             onClick={handleProcessPayment}
-            disabled={summary.status === 'paid'}
+            disabled={summary.status === 'paid' || loading}
             className={`w-full py-3 rounded-lg font-medium transition-all duration-300 ${
-              summary.status === 'paid'
+              summary.status === 'paid' || loading
                 ? 'bg-green-500 text-white cursor-not-allowed'
                 : 'bg-blue-600 text-white hover:bg-blue-700'
             }`}
           >
-            {summary.status === 'paid' ? 'Paid' : 'Process Payment'}
+            {summary.status === 'paid' ? 'Paid' : loading ? 'Redirecting...' : 'Process Payment'}
           </button>
         </div>
         

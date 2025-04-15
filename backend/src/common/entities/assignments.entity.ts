@@ -15,6 +15,18 @@ export class Assignment {
 @PrimaryGeneratedColumn('uuid')
 id: number;
 
+@Column({nullable: true})
+task: string;
+
+@Column({nullable: true})
+description: string;
+
+@Column({nullable: true})
+startTime: string;
+
+@Column({nullable: true})
+endTime: string;
+
 @ManyToOne(() => Hotel, (hotel) => hotel.assignments, { nullable: false })
 @JoinColumn({ name: 'hotel_id' })
 hotel: Hotel;

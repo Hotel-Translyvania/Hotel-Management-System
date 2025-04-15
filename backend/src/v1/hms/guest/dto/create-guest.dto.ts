@@ -19,8 +19,8 @@ export class CreateGuestDto {
     @IsNotEmpty()
     gender: string;
 
-    @IsPhoneNumber()
-    phone: string;
+    @IsNotEmpty()
+    phone: string;    
 
     @IsNotEmpty()
     nationality: string;

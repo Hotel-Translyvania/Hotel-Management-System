@@ -1,8 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import axios from "axios";
+import SpinPage from "@/components/Spin/Spin";
+import { useRoomStore } from "@/components/store/useRoomStore";
 
+const api = axios.create({
+  baseURL: "http://localhost:3000/api/v1",
+});
 const EditRoom = ({ onSuccess, roomData }) => {
-  console.log(roomData);
+  const {editRoom} = useRoomStore();
   const {
     register,
     handleSubmit,
@@ -27,6 +33,9 @@ const EditRoom = ({ onSuccess, roomData }) => {
 
   const picture = watch("picture");
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     if (roomData) {
       reset({
@@ -38,7 +47,7 @@ const EditRoom = ({ onSuccess, roomData }) => {
         status: roomData.status,
         price: roomData.price,
         maxOccupancy: roomData.occupancy,
-        picture: roomData.picture || null,
+        picture: roomData.image || null,
         amenities: roomData.amenities.join(", "),
       });
     }
@@ -59,12 +68,29 @@ const EditRoom = ({ onSuccess, roomData }) => {
     }
   };
 
-  const onSubmit = (data) => {
-    console.log("Room Data Submitted:", data);
-    onSuccess();
-    alert("Room updated successfully!");
+  const onSubmit = async (data) => {
+    setLoading(true);
+
+    try {
+      const res = await editRoom(data, roomData.id);
+      onSuccess();
+      alert("Room updated successfully!");
+    } catch (error) {
+      console.error("Error updating room:", error);
+      setError("Failed to update room. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center flex-col items-center p-10">
+        <div className="text-center text-gray-500">Loading...</div>
+        <SpinPage />
+      </div>
+    );
+  }
   return (
     <div className="space-y-4 rounded-lg p-8 w-full">
       <h2 className="text-2xl font-semibold text-center">Edit Room</h2>

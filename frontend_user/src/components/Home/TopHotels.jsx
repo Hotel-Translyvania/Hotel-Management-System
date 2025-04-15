@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Button } from "@/components/ui/button";
 import HotelCard from "./HotelCard";
+import { getHotels } from "@/api"; // cleanly importing the API function
 
 const TopHotels = () => {
   const [hotels, setHotels] = useState([]);
@@ -11,31 +11,39 @@ const TopHotels = () => {
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const res = await axios.get("/api/top-hotels");
-        const rawHotels = res.data;
-
-        const cleaned = rawHotels.map((hotel) => ({
-          id: hotel.id,
-          name: hotel.namee,
-          description: hotel.description,
-          address: hotel.address,
-          city: hotel.city,
-          country: hotel.country,
-          pricePerNight: hotel["price per night"],
-          isActive: hotel.isActIve,
-          location: hotel.location ?? `${hotel.city}, ${hotel.country}`,
-          image: hotel.image
+        setLoading(true);
+        setError("");
+        
+        const hotelsData = await getHotels();
+        console.log("Processed hotels data:", hotelsData);
+  
+        if (!Array.isArray(hotelsData)) {
+          throw new Error("Expected array of hotels but got different format");
+        }
+  
+        const cleaned = hotelsData.map((hotel) => ({
+          id: hotel.id || "",
+          name: hotel.name || "Unnamed Hotel",
+          description: hotel.description || "No description available",
+          address: hotel.address || "",
+          city: hotel.city || "",
+          country: hotel.country || "",
+          pricePerNight: hotel.pricePerNight || 0,
+          isActive: hotel.isActive !== false,
+          location: hotel.location || [hotel.city, hotel.country].filter(Boolean).join(", "),
+          image: hotel.image || "/default-hotel.jpg",
+          rating: typeof hotel.rating === "number" ? hotel.rating : 4.5,
         }));
-
+  
         setHotels(cleaned);
       } catch (err) {
-        setError("Failed to load hotels.");
-        console.error(err);
+        console.error("Full error:", err);
+        setError(err.message || "Failed to load hotels. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchHotels();
   }, []);
 
@@ -61,9 +69,9 @@ const TopHotels = () => {
                 image={hotel.image}
                 name={hotel.name}
                 location={hotel.location}
-                rating={hotel.rating || 4.5} // fallback to 0 if rating is not available
-                price={hotel.pricePerNight}
-                description={hotel.description}
+                rating={hotel.rating}
+                //price={hotel.pricePerNight}
+                //description={hotel.description}
               />
             ))}
           </div>

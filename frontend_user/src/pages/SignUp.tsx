@@ -1,5 +1,6 @@
 
 import React from "react";
+import { Link } from 'react-router-dom';
 import Logo from "@/components/SignUp/Logo";
 import SignupForm from "@/components/SignUp/SignupForm";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -107,6 +108,15 @@ const SignUp = () => {
         <div className="p-6 sm:p-10 lg:px-16 xl:px-20 flex-1 max-w-3xl mx-auto w-full">
           <div className="mb-6 flex justify-center md:justify-start">
             <Logo />
+          </div>
+           {/* "Back to Home" link (top-right corner) */}
+           <div className="flex justify-end mb-4">
+            <Link 
+              to="/" 
+              className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+            >
+              ← Back to Home
+            </Link>
           </div>
           
           <div className="mb-8">

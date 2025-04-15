@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom"; // add this import
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { CheckCircle } from "lucide-react";
@@ -15,6 +16,8 @@ const PaymentSuccessModal = ({
   bookingId,
   onViewBooking,
 }: PaymentSuccessModalProps) => {
+  const navigate = useNavigate(); // initialize the navigate function
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden">
@@ -41,21 +44,16 @@ const PaymentSuccessModal = ({
               </div>
             )}
 
-            <div className="flex flex-col sm:flex-row gap-3 mt-6 mb-8">
-              <Button
-                onClick={onViewBooking}
-                className="bg-ezystay-primary hover:bg-ezystay-primary/90"
-              >
-                View Booking
-              </Button>
+            <div className="flex justify-center mt-6 mb-8">
               <Button
                 variant="outline"
-                onClick={onClose}
+                onClick={() => navigate("/billing")}
                 className="border-gray-200"
               >
-                Back to Home
+                Go to Billing
               </Button>
             </div>
+
           </div>
         </div>
       </DialogContent>

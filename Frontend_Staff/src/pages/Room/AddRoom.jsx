@@ -1,14 +1,12 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import SpinPage from "@/components/Spin/Spin";
 
-export const api = axios.create({
-  baseURL: "http://localhost:3000/api/v1",
-});
+import { useRoomStore } from "@/components/store/useRoomStore";
 
 const AddRoom = ({ onSuccess }) => {
+  const { addRoom } = useRoomStore();
   const {
     register,
     handleSubmit,
@@ -39,7 +37,7 @@ const AddRoom = ({ onSuccess }) => {
   if (isLoading) {
     return (
       <div className="flex justify-center flex-col items-center p-10">
-        <div className="text-center text-gray-500">Loading reservations...</div>
+        <div className="text-center text-gray-500">Loading rooms...</div>
         <SpinPage />
       </div>
     );
@@ -63,37 +61,19 @@ const AddRoom = ({ onSuccess }) => {
   };
 
   const onSubmit = async (data) => {
+    setIsLoading(true);
+    setError(null);
+    if (!data.image) {
+      setError("Please upload an image");
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      if (!data.image) {
-        setError("Please upload a room image");
-        return;
-      }
-      const amenitiesArray = data.amenities
-        .split(",")
-        .filter((item) => item.trim() !== "")
-        .map((item) => ({ amenityName: item.trim() }));
-
-      const formData = new FormData();
-      formData.append("type", data.roomType);
-      formData.append("price", String(data.price));
-      formData.append("occupancy", String(data.maxOccupancy));
-      formData.append("bedType", data.bedType);
-      formData.append("description", data.description);
-      formData.append("size", String(data.size));
-      formData.append("roomNumber", data.roomNumber);
-      formData.append("amenities", JSON.stringify(amenitiesArray));
-      formData.append("image", data.image);
-
-      setIsLoading(true);
-
-      const response = await api.post("/hms/hotels/1/rooms", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      console.log("Room added successfully:", response.data);
-      onSuccess?.();
+      console.log(data)
+      const res = await addRoom(data);
+      alert("Room added successfully!");
+      onSuccess();
       reset();
     } catch (error) {
       console.error("Error adding room:", error);

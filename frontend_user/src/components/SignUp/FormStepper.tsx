@@ -3,7 +3,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 
 interface FormStepperProps {
-  steps: string[];
+  steps: readonly string[]; // Change from string[] to readonly string[]
   currentStep: number;
 }
 

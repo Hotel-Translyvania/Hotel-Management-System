@@ -21,10 +21,10 @@ export class StaffAuthService {
     const staff = await this.staffRepository.findOne({ where: { email } });
     // Compare the provided password with the stored hashed password.
     
-    console.log("existing pssword", staff ? staff.password : 'null');
+    // console.log("existing pssword", staff ? staff.password : 'null');
     const hashedPassword = await bcrypt.hash(password, 10)
-    console.log("entered Password",hashedPassword);
-    console.log('password', password)
+    // console.log("entered Password",hashedPassword);
+    // console.log('password', password)
     if (staff && (await bcrypt.compare(password, staff.password))) {
       return staff;
     }
@@ -34,7 +34,17 @@ export class StaffAuthService {
   // Generates a JWT token for an authenticated staff member.
   login(staff: Staff): { token: string } {
     // Create a payload with the staff's unique identifier and email.
-    const payload = { sub: staff.id, email: staff.email };
+    const payload = { 
+      sub: staff.id,
+      staffId: staff.id, // Add this for consistency
+      email: staff.email, 
+      role: staff.role,
+      firstName: staff.firstname, // Match your response format
+      lastName: staff.lastname,
+      phone: staff.phonenumber,
+      dateOfBirth: staff.dateOfBirth
+    };
+    
     // Return a signed JWT token with an expiration time, using the secret from environment variables.
     return {
       token: this.jwtService.sign(payload, {
@@ -69,5 +79,26 @@ export class StaffAuthService {
 
     // Save the updated staff entity with the new password.
     await this.staffRepository.save(staff);
+  }
+
+  async findStaffById(id: any) {
+    if (!id) return null;
+    return this.staffRepository.findOne({ 
+      where: { id },
+      select: [
+        'id', 
+        'email', 
+        'role', 
+        'firstname', 
+        'lastname', 
+        'phonenumber', 
+        'dateOfBirth',
+        "profilePic",
+        "employedAt",
+        "status",
+        "salary",
+
+      ]
+    });
   }
 }

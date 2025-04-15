@@ -4,15 +4,11 @@ import {
     PrimaryGeneratedColumn, 
     Column, 
     ManyToOne,
-    CreateDateColumn,
-    UpdateDateColumn,
-    BeforeInsert,
-    BeforeUpdate,
     OneToMany
   } from 'typeorm';
-  import * as bcrypt from 'bcrypt';
-  import { Hotel } from 'src/common/entities/hotel.entity';
+import { Hotel } from '../../common/entities/hotel.entity';
 import { Assignment } from './assignments.entity';
+import { Role } from '../../common/enums/role.enum';
   
   @Entity()
   export class Staff {
@@ -24,8 +20,8 @@ import { Assignment } from './assignments.entity';
   
     @Column()
     lastname: string;
-  
-    @Column()
+    
+    @Column({default: Role.MANAGER})
     role: string;
   
     @Column({ unique: true })

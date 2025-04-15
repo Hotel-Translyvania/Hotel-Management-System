@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -17,11 +16,27 @@ interface EditProfileFormProps {
 
 const EditProfileForm = ({ isOpen, onClose, profileData, onSave }: EditProfileFormProps) => {
   const [formData, setFormData] = useState<ProfileData>(profileData);
+  const [fullName, setFullName] = useState(`${profileData.firstName} ${profileData.lastName}`);
   const { toast } = useToast();
 
+  // Handle changes to regular fields
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Special handler for full name changes
+  const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFullName(value);
+    
+    // Split the full name into first and last names
+    const [firstName, ...lastNameParts] = value.split(' ');
+    setFormData(prev => ({
+      ...prev,
+      firstName: firstName || '',
+      lastName: lastNameParts.join(' ') || ''
+    }));
   };
 
   const handleSelectChange = (name: string, value: string) => {
@@ -53,8 +68,8 @@ const EditProfileForm = ({ isOpen, onClose, profileData, onSave }: EditProfileFo
               <Input
                 id="fullName"
                 name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
+                value={fullName}
+                onChange={handleFullNameChange}
                 className="col-span-3"
               />
             </div>
@@ -142,13 +157,13 @@ const EditProfileForm = ({ isOpen, onClose, profileData, onSave }: EditProfileFo
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="idType" className="text-right">
+              <Label htmlFor="identificationType" className="text-right">
                 ID Type
               </Label>
               <div className="col-span-3">
                 <Select 
-                  value={formData.idType} 
-                  onValueChange={(value) => handleSelectChange("idType", value)}
+                  value={formData.identificationType} 
+                  onValueChange={(value) => handleSelectChange("identificationType", value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select ID type" />
@@ -167,9 +182,9 @@ const EditProfileForm = ({ isOpen, onClose, profileData, onSave }: EditProfileFo
                 ID Number
               </Label>
               <Input
-                id="idNumber"
-                name="idNumber"
-                value={formData.idNumber}
+                id="identificationNumber"
+                name="identificationNumber"
+                value={formData.identificationNumber}
                 onChange={handleChange}
                 className="col-span-3"
               />

@@ -1,6 +1,6 @@
-// src/pages/restaurant/OrderHistory.jsx
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import Navbar from '@/components/Navbar/Navbar';
 import { RestaurantNavbar } from '../../components/restaurant/RestaurantNavbar';
 
 export default function OrderHistory() {
@@ -10,14 +10,11 @@ export default function OrderHistory() {
   const [showOrderDetails, setShowOrderDetails] = useState(false);
 
   useEffect(() => {
-    // In a real app, you would fetch order history from an API
     const fetchOrderHistory = async () => {
       try {
         setLoading(true);
-        // Simulate API call delay
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        // Mock data - in a real app, this would come from an API
         const mockOrders = [
           {
             id: "ORD-12345",
@@ -100,15 +97,20 @@ export default function OrderHistory() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="min-h-screen flex flex-col">
+      {/* Common Navbar */}
+      //<Navbar />
+      
+      {/* Restaurant-Specific Navbar */}
       <RestaurantNavbar cartItemCount={0} />
 
-      <main className="flex-1 container mx-auto px-4 py-8">
+      {/* Main Content */}
+      <main className="flex-1 container mx-auto px-4 py-8 mt-32">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Order History</h1>
           <Link 
             to="/restaurant/menu" 
-            className="px-4 py-2 bg-blue-600 text-white rounded-md"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
             Back to Menu
           </Link>
@@ -127,7 +129,11 @@ export default function OrderHistory() {
         ) : orders.length > 0 ? (
           <div className="space-y-4">
             {orders.map((order) => (
-              <div key={order.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div 
+                key={order.id} 
+                className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => viewOrderDetails(order)}
+              >
                 <div className="flex justify-between items-center">
                   <div>
                     <h3 className="font-semibold text-lg">{order.id}</h3>
@@ -145,8 +151,11 @@ export default function OrderHistory() {
                     {order.items.length} item{order.items.length !== 1 ? 's' : ''}
                   </div>
                   <button 
-                    className="text-blue-600 hover:text-blue-800"
-                    onClick={() => viewOrderDetails(order)}
+                    className="text-blue-600 hover:text-blue-800 font-medium"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      viewOrderDetails(order);
+                    }}
                   >
                     View Details
                   </button>
@@ -163,7 +172,7 @@ export default function OrderHistory() {
             <p className="text-gray-500 mt-2">You haven't placed any orders yet.</p>
             <Link 
               to="/restaurant/menu" 
-              className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-md"
+              className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
             >
               Browse Menu
             </Link>
@@ -174,8 +183,8 @@ export default function OrderHistory() {
       {/* Order Details Modal */}
       {showOrderDetails && selectedOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-md w-full">
-            <div className="p-4 border-b flex justify-between items-center">
+          <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-4 border-b flex justify-between items-center sticky top-0 bg-white">
               <h2 className="text-lg font-semibold">Order Details</h2>
               <button 
                 onClick={() => setShowOrderDetails(false)}
@@ -208,13 +217,20 @@ export default function OrderHistory() {
 
               <div className="border-t pt-4">
                 <h3 className="font-medium mb-2">Items</h3>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {selectedOrder.items.map((item, index) => (
-                    <div key={index} className="flex justify-between">
-                      <span>
-                        {item.quantity}x {item.name}
+                    <div key={index} className="flex justify-between items-center">
+                      <div>
+                        <span className="font-medium">
+                          {item.quantity}x {item.name}
+                        </span>
+                        <span className="block text-sm text-gray-500">
+                          ${item.price.toFixed(2)} each
+                        </span>
+                      </div>
+                      <span className="font-medium">
+                        ${(item.price * item.quantity).toFixed(2)}
                       </span>
-                      <span>${(item.price * item.quantity).toFixed(2)}</span>
                     </div>
                   ))}
                 </div>
@@ -224,9 +240,9 @@ export default function OrderHistory() {
                 </div>
               </div>
             </div>
-            <div className="p-4 border-t">
+            <div className="p-4 border-t sticky bottom-0 bg-white">
               <button 
-                className="w-full py-2 bg-blue-600 text-white rounded-md"
+                className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                 onClick={() => setShowOrderDetails(false)}
               >
                 Close

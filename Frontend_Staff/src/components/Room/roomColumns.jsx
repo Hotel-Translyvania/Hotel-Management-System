@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import RoomDetail from "@/pages/Room/RoomDetail";
-import { Edit, Trash2, ArrowUpDown } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { DeleteButton } from "../Delete/DeleteButton";
+import { Edit, ArrowUpDown } from "lucide-react";
+import { DeleteButton } from "../Confirmation/DeleteButton";
+import axios from "axios";
+import { useRoomStore } from "../store/useRoomStore";
 
 export const roomColumns = [
   {
@@ -108,17 +109,20 @@ export const roomColumns = [
         <Button
           variant="ghost"
           size="sm"
-          onClick={
-            (e) => {table.options.meta.onEditClick(row.original); e.stopPropagation();}
-          }
+          onClick={(e) => {
+            table.options.meta.onEditClick(row.original);
+            e.stopPropagation();
+          }}
           className=" hover:bg-gray-200"
+          // disabled={user.role !== "manager"}
         >
           <Edit className="size-4 text-blue-600" />
         </Button>
         <DeleteButton
-          onDelete={
-            () => alert(`Delete guest with ID: ${row.original.roomNumber}`)
-          }
+          onDelete={ () => {
+            table.options.meta.onDeleteClick(row.original);
+          }}
+          role="staff"
         />
       </div>
     ),
@@ -126,4 +130,3 @@ export const roomColumns = [
     size: 80,
   },
 ];
-

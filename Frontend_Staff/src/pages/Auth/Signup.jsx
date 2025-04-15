@@ -3,7 +3,13 @@ import Button from "../../components/SignUp/Button";
 import SubmissionStatus from "../../components/SignUp/SubmissionStatus";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUserPlus, FaIdBadge, FaEnvelope, FaLock, FaHotel } from "react-icons/fa";
+import {
+  FaUserPlus,
+  FaIdBadge,
+  FaEnvelope,
+  FaLock,
+  FaHotel,
+} from "react-icons/fa";
 import { motion } from "framer-motion";
 
 const Signup = () => {
@@ -18,17 +24,14 @@ const Signup = () => {
   const [submissionStatus, setSubmissionStatus] = useState(null);
   const [loading, setLoading] = useState(false);
 
-
-
   const onSubmit = async (data) => {
     setLoading(true);
     try {
       console.log(data);
       setSubmissionStatus({
         type: "success",
-        message: "Staff account created successfully!",
+        message: "New Admin account created successfully!",
       });
-      setTimeout(() => navigate("/admin"), 3000);
     } catch (error) {
       setSubmissionStatus({
         type: "error",
@@ -82,7 +85,11 @@ const Signup = () => {
               animate={{
                 y: [0, -10, 0],
                 opacity: 1,
-                transition: { duration: 1, repeat: Infinity, repeatType: "reverse" },
+                transition: {
+                  duration: 1,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                },
               }}
             >
               "Empower Your Team, Elevate Your Service!"
@@ -107,7 +114,9 @@ const Signup = () => {
                 "The strength of the team is each individual member. The
                 strength of each member is the team."
               </p>
-              <span className="block mt-2 text-sm text-gray-300">- Mahder Tesfaye</span>
+              <span className="block mt-2 text-sm text-gray-300">
+                - Mahder Tesfaye
+              </span>
             </motion.div>
           </div>
         </motion.div>
@@ -127,12 +136,14 @@ const Signup = () => {
           </motion.h1>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-         
-
             {/* First Name and Last Name */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* First Name */}
-              <motion.div variants={fadeInAnimation} initial="initial" animate="animate">
+              <motion.div
+                variants={fadeInAnimation}
+                initial="initial"
+                animate="animate"
+              >
                 <label
                   htmlFor="firstName"
                   className="block text-sm font-medium text-gray-700"
@@ -148,7 +159,9 @@ const Signup = () => {
                     id="firstName"
                     className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-3 py-1 sm:text-sm border-gray-300 rounded-md"
                     placeholder="Enter first name"
-                    {...register("firstName", { required: "First name is required" })}
+                    {...register("firstName", {
+                      required: "First name is required",
+                    })}
                   />
                 </div>
                 {errors.firstName && (
@@ -159,7 +172,11 @@ const Signup = () => {
               </motion.div>
 
               {/* Last Name */}
-              <motion.div variants={fadeInAnimation} initial="initial" animate="animate">
+              <motion.div
+                variants={fadeInAnimation}
+                initial="initial"
+                animate="animate"
+              >
                 <label
                   htmlFor="lastName"
                   className="block text-sm font-medium text-gray-700"
@@ -175,7 +192,9 @@ const Signup = () => {
                     id="lastName"
                     className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-3 py-1 sm:text-sm border-gray-300 rounded-md"
                     placeholder="Enter last name"
-                    {...register("lastName", { required: "Last name is required" })}
+                    {...register("lastName", {
+                      required: "Last name is required",
+                    })}
                   />
                 </div>
                 {errors.lastName && (
@@ -187,7 +206,11 @@ const Signup = () => {
             </div>
 
             {/* Email */}
-            <motion.div variants={fadeInAnimation} initial="initial" animate="animate">
+            <motion.div
+              variants={fadeInAnimation}
+              initial="initial"
+              animate="animate"
+            >
               <label
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700"
@@ -220,7 +243,11 @@ const Signup = () => {
             </motion.div>
 
             {/* Password */}
-            <motion.div variants={fadeInAnimation} initial="initial" animate="animate">
+            <motion.div
+              variants={fadeInAnimation}
+              initial="initial"
+              animate="animate"
+            >
               <label
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-700"
@@ -253,7 +280,11 @@ const Signup = () => {
             </motion.div>
 
             {/* Confirm Password */}
-            <motion.div variants={fadeInAnimation} initial="initial" animate="animate">
+            <motion.div
+              variants={fadeInAnimation}
+              initial="initial"
+              animate="animate"
+            >
               <label
                 htmlFor="confirmPassword"
                 className="block text-sm font-medium text-gray-700"
@@ -283,7 +314,11 @@ const Signup = () => {
             </motion.div>
 
             {/* Create Account Button */}
-            <motion.div variants={fadeInAnimation} initial="initial" animate="animate">
+            <motion.div
+              variants={fadeInAnimation}
+              initial="initial"
+              animate="animate"
+            >
               <Button
                 type="submit"
                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-md shadow-md transition duration-300 ease-in-out"
@@ -317,6 +352,24 @@ const Signup = () => {
                   "Create Account"
                 )}
               </Button>
+            </motion.div>
+            {/* 
+            Redirect back to home page after successful signup
+            */}
+            <motion.div
+              variants={fadeInAnimation}
+              initial="initial"
+              animate="animate"
+            >
+              <p className="text-sm text-gray-600 text-center">
+                Go back to{" "}
+                <a
+                  href="/admin/hotels"
+                  className="text-indigo-600 hover:text-indigo-500 font-semibold"
+                >
+                  Home Page
+                </a>
+              </p>
             </motion.div>
           </form>
 

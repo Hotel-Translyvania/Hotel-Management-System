@@ -14,18 +14,16 @@ export class User {
     @Column()
     lastName: string;
     
-    @Column()
-    picture: string;
+    @Column({ nullable: true})
+    picture: string ;
 
-    @Column()
+    @Column({ unique: true })
     email: string;
 
     @Column()
     phone: string;
     
-
-
-    @Column()
+    @Column({nullable: true, default: ''})
     password: string;
 
     @Column()
@@ -36,9 +34,6 @@ export class User {
 
     @Column()
     identificationNumber: string;
-    
-    @Column()
-    createdAt: Date;
 
     @Column()
     gender: string;
@@ -48,7 +43,10 @@ export class User {
 
     @Column()
     nationality: string;
-    
+
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    createdAt: Date;
+
     // usefule for payloading the jwt
     @Column()
     role: String;

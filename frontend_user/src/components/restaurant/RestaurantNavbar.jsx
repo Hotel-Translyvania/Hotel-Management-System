@@ -1,14 +1,12 @@
-// src/components/restaurant/RestaurantNavbar.jsx
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 export function RestaurantNavbar({ cartItemCount, onCartClick }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+    <header className="sticky top-16 z-40 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <button 
@@ -23,45 +21,28 @@ export function RestaurantNavbar({ cartItemCount, onCartClick }) {
             <span className="sr-only">Toggle menu</span>
           </button>
 
-          <Link to="/" className="flex items-center gap-2">
+          <Link to="/restaurant" className="flex items-center gap-2">
             <span className="font-bold text-xl hidden md:inline-flex">Hotel Restaurant</span>
             <span className="font-bold text-xl md:hidden">HR</span>
           </Link>
         </div>
 
         <nav className={`${isMenuOpen ? 'flex' : 'hidden'} md:flex absolute md:relative top-16 md:top-0 left-0 right-0 md:right-auto bg-white md:bg-transparent flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 p-4 md:p-0 border-b md:border-0`}>
-          <Link to="/" className="text-sm font-medium transition-colors hover:text-blue-600">
-            Home
-          </Link>
-          <Link to="/restaurant/menu" className="text-sm font-medium transition-colors hover:text-blue-600">
+          <Link to="/restaurant/Menu" className={`text-sm font-medium transition-colors ${
+            location.pathname === '/restaurant' ? 'text-blue-600' : 'hover:text-blue-600'
+
+          }`}>
             Menu
           </Link>
-          
-          <Link 
-            to="/restaurant/order" 
-            className={`text-sm font-medium transition-colors ${
-              location.pathname === '/restaurant/order' 
-                ? 'text-blue-600' 
-                : 'hover:text-blue-600'
-            }`}
-          >
+          <Link to="/restaurant/order" className={`text-sm font-medium transition-colors ${
+            location.pathname === '/restaurant/order' ? 'text-blue-600' : 'hover:text-blue-600'
+          }`}>
             Place Order
           </Link>
-          <Link 
-            to="/restaurant/history" 
-            className={`text-sm font-medium transition-colors ${
-              location.pathname === '/restaurant/history' 
-                ? 'text-blue-600' 
-                : 'hover:text-blue-600'
-            }`}
-          >
+          <Link to="/restaurant/history" className={`text-sm font-medium transition-colors ${
+            location.pathname === '/restaurant/history' ? 'text-blue-600' : 'hover:text-blue-600'
+          }`}>
             Order History
-          </Link>
-          <Link to="../../#about" className="text-sm font-medium transition-colors hover:text-blue-600">
-            About
-          </Link>
-          <Link to="../../#contact" className="text-sm font-medium transition-colors hover:text-blue-600">
-            Contact
           </Link>
         </nav>
 
@@ -78,14 +59,6 @@ export function RestaurantNavbar({ cartItemCount, onCartClick }) {
               </span>
             )}
             <span className="sr-only">Shopping cart</span>
-          </button>
-
-          <button className="p-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-            <span className="sr-only">User account</span>
           </button>
         </div>
       </div>

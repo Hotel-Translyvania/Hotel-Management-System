@@ -3,12 +3,14 @@ import AddGuest from "../Guests/AddGuest";
 import RoomSelection from "../Room/RoomSelection";
 import axios from "axios";
 import SpinPage from "@/components/Spin/Spin";
+import { useGuestStore } from "@/components/store/useGuestStore";
 
-export const api = axios.create({
+const api = axios.create({
   baseURL: "http://localhost:3000/api/v1",
 });
 
 const UserProfileAndBooking = ({ onSuccess }) => {
+  const { addGuest } = useGuestStore();
   const [activeButton, setActiveButton] = useState("profile");
   const [selectedRoom, setSelectedRoom] = useState(null);
 
@@ -24,7 +26,6 @@ const UserProfileAndBooking = ({ onSuccess }) => {
         const response = await api.get(
           "hotels/1/rooms?check_in=2025-01-11&check_out=2025-12-13"
         );
-        console.log(response.data.rooms.data);
         const data = response.data.rooms.data;
         const formattedRoom = data.map((room) => ({
           id: room.id,
@@ -42,6 +43,7 @@ const UserProfileAndBooking = ({ onSuccess }) => {
           setActiveButton("book");
         }
         setError(null);
+
       } catch (error) {
         console.error("Error fetching room:", error);
         setError("Failed to load room");
@@ -75,49 +77,15 @@ const UserProfileAndBooking = ({ onSuccess }) => {
   const handleRoomSelection = (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
     const book = async () => {
       try {
-        console.log(guestFormData, "Guest Form Data");
-
-        // map guestFormData to the API format
-        const guestData = {
-          firstName: guestFormData.firstName,
-          lastName: guestFormData.lastName,
-          dateOfBirth: guestFormData.dob,
-          email: guestFormData.email || "",
-          address: guestFormData.address,
-          gender: guestFormData.gender,
-          phone: guestFormData.phone,
-          nationality: guestFormData.nationality,
-          identificationType: guestFormData.idType,
-          identificationNumber: guestFormData.idNumber,
-
-        };
-
-
-        console.log(guestData, "Guest Data");
-        const createGuestResponse = await api.post("/hotels/1/guest",
-          guestData
-        );
-
-        const guestId = createGuestResponse.data.guestId;
-        console.log(guestId, "Guest ID");
-
-        const response = await api.post(
-          `hotels/1/rooms/${selectedRoom.id}/bookings`,
-          {
-            guestId: guestId,
-            checkIn: bookingFormData.checkIn,
-            checkOut: bookingFormData.checkOut,
-          }
-        );
-        console.log(response.data);
-        setError(null);
-        setIsLoading(false);
+        await addGuest(guestFormData, selectedRoom, bookingFormData);
         onSuccess();
       } catch (error) {
         console.error("Error booking room:", error);
         setError("Failed to book room");
+      } finally {
         setIsLoading(false);
       }
     };
@@ -128,7 +96,7 @@ const UserProfileAndBooking = ({ onSuccess }) => {
   if (isLoading) {
     return (
       <div className="flex justify-center flex-col items-center p-10">
-        <div className="text-center text-gray-500">Loading Room...</div>
+        <div className="text-center text-gray-500">Loading...</div>
         <SpinPage />
       </div>
     );

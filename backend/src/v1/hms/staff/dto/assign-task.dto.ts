@@ -1,5 +1,5 @@
 // src/hms/staff/dto/assign-task.dto.ts
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsDate, IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 export class AssignTaskDto {
   @IsNotEmpty()
@@ -8,4 +8,13 @@ export class AssignTaskDto {
   @IsNotEmpty()
   @IsString()
   task: string;
+
+  @IsString()
+  description: string;
+
+  @IsString()
+  startTime: string;
+
+  @IsString()
+  endTime: string; 
 }

@@ -1,69 +1,146 @@
 import {
   Controller,
   Post,
+  Get,
   Body,
   Patch,
   UseGuards,
   Req,
   Res,
-  Header,
+  HttpStatus,
 } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { StaffAuthService } from '../services/staff-auth.service';
 import { LoginDto } from '../dto/login.dto';
-import { JwtAuthGuard, StaffJwtAuthGuard } from '../guards/jwt-auth.guard';
-import { Request, Response } from 'express';
-
-// Extend the Request interface to include the `user` property.
-interface AuthenticatedRequest extends Request {
-  user?: { sub: string; staffId: string };
-}
+import { StaffJwtAuthGuard } from '../guards/jwt-auth.guard';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 
-@Controller('auth/staff') // Base endpoint for staff authentication
-export class StaffAuthController {
-  constructor(private staffAuthService: StaffAuthService) {}
+// Extended Request type for authenticated routes
+interface AuthenticatedRequest extends Request {
+  user?: {
+    sub: string;
+    staffId: string;
+    role: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    dateOfBirth: string;
+    profilePic: string;
+    salary: number;
+    employedAt: Date;
+    status: string;
 
-  //Staff login endpoint.
+  };
+}
+
+@Controller('auth/staff')
+export class StaffAuthController {
+  constructor(private readonly staffAuthService: StaffAuthService) {}
+
   @Post('login')
-  async login(@Body() loginDto: LoginDto, @Res() res: Response) {
-    // Validate staff credentials using the service.
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: Response
+  ) {
     const staff = await this.staffAuthService.validateStaff(
       loginDto.email,
-      loginDto.password,
+      loginDto.password
     );
-    // If credentials are invalid, return an unauthorized error.
+
     if (!staff) {
-      return res
-        .status(401)
-        .json({ success: false, message: 'Invalid credentials' });
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        success: false,
+        message: 'Invalid credentials',
+      });
     }
-    // Generate a JWT token for the validated staff.
+
     const { token } = this.staffAuthService.login(staff);
-    // Return the token along with a success message.
-    res.json({ success: true, message: 'Staff login successful', token });
+
+    // Set secure HTTP-only cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000,
+      secure: false,
+      path: '/',
+    });
+
+    return res.status(HttpStatus.OK).json({
+      success: true,
+      message: 'Login successful',
+      user : {
+        email: staff.email,
+        role: staff.role,
+        staffId: staff.id,
+        firstName: staff.firstname,
+        lastName: staff.lastname,
+        phone: staff.phonenumber,
+        dateOfBirth: staff.dateOfBirth,
+      },
+
+    });
   }
-  // Change password endpoint for staff.
+
+
+  @Post('logout')
+  logout(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie('token', {
+      path: '/',
+    });
+    return res.json({ success: true, message: 'Logged out successfully' });
+  }
+
   @Patch('change-password')
-  @UseGuards(StaffJwtAuthGuard) // Protect this route with the staff JWT authentication guard.
+  @UseGuards(StaffJwtAuthGuard)
   async changePassword(
     @Req() req: AuthenticatedRequest,
-    @Body() changePasswordDto: ChangePasswordDto,
+    @Body() changePasswordDto: ChangePasswordDto
   ) {
-    console.log("req", req.user);
-
-    // Extract the staff's unique identifier (staffId) from the JWT payload attached to the request.
-    const staffId = req.user?.staffId;
-
-    if (!staffId) {
+    if (!req.user?.staffId) {
       throw new Error('Staff ID is missing in the request');
     }
 
-    console.log('Staff ID:', staffId);
+    await this.staffAuthService.changePassword(
+      req.user.staffId,
+      changePasswordDto
+    );
 
-    // Call the service to change the password.
-    await this.staffAuthService.changePassword(staffId, changePasswordDto);
+    return {
+      success: true,
+      message: 'Password changed successfully',
+    };
+  }
 
-    // Respond with a success message.
-    return { success: true, message: 'Password changed successfully' };
+
+  @Get('checkAuth')
+  @UseGuards(StaffJwtAuthGuard)
+  async checkAuth(@Req() req: AuthenticatedRequest) {
+    // The guard already validated the JWT
+    const staff = await this.staffAuthService.findStaffById(req.user?.sub);
+    // console.log(req.user?.sub,"staff is here")
+    if (!staff) {
+      return {
+        success: false,
+        message: 'Staff not found',
+      };
+    }
+    return {
+      user: {
+        id: staff.id,
+        email: staff.email,
+        role: staff.role,
+        firstName: staff.firstname,
+        lastName: staff.lastname,
+        phone: staff.phonenumber,
+        dateOfBirth: staff.dateOfBirth,
+        profilePic : staff.profilePic,
+        salary: staff.salary,
+        employedAt: staff.employedAt,
+        status: staff.status,
+        
+      },
+      
+    };
   }
 }

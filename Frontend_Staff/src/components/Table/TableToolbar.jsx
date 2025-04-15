@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 
-export const TableToolbar = ({ table, addButtonText, onAddClick }) => {
+export const TableToolbar = ({ table, addButtonText, onAddClick, role }) => {
   const [filterField, setFilterField] = useState("all");
   const [filterValue, setFilterValue] = useState("");
 
@@ -97,16 +97,20 @@ export const TableToolbar = ({ table, addButtonText, onAddClick }) => {
           )}
         </div>
       </div>
-      {addButtonText && (
-        <Button
-          variant="default"
-          className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
-          onClick={onAddClick}
-        >
-          {addButtonText}
-          <PlusCircle className="h-4 w-4" />
-        </Button>
-      )}
+      {addButtonText &&
+        !(
+          role === "staff" &&
+          (addButtonText === "Add Room" || addButtonText === "Add Food")
+        ) && (
+          <Button
+            variant="default"
+            className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+            onClick={onAddClick}
+          >
+            {addButtonText}
+            <PlusCircle className="h-4 w-4" />
+          </Button>
+        )}
     </div>
   );
 };

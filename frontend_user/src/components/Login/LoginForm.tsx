@@ -1,10 +1,12 @@
-
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/components/ui/use-toast';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { login } from '@/api'; // Import the login function from your API file
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -14,6 +16,7 @@ const LoginForm = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const validateEmail = (email: string) => {
     return String(email)
@@ -23,7 +26,7 @@ const LoginForm = () => {
       );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -43,21 +46,26 @@ const LoginForm = () => {
       return;
     }
 
-    // Simulate login process
     setIsLoading(true);
-    setTimeout(() => {
-      // For demo purposes, let's show a success toast or error based on email check
-      if (email === 'demo@ezystay.com' && password === 'password') {
-        toast({
-          title: 'Success!',
-          description: 'You have successfully logged in.',
-        });
-        // Here you would typically redirect or update auth state
-      } else {
-        setError('Invalid email or password. Please try again.');
-      }
+    try {
+      const loginData = { email, password };
+      const response = await login(loginData); // Call the login API function
+      toast({
+        title: 'Success!',
+        description: 'You have successfully logged in.',
+      });
+
+      // Store the token or handle response as necessary
+      // For example, storing the token in localStorage or a global state
+      localStorage.setItem('token', response.token); // Assuming the response contains a 'token'
+
+      // Redirect to the /user_login page after successful login
+      navigate('/user_login');
+    } catch (error) {
+      setError(error.message || 'Login failed. Please try again.');
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -148,11 +156,14 @@ const LoginForm = () => {
         </Button>
 
         <div className="text-center text-gray-600 text-sm">
-          Don't have an account?{' '}
-          <a href="#" className="text-primary hover:text-primary/80 font-medium">
-            Sign up
-          </a>
-        </div>
+        Don't have an account?{' '}
+        <Link 
+        to="/signup" 
+        className="text-primary hover:text-primary/80 font-medium"
+        >
+        Sign up
+        </Link>
+      </div>
       </form>
     </div>
   );

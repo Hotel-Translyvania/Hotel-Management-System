@@ -20,7 +20,7 @@ export class HotelsController {
    async getHotels() {
       const hotel = await this.hotelService.getHotels();
       return {
-         Sucess: true,
+         Success: true,
          data: hotel
       }
    }
@@ -32,9 +32,13 @@ export class HotelsController {
    ) {
 
       const publicId = `hotels-${Date.now()}`;
-      const uploadResult = await this.cloudinaryService.uploadImage(file.path, publicId);
+      try{
+         const uploadResult = await this.cloudinaryService.uploadImage(file.path, publicId);
 
-      createHotelDto.image = uploadResult;
+         createHotelDto.image = uploadResult;
+      } catch (e){
+         throw new InternalServerErrorException(e.message)
+      }
       return await this.hotelService.createHotel(createHotelDto);
    }
 }

@@ -2,7 +2,16 @@ import React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
+import axios from "axios";
+import SpinPage from "@/components/Spin/Spin";
+
+const api = axios.create({
+  baseURL: "http://localhost:3000/api/v1",
+});
+
 const AddManager = ({ onSuccess }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const form = useForm({
     defaultValues: {
       firstName: "",
@@ -13,27 +22,47 @@ const AddManager = ({ onSuccess }) => {
       phone: "",
       hotel: "",
       department: "",
-      position: "",
       registeredAt: "",
     },
   });
   const { register, handleSubmit, formState } = form;
   const { errors } = formState;
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     console.log(data);
-    onSuccess();
-    alert(`
-      First Name: ${data.firstName}
-      Last Name: ${data.lastName}
-      Email: ${data.email}
-      Date of Birth: ${data.dob}
-      Address: ${data.address}
-      Phone Number: ${data.phone}
-      Hotel: ${data.hotel}
-      Department: ${data.department}
-      Position: ${data.position}
-      Registered At: ${data.registeredAt}
-      `);
+    if (!profileImage) {
+      alert("Please upload a profile image.");
+      return;
+    }
+    setIsLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("firstName", data.firstName);
+      formData.append("lastName", data.lastName);
+      formData.append("email", data.email);
+      formData.append("dateOfBirth", data.dob);
+      formData.append("address", data.address);
+      formData.append("phoneNumber", data.phone);
+      formData.append("hotelId", data.hotel);
+      formData.append("registrationDate", data.registeredAt);
+      formData.append("profilePic", profileImage);
+      formData.append("password", "");
+
+      const response = await api.post("/manager", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("Manager added successfully:", response.data);
+      alert("Manager added successfully!");
+      onSuccess();
+    } catch (error) {
+      console.error("Submission error:", error);
+      setError(error.message || "An error occurred while adding the manager");
+    } finally {
+      setIsLoading(false);
+    }
+
   };
   const [profileImage, setProfileImage] = useState(null);
 
@@ -45,6 +74,16 @@ const AddManager = ({ onSuccess }) => {
       setProfileImage(file);
     }
   };
+
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center flex-col items-center p-10">
+        <div className="text-center text-gray-500">Adding manager...</div>
+        <SpinPage />
+      </div>
+    );
+  }
   return (
     <div className="flex items-center flex-col justify-center font-serif p-4 gap-3">
       <h2 className="text-2xl font-semibold">Add Manager</h2>
@@ -169,15 +208,18 @@ const AddManager = ({ onSuccess }) => {
                     message: "Phone Number is required",
                   },
                   pattern: {
-                    value: /^\d{10}$/,
+                    value: /^\+?[0-9]{10,15}$/,
                     message: "Invalid Phone Number",
                   },
                 })}
                 className="rounded-xl p-3 border w-full"
               />
+              {errors.phone && (
+                <span className="text-red-500 text-sm">{errors.phone.message}</span>
+              )}
             </div>
             <div className="flex flex-col items-start justify-center gap-2">
-              <label className="text-[#232323] ">Hotel</label>
+              <label className="text-[#232323] ">Hotel Id</label>
               <input
                 type="text"
                 placeholder="Hotel"

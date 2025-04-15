@@ -1,0 +1,31 @@
+name: CI/CD pipeline
+
+on:
+  pull_request:
+    paths: 
+      - 'backend/**'
+    branches:
+      - main
+  
+jobs:
+  backend_test:
+    runs-on: ubuntu-latest
+    container:
+      image: node:23
+    
+    defaults:
+      run:
+        working-directory: backend
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install backend dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm run test
+      
+      - name: Build Backend
+        run: npm run build

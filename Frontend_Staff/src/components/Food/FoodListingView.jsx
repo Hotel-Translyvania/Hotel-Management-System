@@ -2,18 +2,33 @@ import { useState, useEffect } from "react";
 import FoodCard from "./foodCard";
 import FoodPagination from "./foodPagination";
 import FoodToolbar from "./foodToolBar";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useAuthStore } from "../Auth/authStore";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+
 import AddFood from "@/pages/Food/AddFood";
 import OrderedFood from "../Order/OrderedFood";
 import EditFood from "@/pages/Food/EditFood";
 import axios from "axios";
 import SpinPage from "@/components/Spin/Spin";
+import { useFoodStore } from "../store/useFoodStore";
 
 export const api = axios.create({
   baseURL: "http://localhost:3000/api/v1",
 });
 
 export const FoodListingView = () => {
+  const { user } = useAuthStore();
+  const { fetchFood, foodItems, isLoading, initialized, deleteFood } =
+    useFoodStore();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 12;
@@ -22,40 +37,30 @@ export const FoodListingView = () => {
   const [editFoodOpen, setEditFoodOpen] = useState(false);
   const [foodItem, setFoodItem] = useState(null);
 
-  const [food, setFood] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [deleteFoodOpen, setDeleteFoodOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchFood = async () => {
-      try {
-        setIsLoading(true);
-        const response = await api.get("/hotels/1/menu");
-        const data = response.data;
-        console.log(data, "data from api");
-        const formattedFood = data.map((food) => ({
-          id: food.id,
-          Name: food.name,
-          Ingredients: food.ingredients,
-          Status: food.status,
-          Category: food.category,
-          Price: food.price,
-          picture: food.image,
-          EstimatedPreparationTime: food.timeToMake,
-        }));
-        setFood(formattedFood);
-        setError(null);
-      } catch (error) {
-        console.error("Error fetching food:", error);
-        setError("Failed to load food");
-        setFood([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    if (!initialized) {
+      fetchFood();
+    }
+  }, [initialized]);
 
-    fetchFood();
-  }, []);
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true);
+      await deleteFood(foodItem.id);
+      setDeleteFoodOpen(false);
+      alert("Food item deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting food item:", error);
+      setError("Failed to delete food item. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -65,18 +70,16 @@ export const FoodListingView = () => {
       </div>
     );
   }
-  console.log(food);
-  const filteredFoods = food.filter((food) => {
-    const lowerSearchTerm = searchTerm.toLowerCase();
-
+  console.log("foodItems", foodItems);
+  const filteredFoods = foodItems.filter((food) => {
     return (
-      food.Name.toLowerCase().includes(lowerSearchTerm) ||
-      food.Status.toLowerCase().includes(lowerSearchTerm) ||
-      food.Category.toLowerCase().includes(lowerSearchTerm) ||
-      food.Ingredients.some((ingredient) =>
-        ingredient.toLowerCase().includes(lowerSearchTerm)
+      food?.Name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      food?.Status?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      food?.Category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      food?.Ingredients?.some((ingredient) =>
+        ingredient.toLowerCase().includes(searchTerm.toLowerCase())
       ) ||
-      String(food.Price).includes(searchTerm) 
+      String(food?.Price)?.includes(searchTerm)
     );
   });
 
@@ -95,6 +98,7 @@ export const FoodListingView = () => {
           buttonText="Add Food"
           onAddClick={() => setAddFoodOpen(true)}
           onOrderClick={() => setOrderFoodOpen(true)}
+          role={user?.role}
         />
       </div>
       <div className="flex flex-wrap gap-5 justify-center">
@@ -106,6 +110,11 @@ export const FoodListingView = () => {
               setEditFoodOpen(true);
               setFoodItem(food);
             }}
+            onDeleteClick={() => {
+              setDeleteFoodOpen(true);
+              setFoodItem(food);
+            }}
+            role={user?.role}
           />
         ))}
       </div>
@@ -118,7 +127,11 @@ export const FoodListingView = () => {
 
       <Dialog open={addFoodOpen} onOpenChange={setAddFoodOpen}>
         <DialogContent className="sm:max-w-3xl">
-          <AddFood onSuccess={() => setAddFoodOpen(false)} />
+          <AddFood
+            onSuccess={() => {
+              setAddFoodOpen(false);
+            }}
+          />
         </DialogContent>
       </Dialog>
 
@@ -131,8 +144,36 @@ export const FoodListingView = () => {
         <DialogContent className="sm:max-w-3xl">
           <EditFood
             foodItem={foodItem}
-            onSuccess={() => setEditFoodOpen(false)}
+            onSuccess={() => {
+              setEditFoodOpen(false);
+            }}
           />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={deleteFoodOpen} onOpenChange={setDeleteFoodOpen}>
+        <DialogContent className={"sm:max-w-xl p-6"}>
+          <DialogHeader>
+            <DialogTitle className={"font-bold font-serif"}>
+              Confirm Deletion
+            </DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this item?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteFoodOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="default"
+              className="bg-blue-700 hover:bg-blue-800 text-white"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

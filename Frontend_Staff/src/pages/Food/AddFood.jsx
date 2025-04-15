@@ -1,12 +1,10 @@
 import { useState } from "react";
 import axios from "axios";
 import SpinPage from "@/components/Spin/Spin";
-
-export const api = axios.create({
-  baseURL: "http://localhost:3000/api/v1",
-});
+import { useFoodStore } from "@/components/store/useFoodStore";
 
 const AddFood = ({ onSuccess }) => {
+  const { addfood } = useFoodStore();
   const [activeTab, setActiveTab] = useState("basic");
   const [foodItem, setFoodItem] = useState({
     name: "",
@@ -18,8 +16,8 @@ const AddFood = ({ onSuccess }) => {
     status: "available",
   });
   const [previewUrl, setPreviewUrl] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,32 +39,13 @@ const AddFood = ({ onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!previewUrl) {
-      alert("Please upload an image before submitting.");
+      setError("Please upload an image.");
       return;
     }
-    const IngredientArray = foodItem.ingredients
-      .split(",")
-      .map((item) => item.trim());
-    console.log(foodItem);
-    const formData = new FormData();
-    formData.append("ingredients", JSON.stringify(IngredientArray));
-    formData.append("name", foodItem.name);
-    formData.append("category", foodItem.category);
-    formData.append("timeToMake", foodItem.preparationTime);
-    formData.append("price", foodItem.price);
-    formData.append("image", foodItem.image);
-    formData.append("status", foodItem.status);
-
     setIsLoading(true);
-    try {
-      const response = await api.post("/hms/hotels/1/food", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
 
-      console.log(response.data);
-      setError(null);
+    try {
+      await addfood(foodItem);
       onSuccess();
       alert("Food item added successfully!");
     } catch (error) {

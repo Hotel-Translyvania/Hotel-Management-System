@@ -1,10 +1,11 @@
 import React from "react";
 import AdminUserProfile from "./AdminProfilePage";
-import {  AdminProfile } from "@/TestData/HotelConfig";
+// import {  AdminProfile } from "@/TestData/HotelConfig";
 import Security from "../Security/Security";
 
-const AdminSettingPage = () => {
+const AdminSettingPage = ({AdminProfile}) => {
   const [activeButton, setActiveButton] = React.useState("profile");
+  console.log(AdminProfile, "AdminProfile");
 
   return (
     <div className="flex flex-col flex-1 p-6 bg-white  rounded-lg">

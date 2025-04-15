@@ -11,7 +11,7 @@ const AdminUserProfile = ({ userProfile }) => {
       phone: userProfile.phone,
       dob: userProfile.dob,
       role: userProfile.role,
-      picture: userProfile.picture,
+      picture: userProfile.profilePic,
     },
   });
   const { register, handleSubmit, formState, reset } = form;
@@ -26,7 +26,7 @@ const AdminUserProfile = ({ userProfile }) => {
         phone: userProfile.phone,
         dob: userProfile.dob,
         role: userProfile.role,
-        picture: userProfile.picture,
+        picture: userProfile.profilePic,
       });
     }
   }, [userProfile, reset]);
@@ -35,7 +35,7 @@ const AdminUserProfile = ({ userProfile }) => {
     console.log(data);
   };
   const [profileImage, setProfileImage] = useState(
-    userProfile.picture ? userProfile.picture : null
+    userProfile.profilePic ? userProfile.profilePic : null
   );
 
   const handleProfilePictureChange = (event) => {

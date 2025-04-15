@@ -1,7 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { CreateGuestDto } from './dto/create-guest.dto';
 import { GuestService } from './guest.service';
 import { UpdateGuestDto } from './dto/update-guest.dto';
+import { UserProfileResponseDto } from './dto/guest-profile.dto';
+import { JwtAuthGuard } from 'src/v1/auth/guards/jwt-auth.guard';
 
 @Controller('hotels/:hotelId')
 export class GuestController {
@@ -21,6 +23,18 @@ export class GuestController {
     async getAllGuests(
     ){
         return await this.guestService.getAllGuests();
+    }
+
+    @Get('me')
+    @UseGuards(JwtAuthGuard)
+    async getProfile(@Req() req: any): Promise<UserProfileResponseDto> {
+        console.log('Guest ID from JWT:', req.user.userId); //
+        const profile = await this.guestService.getUserProfile(req.user.userId);
+        
+        return {
+            success: true,
+            data: profile,
+        };
     }
 
     @Patch('guest/:id')

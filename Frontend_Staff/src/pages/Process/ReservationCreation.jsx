@@ -3,12 +3,14 @@ import RoomSelection from "../Room/RoomSelection";
 import SelectGuest from "../Guests/SelectGuest";
 import axios from "axios";
 import SpinPage from "@/components/Spin/Spin";
+import { useReservationStore } from "@/components/store/useReservationStore";
 
 export const api = axios.create({
   baseURL: "http://localhost:3000/api/v1",
 });
 
 const SelectGuestAndBooking = ({ onSuccess }) => {
+  const {addReservation} = useReservationStore();
   const [activeButton, setActiveButton] = useState("guest");
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [selectedGuest, setSelectedGuest] = useState(null);
@@ -104,35 +106,18 @@ const SelectGuestAndBooking = ({ onSuccess }) => {
     fetchRoom();
   };
 
-  const handleRoomSelection = (e) => {
+  const handleRoomSelection = async (e) => {
     e.preventDefault();
-    console.log(selectedRoom);
     setIsLoading(true);
-    const book = async () => {
-      try {
-        // hotels/1/rooms/16d8677d-d5c3-43cb-8b8f-648335397e5b/bookings
-        const response = await api.post(
-          `hotels/1/rooms/${selectedRoom.id}/bookings`,
-          {
-            guestId: selectedGuest.id,
-            checkIn: bookingFormData.checkIn,
-            checkOut: bookingFormData.checkOut,
-          }
-        );
-        console.log(response.data);
-        setError(null);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error booking room:", error);
-        setError("Failed to book room");
-        setIsLoading(false);
-      }
-    };
-
-    book();
-
-    onSuccess();
-    console.log(selectedGuest, selectedRoom, bookingFormData);
+    try {
+      await addReservation(selectedGuest, selectedRoom, bookingFormData);
+      onSuccess();
+    } catch (error) {
+      console.error("Error adding reservation:", error);
+      setError("Failed to add reservation");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (isLoading) {

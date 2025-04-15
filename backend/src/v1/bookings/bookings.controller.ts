@@ -1,7 +1,9 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, Delete, Patch, Param, UseGuards, HttpException, HttpStatus, Post, Body } from '@nestjs/common';
+import { Controller, Get, Delete, Patch, Param, UseGuards, HttpException, HttpStatus, Post, Body, Request } from '@nestjs/common';
 import { BookingService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { BookingDto } from './dto/getuserbooking.dto';
 // import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('hotels/:hotelId')
@@ -12,6 +14,29 @@ export class BookingController {
   @Get('bookings')
   async getAllBookings() {
     return this.bookingService.getAllBookings();
+  }
+
+  @Get('mybookings')
+  @UseGuards(JwtAuthGuard)
+  async getMyBookings(@Request() req): Promise<BookingDto[]> {
+    const email = req.user.email; // Get email from JWT payload
+    const bookings = await this.bookingService.getUserBookings(email);
+    
+    return bookings.map(booking => ({
+      id: booking.id,
+      bookingStatus: booking.bookingStatus,
+      checkIn: booking.checkIn,
+      checkOut: booking.checkOut,
+      hotel: {
+        id: String(booking.hotel.id),
+        name: booking.hotel.name,
+      },
+      room: {
+        id: booking.room.id,
+        roomNumber: booking.room.roomNumber,
+      },
+      createdAt: booking.createdAt,
+    }));
   }
 
   @Delete('bookings/:bookingId')

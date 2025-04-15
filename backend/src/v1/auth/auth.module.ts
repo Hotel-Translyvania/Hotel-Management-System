@@ -35,5 +35,6 @@ import { JwtStrategy, StaffJwtStrategy } from './strategies/jwt.strategy';
 
   // Provide the services and strategies for dependency injection.
   providers: [AuthService, StaffAuthService, JwtStrategy, StaffJwtStrategy],
+  exports: [JwtModule],
 })
 export class AuthModule {}

@@ -39,7 +39,7 @@ const EditBooking = ({ reservationData, onSuccess }) => {
   };
 
   return (
-    <div className="flex items-center flex-col justify-center font-serif gap-3">
+    <div className="flex items-center flex-col justify-center font-serif gap-3 p-2">
       <h2 className="text-2xl font-semibold">Edit Reservation</h2>
       <form
         onSubmit={handleSubmit(onSubmit)}

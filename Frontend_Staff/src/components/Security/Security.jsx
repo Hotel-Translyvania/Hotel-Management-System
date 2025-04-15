@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button"; // Assuming you're using shadcn/ui
+import { Button } from "@/components/ui/button";
+import axios from "axios";
+import SpinPage from "@/components/Spin/Spin";
+
+const api = axios.create({
+  baseURL: "http://localhost:3000/api/v1",
+});
 
 const Security = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const {
     register,
     handleSubmit,
@@ -16,9 +24,37 @@ const Security = () => {
     },
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    setIsLoading(true);
+    setError(null);
+
+    const { currentPassword, newPassword } = data;
+    console.log(currentPassword, newPassword);
+
+    try {
+      const response = await api.patch("/auth/staff/change-password", {
+        oldPassword: currentPassword,
+        newPassword: newPassword,
+      });
+
+      if (response.data.success) {
+        alert("Password changed successfully!");
+      }
+    } catch (error) {
+      console.error("Error changing password:", error);
+      setError("Failed to change password. Please try again.");
+    }
+    setIsLoading(false);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center flex-col items-center p-10">
+        <div className="text-center text-gray-500">Loading..</div>
+        <SpinPage />
+      </div>
+    );
+  }
 
   return (
     <div className="px-2 py-4 bg-white font-serif space-y-4">
@@ -26,9 +62,7 @@ const Security = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
         <div className="flex flex-col gap-2">
-          <label
-            className=" text-sm font-medium text-gray-700"
-          >
+          <label className=" text-sm font-medium text-gray-700">
             Current Password
           </label>
           <input
@@ -51,9 +85,7 @@ const Security = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label
-            className="text-sm font-medium text-gray-700"
-          >
+          <label className="text-sm font-medium text-gray-700">
             New Password
           </label>
           <input
@@ -79,11 +111,7 @@ const Security = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label
-            className="text-sm font-medium "
-          >
-            Confirm New Password
-          </label>
+          <label className="text-sm font-medium ">Confirm New Password</label>
           <input
             id="confirmPassword"
             type="password"
@@ -106,9 +134,10 @@ const Security = () => {
             type="submit"
             className="w-1/5 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full"
           >
-            Save
+            Update
           </Button>
         </div>
+        {error && <p className="mt-1 text-sm text-red-600 text-center">{error}</p>}
       </form>
     </div>
   );

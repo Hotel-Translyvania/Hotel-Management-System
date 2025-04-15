@@ -30,7 +30,6 @@ export class StaffController {
   @Post('staff')
   @UseInterceptors(FileInterceptor('image', { dest: './uploads/' }))
   async addStaff(
-    @Headers('authorization') authorization: string,
     @Body() createStaffDto: CreateStaffDto,
     @Param('hotelId') hotelId: number,
     @UploadedFile('file') file: Express.Multer.File,
