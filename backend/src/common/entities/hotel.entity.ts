@@ -27,7 +27,7 @@ export class Hotel {
     rooms: Room[];
 
     @OneToOne(() => Manager, (manager) => manager.hotel, { onDelete: "SET NULL" })
-    manager: Manager;
+    manager: Manager | null;
 
 
     @OneToMany(() => Assignment, (assignment) => assignment.hotel)

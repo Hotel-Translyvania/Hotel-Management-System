@@ -10,15 +10,15 @@ import { ObjectId, Repository } from 'typeorm';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { AssignTaskDto } from './dto/assign-task.dto';
 import { GetStaffDto } from './dto/get-staff.dto';
-import { Hotel } from 'src/common/entities/hotel.entity';
-import { Staff } from 'src/common/entities/staff.entity';
+import { Hotel } from '../../../common/entities/hotel.entity';
+import { Staff } from '../../../common/entities/staff.entity';
 import { EmailService } from '../../../common/services/email.service';
 import * as bcrypt from 'bcrypt';
 import { create } from 'domain';
-import { ImageUploadService } from 'src/common/services/image-upload.service';
+import { ImageUploadService } from '../../../common/services/image-upload.service';
 import { UpdateStaffDto } from './dto/update-staff.dto';
-import { Assignment } from 'src/common/entities/assignments.entity';
-import { Room } from 'src/common/entities/room.entity';
+import { Assignment } from '../../../common/entities/assignments.entity';
+import { Room } from '../../../common/entities/room.entity';
 
 @Injectable()
 export class StaffService {
