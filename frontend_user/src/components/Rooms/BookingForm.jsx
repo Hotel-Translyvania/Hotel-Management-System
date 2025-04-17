@@ -1,34 +1,33 @@
-import React, { useState } from 'react';
-import { useBooking } from '../../hooks/useBooking';
-import axios from 'axios';
-
+import React, { useState } from "react";
+import { useBooking } from "../../hooks/useBooking";
+import axios from "axios";
 
 const BookingForm = ({ room, onClose }) => {
   const { bookRoom } = useBooking();
   const [formData, setFormData] = useState({
-    checkIn: '',
-    checkOut: '',
-    specialRequests: ''
+    checkIn: "",
+    checkOut: "",
+    specialRequests: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
       await bookRoom({
         roomId: room.roomId,
-        ...formData
+        ...formData,
       });
       onClose();
     } catch (error) {
-      console.error('Booking failed:', error);
+      console.error("Booking failed:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -39,15 +38,21 @@ const BookingForm = ({ room, onClose }) => {
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Book Room #{room.roomNum}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
             &times;
           </button>
         </div>
-        
+
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Check-in Date</label>
+            <label htmlFor="checkIn" className="block text-gray-700 mb-2">
+              Check-in Date
+            </label>
             <input
+              id="checkIn"
               type="date"
               name="checkIn"
               value={formData.checkIn}
@@ -56,10 +61,13 @@ const BookingForm = ({ room, onClose }) => {
               required
             />
           </div>
-          
+
           <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Check-out Date</label>
+            <label htmlFor="checkOut" className="block text-gray-700 mb-2">
+              Check-out Date
+            </label>
             <input
+              id="checkOut"
               type="date"
               name="checkOut"
               value={formData.checkOut}
@@ -68,10 +76,16 @@ const BookingForm = ({ room, onClose }) => {
               required
             />
           </div>
-          
+
           <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Special Requests</label>
+            <label
+              htmlFor="specialRequests"
+              className="block text-gray-700 mb-2"
+            >
+              Special Requests
+            </label>
             <textarea
+              id="specialRequests"
               name="specialRequests"
               value={formData.specialRequests}
               onChange={handleChange}
@@ -79,7 +93,7 @@ const BookingForm = ({ room, onClose }) => {
               rows="3"
             />
           </div>
-          
+
           <div className="flex justify-end space-x-3">
             <button
               type="button"
@@ -93,7 +107,7 @@ const BookingForm = ({ room, onClose }) => {
               disabled={isSubmitting}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-blue-400"
             >
-              {isSubmitting ? 'Booking...' : 'Confirm Booking'}
+              {isSubmitting ? "Booking..." : "Confirm Booking"}
             </button>
           </div>
         </form>
