@@ -1,6 +1,6 @@
+// src/components/Admin/Managers.jsx
 import React, { useState, useEffect } from "react";
 import { CustomTable } from "../Table/Table";
-import { managersDatabase } from "./ManagersDatabase";
 import AddManager from "./AddManagers";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import ManagersColumns from "./ManagersCoulumn";
@@ -13,26 +13,22 @@ export const api = axios.create({
 
 const Managers = () => {
   const [addManagerIsOpen, setAddManagerOpen] = useState(false);
-
-  const [isLoading, setIsloading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Fixed typo
   const [error, setError] = useState(null);
   const [managers, setManagers] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsloading(true);
+      setIsLoading(true); // Fixed typo
       try {
         const response = await api.get("/manager");
-
         const formattedManagers = response.data.data.map((manager) => ({
           firstName: manager.firstName,
           lastName: manager.lastName,
           email: manager.email,
           phone: manager.phoneNumber,
-          // DateOfBirth: manager.dateOfBirth,
           registeredAt: manager.registrationDate,
           id: manager.id,
-
           address: manager.address,
           hotel: manager.hotelName || "Hotel",
           picture:
@@ -42,14 +38,15 @@ const Managers = () => {
         setManagers(formattedManagers);
         setError(null);
       } catch (error) {
-        setError(error.message);
+        setError(error.message || "Failed to fetch managers");
       } finally {
-        setIsloading(false);
+        setIsLoading(false); // Fixed typo
       }
     };
 
     fetchData();
   }, []);
+
   if (isLoading) {
     return (
       <div className="flex justify-center flex-col items-center p-10">
@@ -57,6 +54,10 @@ const Managers = () => {
         <SpinPage />
       </div>
     );
+  }
+
+  if (error) {
+    return <div className="text-red-500 text-center p-10">{error}</div>;
   }
 
   return (
@@ -68,7 +69,6 @@ const Managers = () => {
         addButtonText={"Add Manager"}
         pageSize={8}
       />
-
       <Dialog open={addManagerIsOpen} onOpenChange={setAddManagerOpen}>
         <DialogContent>
           <AddManager onSuccess={() => setAddManagerOpen(false)} />

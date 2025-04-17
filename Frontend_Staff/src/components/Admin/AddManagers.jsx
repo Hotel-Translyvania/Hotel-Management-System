@@ -1,7 +1,7 @@
+// src/components/Admin/AddManagers.jsx
 import React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-
 import axios from "axios";
 import SpinPage from "@/components/Spin/Spin";
 
@@ -27,14 +27,13 @@ const AddManager = ({ onSuccess }) => {
   });
   const { register, handleSubmit, formState } = form;
   const { errors } = formState;
+
   const onSubmit = async (data) => {
-    console.log(data);
     if (!profileImage) {
       alert("Please upload a profile image.");
       return;
     }
     setIsLoading(true);
-
     try {
       const formData = new FormData();
       formData.append("firstName", data.firstName);
@@ -53,28 +52,23 @@ const AddManager = ({ onSuccess }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("Manager added successfully:", response.data);
       alert("Manager added successfully!");
       onSuccess();
     } catch (error) {
-      console.error("Submission error:", error);
       setError(error.message || "An error occurred while adding the manager");
     } finally {
       setIsLoading(false);
     }
-
   };
+
   const [profileImage, setProfileImage] = useState(null);
 
   const handleProfilePictureChange = (event) => {
     const file = event.target.files?.[0];
-    console.log(file);
-
     if (file) {
       setProfileImage(file);
     }
   };
-
 
   if (isLoading) {
     return (
@@ -84,20 +78,15 @@ const AddManager = ({ onSuccess }) => {
       </div>
     );
   }
+
   return (
     <div className="flex items-center flex-col justify-center font-serif p-4 gap-3">
       <h2 className="text-2xl font-semibold">Add Manager</h2>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-row gap-10 text-sm w-full"
-      >
+      {error && <div className="text-red-500">{error}</div>}
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-row gap-10 text-sm w-full">
         <div className="relative">
           {profileImage ? (
-            <img
-              src={URL.createObjectURL(profileImage)}
-              alt="Profile"
-              className="size-32 rounded-full"
-            />
+            <img src="/mock-profile-image.png" alt="Profile" className="size-32 rounded-full" />
           ) : (
             <img src="/placePP.png" className="size-32" />
           )}
@@ -111,51 +100,54 @@ const AddManager = ({ onSuccess }) => {
               accept="image/*"
               onChange={handleProfilePictureChange}
               className="hidden"
+              data-testid="file-input"
             />
           </div>
         </div>
         <div className="flex flex-row gap-6 w-3/4 justify-between">
-          <div className="flex flex-col gap-3 w-1/2 ">
-            <div className="flex flex-col items-start justify-center gap-2 ">
-              <label className="text-[#232323] ">First Name</label>
+          <div className="flex flex-col gap-3 w-1/2">
+            <div className="flex flex-col items-start justify-center gap-2">
+              <label htmlFor="firstName" className="text-[#232323]">
+                First Name
+              </label>
               <input
                 id="firstName"
                 {...register("firstName", {
-                  required: {
-                    value: true,
-                    message: "First Name is required",
-                  },
+                  required: { value: true, message: "First Name is required" },
                 })}
                 placeholder="First Name"
                 className="rounded-xl p-3 border w-full"
               />
+              {errors.firstName && (
+                <span className="text-red-500 text-sm">{errors.firstName.message}</span>
+              )}
             </div>
             <div className="flex flex-col items-start justify-center gap-2">
-              <label className="text-[#232323] ">Last Name</label>
+              <label htmlFor="lastName" className="text-[#232323]">
+                Last Name
+              </label>
               <input
                 id="lastName"
                 {...register("lastName", {
-                  required: {
-                    value: true,
-                    message: "Last Name is required",
-                  },
+                  required: { value: true, message: "Last Name is required" },
                 })}
                 placeholder="Last Name"
                 className="rounded-xl p-3 border w-full"
               />
+              {errors.lastName && (
+                <span className="text-red-500 text-sm">{errors.lastName.message}</span>
+              )}
             </div>
-
             <div className="flex flex-col items-start justify-center gap-2">
-              <label className="text-[#232323] ">Email</label>
+              <label htmlFor="email" className="text-[#232323]">
+                Email
+              </label>
               <input
                 placeholder="Email"
                 type="email"
                 id="email"
                 {...register("email", {
-                  required: {
-                    value: true,
-                    message: "Email is required",
-                  },
+                  required: { value: true, message: "Email is required" },
                   pattern: {
                     value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                     message: "Invalid Email",
@@ -163,50 +155,55 @@ const AddManager = ({ onSuccess }) => {
                 })}
                 className="rounded-xl p-3 border w-full"
               />
+              {errors.email && (
+                <span className="text-red-500 text-sm">{errors.email.message}</span>
+              )}
             </div>
-
             <div className="flex flex-col items-start justify-center gap-2">
-              <label className="text-[#232323] ">Date of Birth</label>
+              <label htmlFor="dob" className="text-[#232323]">
+                Date of Birth
+              </label>
               <input
                 type="date"
                 id="dob"
                 {...register("dob", {
-                  required: {
-                    value: true,
-                    message: "Date of Birth is required",
-                  },
+                  required: { value: true, message: "Date of Birth is required" },
                 })}
                 className="rounded-xl p-3 border w-full"
               />
+              {errors.dob && (
+                <span className="text-red-500 text-sm">{errors.dob.message}</span>
+              )}
             </div>
           </div>
           <div className="flex flex-col gap-3 w-1/2">
             <div className="flex flex-col items-start justify-center gap-2">
-              <label className="text-[#232323] ">Address</label>
+              <label htmlFor="address" className="text-[#232323]">
+                Address
+              </label>
               <input
                 type="text"
                 id="address"
                 placeholder="Address"
                 {...register("address", {
-                  required: {
-                    value: true,
-                    message: "Address is required",
-                  },
+                  required: { value: true, message: "Address is required" },
                 })}
                 className="rounded-xl p-3 border w-full"
               />
+              {errors.address && (
+                <span className="text-red-500 text-sm">{errors.address.message}</span>
+              )}
             </div>
             <div className="flex flex-col items-start justify-center gap-2">
-              <label className="text-[#232323] ">Phone Number</label>
+              <label htmlFor="phone" className="text-[#232323]">
+                Phone Number
+              </label>
               <input
                 type="tel"
                 placeholder="Phone Number"
                 id="phone"
                 {...register("phone", {
-                  required: {
-                    value: true,
-                    message: "Phone Number is required",
-                  },
+                  required: { value: true, message: "Phone Number is required" },
                   pattern: {
                     value: /^\+?[0-9]{10,15}$/,
                     message: "Invalid Phone Number",
@@ -219,40 +216,40 @@ const AddManager = ({ onSuccess }) => {
               )}
             </div>
             <div className="flex flex-col items-start justify-center gap-2">
-              <label className="text-[#232323] ">Hotel Id</label>
+              <label htmlFor="hotel" className="text-[#232323]">
+                Hotel Id
+              </label>
               <input
                 type="text"
                 placeholder="Hotel"
                 id="hotel"
                 {...register("hotel", {
-                  required: {
-                    value: true,
-                    message: "Hotel is required",
-                  },
+                  required: { value: true, message: "Hotel is required" },
                 })}
                 className="rounded-xl p-3 border w-full"
               />
+              {errors.hotel && (
+                <span className="text-red-500 text-sm">{errors.hotel.message}</span>
+              )}
             </div>
-
             <div className="flex flex-col items-start justify-center gap-2">
-              <label className="text-[#232323] ">Registered At</label>
+              <label htmlFor="registeredAt" className="text-[#232323]">
+                Registered At
+              </label>
               <input
                 type="date"
                 id="registeredAt"
                 {...register("registeredAt", {
-                  required: {
-                    value: true,
-                    message: "Registration Date is required",
-                  },
+                  required: { value: true, message: "Registration Date is required" },
                 })}
                 className="rounded-xl p-3 border w-full"
               />
+              {errors.registeredAt && (
+                <span className="text-red-500 text-sm">{errors.registeredAt.message}</span>
+              )}
             </div>
-            <div className="flex w-full justify-end ">
-              <button
-                type="submit"
-                className="px-10 py-3 text-white rounded-xl bg-[#1814F3]"
-              >
+            <div className="flex w-full justify-end">
+              <button type="submit" className="px-10 py-3 text-white rounded-xl bg-[#1814F3]">
                 Save
               </button>
             </div>

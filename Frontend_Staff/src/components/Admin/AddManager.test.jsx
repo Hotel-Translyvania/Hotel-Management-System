@@ -1,65 +1,102 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import AddManager from "./AddManager";
-import { useForm } from "react-hook-form";
+// src/components/Admin/AddManager.test.jsx
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import AddManager from './AddManagers';
+import axios from 'axios';
 
-// Mocking the onSuccess function
-const mockOnSuccess = jest.fn();
+jest.mock('axios');
+const mockedAxios = axios;
 
-describe("AddManager Component", () => {
-  it("renders the form correctly", () => {
-    render(<AddManager onSuccess={mockOnSuccess} />);
+describe('AddManager Component', () => {
+  let onSuccessMock;
 
-    // Check if the form elements are rendered
-    expect(screen.getByLabelText(/First Name/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Last Name/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Phone Number/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Date of Birth/i)).toBeInTheDocument();
+  beforeEach(() => {
+    onSuccessMock = jest.fn();
+    mockedAxios.create = jest.fn(() => ({
+      post: jest.fn().mockResolvedValue({ data: { message: 'Success' } }),
+    }));
+    global.URL.createObjectURL = jest.fn(() => '/mock-profile-image.png');
   });
 
-  it("displays validation errors when required fields are empty", async () => {
-    render(<AddManager onSuccess={mockOnSuccess} />);
-    
-    // Submit the form without filling in any inputs
-    fireEvent.submit(screen.getByRole("form"));
-    
-    // Wait for the validation errors to appear
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders the form with all fields', () => {
+    render(<AddManager onSuccess={onSuccessMock} />);
+    expect(screen.getByLabelText('First Name')).toBeInTheDocument();
+    expect(screen.getByLabelText('Last Name')).toBeInTheDocument();
+    expect(screen.getByLabelText('Email')).toBeInTheDocument();
+    expect(screen.getByLabelText('Date of Birth')).toBeInTheDocument();
+    expect(screen.getByLabelText('Address')).toBeInTheDocument();
+    expect(screen.getByLabelText('Phone Number')).toBeInTheDocument();
+    expect(screen.getByLabelText('Hotel Id')).toBeInTheDocument();
+    expect(screen.getByLabelText('Registered At')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
+  });
+
+  it('shows validation errors when required fields are empty', async () => {
+    render(<AddManager onSuccess={onSuccessMock} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+
     await waitFor(() => {
-      expect(screen.getByText(/First Name is required/i)).toBeInTheDocument();
-      expect(screen.getByText(/Last Name is required/i)).toBeInTheDocument();
-      expect(screen.getByText(/Email is required/i)).toBeInTheDocument();
+      expect(screen.getByText('First Name is required')).toBeInTheDocument();
+      expect(screen.getByText('Last Name is required')).toBeInTheDocument();
+      expect(screen.getByText('Email is required')).toBeInTheDocument();
+      expect(screen.getByText('Date of Birth is required')).toBeInTheDocument();
+      expect(screen.getByText('Address is required')).toBeInTheDocument();
+      expect(screen.getByText('Phone Number is required')).toBeInTheDocument();
+      expect(screen.getByText('Hotel is required')).toBeInTheDocument();
+      expect(screen.getByText('Registration Date is required')).toBeInTheDocument();
     });
   });
 
-  it("handles image upload correctly", () => {
-    render(<AddManager onSuccess={mockOnSuccess} />);
-    
-    // Simulate file selection
-    const fileInput = screen.getByLabelText(/pencil icon/i);
-    const file = new File(["(⌐□_□)"], "profile.jpg", { type: "image/jpeg" });
-    
-    fireEvent.change(fileInput, { target: { files: [file] } });
-    
-    // Check if the image is displayed after selection
-    expect(screen.getByAltText("Profile")).toHaveAttribute("src", expect.stringContaining("profile.jpg"));
+  it('validates email format', async () => {
+    render(<AddManager onSuccess={onSuccessMock} />);
+    const emailInput = screen.getByLabelText('Email');
+    await userEvent.type(emailInput, 'invalid-email', { delay: 10 });
+    await userEvent.tab();
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Invalid Email')).toBeInTheDocument();
+    }, { timeout: 3000 });
   });
 
-  it("calls onSuccess when form is submitted", async () => {
-    render(<AddManager onSuccess={mockOnSuccess} />);
-    
-    // Fill the form with valid data
-    fireEvent.input(screen.getByLabelText(/First Name/i), { target: { value: "John" } });
-    fireEvent.input(screen.getByLabelText(/Last Name/i), { target: { value: "Doe" } });
-    fireEvent.input(screen.getByLabelText(/Email/i), { target: { value: "john.doe@example.com" } });
-    fireEvent.input(screen.getByLabelText(/Phone Number/i), { target: { value: "1234567890" } });
-    fireEvent.input(screen.getByLabelText(/Date of Birth/i), { target: { value: "1990-01-01" } });
+  it('validates phone number format', async () => {
+    render(<AddManager onSuccess={onSuccessMock} />);
+    const phoneInput = screen.getByLabelText('Phone Number');
+    await userEvent.type(phoneInput, '123');
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
-    // Submit the form
-    fireEvent.submit(screen.getByRole("form"));
-    
-    // Wait for the alert and success callback
     await waitFor(() => {
-      expect(mockOnSuccess).toHaveBeenCalledTimes(1);
+      expect(screen.getByText('Invalid Phone Number')).toBeInTheDocument();
     });
+  });
+
+  it('calls onSuccess when form is submitted with valid data', async () => {
+    render(<AddManager onSuccess={onSuccessMock} />);
+
+    await userEvent.type(screen.getByLabelText('First Name'), 'John', { delay: 10 });
+    await userEvent.type(screen.getByLabelText('Last Name'), 'Doe', { delay: 10 });
+    await userEvent.type(screen.getByLabelText('Email'), 'john.doe@example.com', { delay: 10 });
+    await userEvent.type(screen.getByLabelText('Date of Birth'), '1990-01-01', { delay: 10 });
+    await userEvent.type(screen.getByLabelText('Address'), '123 Main St', { delay: 10 });
+    await userEvent.type(screen.getByLabelText('Phone Number'), '+12345678901', { delay: 10 });
+    await userEvent.type(screen.getByLabelText('Hotel Id'), '1', { delay: 10 });
+    await userEvent.type(screen.getByLabelText('Registered At'), '2023-01-01', { delay: 10 });
+
+    const file = new File(['dummy'], 'profile.png', { type: 'image/png' });
+    const fileInput = screen.getByTestId('file-input');
+    Object.defineProperty(fileInput, 'files', { value: [file] });
+    fireEvent.change(fileInput);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(mockedAxios.create().post).toHaveBeenCalled();
+      expect(onSuccessMock).toHaveBeenCalled();
+    }, { timeout: 3000 });
   });
 });

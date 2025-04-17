@@ -1,53 +1,90 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import Managers from "./Managers";
-import { Dialog } from "@/components/ui/dialog";
+// src/components/Admin/Managers.test.jsx
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import Managers from './Managers';
+import axios from 'axios';
+import AddManager from './AddManagers';
 
-// Mocking the Dialog component
-jest.mock("@/components/ui/dialog", () => ({
-  Dialog: ({ open, onOpenChange, children }) => (
-    open ? (
-      <div>
-        <button onClick={() => onOpenChange(false)}>Close Modal</button>
-        {children}
-      </div>
-    ) : null
-  ),
-  DialogContent: ({ children }) => <div>{children}</div>,
-}));
+jest.mock('axios');
+jest.mock('./AddManagers', () => jest.fn(({ onSuccess }) => (
+  <div>
+    Add Manager Dialog
+    <button onClick={onSuccess}>Submit</button>
+  </div>
+)));
 
-describe("Managers Component", () => {
-  it("opens the AddManager modal when the 'Add Manager' button is clicked", () => {
-    render(<Managers />);
+describe('Managers Component', () => {
+  const mockManagers = [
+    {
+      id: 1,
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe@example.com',
+      phoneNumber: '+1234567890',
+      registrationDate: '2023-01-01',
+      address: '123 Main St',
+      hotelName: 'Hotel A',
+    },
+    {
+      id: 2,
+      firstName: 'Jane',
+      lastName: 'Smith',
+      email: 'jane.smith@example.com',
+      phoneNumber: '+0987654321',
+      registrationDate: '2023-02-01',
+      address: '456 Oak Ave',
+      hotelName: 'Hotel B',
+    },
+  ];
 
-    // Click the 'Add Manager' button
-    fireEvent.click(screen.getByText(/Add Manager/i));
-    
-    // Check if the modal is displayed
-    expect(screen.getByText(/Add Manager/i)).toBeInTheDocument();
+  beforeEach(() => {
+    axios.get.mockResolvedValue({ data: { data: mockManagers } });
   });
 
-  it("closes the AddManager modal when the close button is clicked", () => {
-    render(<Managers />);
-    
-    // Open the modal first
-    fireEvent.click(screen.getByText(/Add Manager/i));
-    
-    // Click the Close button
-    fireEvent.click(screen.getByText(/Close Modal/i));
-    
-    // Check if the modal is closed
-    expect(screen.queryByText(/Add Manager/i)).not.toBeInTheDocument();
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  it("renders the AddManager component inside the modal", () => {
+  it('renders the managers table with data', async () => {
     render(<Managers />);
 
-    // Open the modal first
-    fireEvent.click(screen.getByText(/Add Manager/i));
+    await waitFor(() => {
+      expect(screen.getByText('First Name')).toBeInTheDocument();
+      expect(screen.getByText('Last Name')).toBeInTheDocument();
+      expect(screen.getByText('Email')).toBeInTheDocument();
+      expect(screen.getByText('John')).toBeInTheDocument();
+      expect(screen.getByText('Doe')).toBeInTheDocument();
+      expect(screen.getByText('jane.smith@example.com')).toBeInTheDocument();
+    });
+  });
 
-    // Check if the AddManager form is rendered inside the modal
-    expect(screen.getByLabelText(/First Name/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Last Name/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
+  it('opens the Add Manager dialog when Add Manager button is clicked', async () => {
+    render(<Managers />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Add Manager/i })).toBeInTheDocument();
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: /Add Manager/i }));
+
+    expect(screen.getByText('Add Manager Dialog')).toBeInTheDocument();
+  });
+
+  it('closes the Add Manager dialog when onSuccess is called', async () => {
+    render(<Managers />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Add Manager/i })).toBeInTheDocument();
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: /Add Manager/i }));
+    expect(screen.getByText('Add Manager Dialog')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    await waitFor(() => {
+      expect(screen.queryByText('Add Manager Dialog')).not.toBeInTheDocument();
+    });
   });
 });

@@ -1,73 +1,81 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import Login from "../Pages/Auth/Login"; // Adjust path as needed
-import { BrowserRouter } from "react-router-dom";
+// Login.test.jsx
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import Login from './Login';
+import { useNavigate } from 'react-router-dom';
 
-// Helper to render with Router context
-const renderWithRouter = (ui) => render(<BrowserRouter>{ui}</BrowserRouter>);
+// Mock react-router-dom's useNavigate
+jest.mock('react-router-dom', () => ({
+  useNavigate: jest.fn(),
+}));
 
-describe("Login Page", () => {
-  test("renders login form correctly", () => {
-    renderWithRouter(<Login />);
-    expect(screen.getByText(/Welcome Back!/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Password/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Login/i })).toBeInTheDocument();
+describe('Login Component', () => {
+  beforeEach(() => {
+    useNavigate.mockClear();
   });
 
-  test("shows required validation errors when fields are empty", async () => {
-    renderWithRouter(<Login />);
-    fireEvent.click(screen.getByRole("button", { name: /Login/i }));
-
-    expect(await screen.findByText("Email is required")).toBeInTheDocument();
-    expect(await screen.findByText("Password is required")).toBeInTheDocument();
+  it('renders login form with email and password fields', () => {
+    render(<Login />);
+    
+    expect(screen.getByText('Welcome Back!')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('you@example.com')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('********')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
   });
 
-  test("shows error for invalid email format", async () => {
-    renderWithRouter(<Login />);
-    fireEvent.input(screen.getByLabelText(/Email/i), {
-      target: { value: "invalidemail" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /Login/i }));
-
-    expect(await screen.findByText("Invalid email address")).toBeInTheDocument();
+  it('shows validation errors when fields are empty', async () => {
+    render(<Login />);
+    
+    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+    
+    expect(await screen.findByText('Email is required')).toBeInTheDocument();
+    expect(await screen.findByText('Password is required')).toBeInTheDocument();
   });
 
-  test("submits form with correct data", async () => {
-    renderWithRouter(<Login />);
-
-    fireEvent.input(screen.getByLabelText(/Email/i), {
-      target: { value: "test@example.com" },
-    });
-    fireEvent.input(screen.getByLabelText(/Password/i), {
-      target: { value: "password123" },
-    });
-
-    fireEvent.click(screen.getByRole("button", { name: /Login/i }));
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Login successful! Redirecting...")
-      ).toBeInTheDocument();
-    });
+  it('validates email format', async () => {
+    render(<Login />);
+    
+    const emailInput = screen.getByPlaceholderText('you@example.com');
+    fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+    
+    expect(await screen.findByText('Invalid email address')).toBeInTheDocument();
   });
 
-  test("displays loading spinner during submission", async () => {
-    renderWithRouter(<Login />);
-    fireEvent.input(screen.getByLabelText(/Email/i), {
-      target: { value: "test@example.com" },
+  it('navigates to dashboard on successful login', async () => {
+    const mockNavigate = jest.fn();
+    useNavigate.mockReturnValue(mockNavigate);
+    
+    render(<Login />);
+    
+    // Fill in valid credentials
+    fireEvent.change(screen.getByPlaceholderText('you@example.com'), { 
+      target: { value: 'hayat@test.com' } 
     });
-    fireEvent.input(screen.getByLabelText(/Password/i), {
-      target: { value: "password123" },
+    fireEvent.change(screen.getByPlaceholderText('********'), { 
+      target: { value: 'password123' } 
     });
+    
+    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+    
+    // Check if navigation occurred after a delay
+    await new Promise(resolve => setTimeout(resolve, 2100));
+    expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+  });
 
-    fireEvent.click(screen.getByRole("button", { name: /Login/i }));
-
-    expect(screen.getByText(/Logging in.../i)).toBeInTheDocument();
-
-    await waitFor(() =>
-      expect(
-        screen.getByText("Login successful! Redirecting...")
-      ).toBeInTheDocument()
-    );
+  it('shows loading state during submission', async () => {
+    render(<Login />);
+    
+    // Fill in valid credentials
+    fireEvent.change(screen.getByPlaceholderText('you@example.com'), { 
+      target: { value: 'hayat@test.com' } 
+    });
+    fireEvent.change(screen.getByPlaceholderText('********'), { 
+      target: { value: 'password123' } 
+    });
+    
+    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+    
+    expect(await screen.findByText('Logging in...')).toBeInTheDocument();
   });
 });
