@@ -71,4 +71,17 @@ export class StaffController {
 
     return this.staffService.updateStaff(id,hotelId,updateStafDto)
   }
+
+  @Get('assignments')
+  async getAssignments(
+  ) {
+    return this.staffService.getAllAssignments();
+  }
+
+  @Delete('assignments/:id')
+  async deleteAssignment(
+    @Param('id') id: string,
+  ) {
+    return this.staffService.deleteAssignment(id);
+  }
 }

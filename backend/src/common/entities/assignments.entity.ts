@@ -13,7 +13,7 @@ JoinColumn,
 @Entity('assignments')
 export class Assignment {
 @PrimaryGeneratedColumn('uuid')
-id: number;
+id: string;
 
 @Column({nullable: true})
 task: string;
