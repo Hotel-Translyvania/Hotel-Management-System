@@ -10,12 +10,12 @@ import { Room } from '../../../../common/entities/room.entity';
 import { EmailService } from '../../../../common/services/email.service';
 import { ImageUploadService } from '../../../../common/services/image-upload.service'; // adjust path if needed
 
-// First declare empty objects with proper types
+
 let mockStaff: Staff;
 let mockManager: Manager;
 let mockHotel: Hotel;
 
-// Then initialize them in the correct order
+
 mockHotel = {
   id: 1,
   name: 'Test Hotel',
@@ -28,7 +28,7 @@ mockHotel = {
   foods: [],
   bookings: [],
   assignments: [],
-manager: null // Will be set after manager is created
+manager: null 
 };
 
 mockManager = {
@@ -100,7 +100,7 @@ describe('StaffService', () => {
         {
           provide: EmailService,
           useValue: {
-            sendStaffWelcomeEmail: jest.fn().mockResolvedValue(true), // this is the method used in your service
+            sendStaffWelcomeEmail: jest.fn().mockResolvedValue(true),
           },
         },
       
