@@ -13,7 +13,7 @@ export function Cart({ isOpen, onClose, cartItems, onUpdateQuantity, onRemoveIte
               </svg>
               <h2 className="text-lg font-semibold">Your Orders</h2>
             </div>
-            <button onClick={onClose} className="p-1">
+            <button onClick={onClose} className="p-1" aria-label="Close Cart">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -51,7 +51,7 @@ export function Cart({ isOpen, onClose, cartItems, onUpdateQuantity, onRemoveIte
                       <div className="flex-1 space-y-1">
                         <div className="flex justify-between">
                           <h4 className="font-medium">{item.foodItem.name}</h4>
-                          <button className="h-6 w-6 text-gray-500" onClick={() => onRemoveItem(item.id)}>
+                          <button className="h-6 w-6 text-gray-500" onClick={() => onRemoveItem(item.id)} data-testid="remove-item">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                               <line x1="18" y1="6" x2="6" y2="18"></line>
                               <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -60,13 +60,15 @@ export function Cart({ isOpen, onClose, cartItems, onUpdateQuantity, onRemoveIte
                         </div>
                         <div className="text-sm text-gray-500">${item.foodItem.price.toFixed(2)}</div>
                         {item.specialInstructions && (
-                          <div className="text-xs text-gray-500 italic">"{item.specialInstructions}"</div>
+                          <div className="text-xs text-gray-500 italic" data-testid={`special-instructions-${item.id}`}>"{item.specialInstructions}"</div>
                         )}
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-1">
                             <button
                               className="h-6 w-6 flex items-center justify-center border rounded-md"
                               onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
+                              data-testid="decrease-quantity"
+                              aria-label={`Decrease quantity of ${item.foodItem.name}`}
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -76,6 +78,8 @@ export function Cart({ isOpen, onClose, cartItems, onUpdateQuantity, onRemoveIte
                             <button
                               className="h-6 w-6 flex items-center justify-center border rounded-md"
                               onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                              data-testid="increase-quantity"
+                              aria-label={`Increase quantity of ${item.foodItem.name}`}
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <line x1="12" y1="5" x2="12" y2="19"></line>

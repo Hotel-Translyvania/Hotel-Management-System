@@ -31,19 +31,14 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_relativeSplatPath: true }}>
         <BookingProvider>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/services" element={<ServicesPage />} /> {/* Remove */}
-            <Route path="/history" element={<ServiceHistory />} /> {/* Remove */}
-            <Route path="/menu" element={<Menu />} /> {/* Remove */}
             <Route path="/billing" element={<Billing />} />
             <Route path="/restaurant/menu" element={<Menu />} />
             <Route path="/restaurant/history" element={<OrderHistory />} />
             <Route path="/restaurant/order" element={<OrderForm />} />
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/history" element={<ServiceHistory />} />
             <Route path="/rooms" element={<RoomsPage />} />
             <Route path="/bookings" element={<BookingPage />} />
             <Route path="/bookings/:id" element={<BookingDetails />} />
@@ -53,31 +48,9 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/login" element={<Login />} />
             <Route path="/payment_success" element={<TestSuccessModal />} />
-            {/* These routes would be implemented later as the application grows */}
-            <Route path="/user_rooms" element={<NotFound />} />
-            <Route path="/user_rooms/:id" element={<NotFound />} />
-            <Route path="/user_bookings" element={<NotFound />} />
-            <Route path="/user_bookings/:id" element={<NotFound />} />
-            <Route path="/user_services" element={<NotFound />} />
-            <Route path="/offers" element={<NotFound />} />
-            <Route path="/offers/:id" element={<NotFound />} />
-            <Route path="/profile" element={<NotFound />} />
-            <Route path="/settings" element={<NotFound />} />
-            <Route path="/destinations" element={<NotFound />} />
-            <Route path="/support" element={<NotFound />} />
-            <Route path="/rewards" element={<NotFound />} />
             <Route path="*" element={<NotFound />} />
-            {/* Catch-all 404 route */}
           </Routes>
         </BookingProvider>
-          <Routes>
-          {/* Restaurant routes */}
-          <Route path="/restaurant/menu" element={<Menu />} />
-          <Route path="/restaurant/history" element={<OrderHistory />} />
-          <Route path="/restaurant/order" element={<OrderForm />} />
-
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

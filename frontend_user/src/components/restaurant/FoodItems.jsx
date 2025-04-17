@@ -7,6 +7,10 @@ export function FoodItems({ items, onAddToCart }) {
   const [specialInstructions, setSpecialInstructions] = useState("");
   const [showDialog, setShowDialog] = useState(false);
 
+  if (items.length === 0) {
+    return null;
+  }
+
   const handleOpenDialog = (item) => {
     setSelectedItem(item);
     setQuantity(1);
@@ -74,7 +78,7 @@ export function FoodItems({ items, onAddToCart }) {
               </button>
               <button 
                 className="text-sm px-3 py-1 bg-blue-600 text-white rounded-md flex items-center"
-                onClick={() => onAddToCart(item, 1)}
+                onClick={() => onAddToCart(item, 1, undefined)}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
                   <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -89,7 +93,7 @@ export function FoodItems({ items, onAddToCart }) {
 
       {/* Item Details Dialog */}
       {showDialog && selectedItem && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div role="dialog" className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
             <div className="p-4 border-b">
               <h2 className="text-lg font-semibold">{selectedItem.name}</h2>
@@ -124,6 +128,7 @@ export function FoodItems({ items, onAddToCart }) {
                 <span className="text-sm font-medium">Quantity</span>
                 <div className="flex items-center gap-2">
                   <button 
+                    data-testid="decrement-quantity"
                     className="w-8 h-8 flex items-center justify-center border rounded-md"
                     onClick={decrementQuantity} 
                     disabled={quantity <= 1}
@@ -134,6 +139,7 @@ export function FoodItems({ items, onAddToCart }) {
                   </button>
                   <span className="w-8 text-center">{quantity}</span>
                   <button 
+                    data-testid="increment-quantity"
                     className="w-8 h-8 flex items-center justify-center border rounded-md"
                     onClick={incrementQuantity}
                   >
