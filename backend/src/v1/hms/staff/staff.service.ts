@@ -105,12 +105,13 @@ export class StaffService {
     assignTaskDto: AssignTaskDto
   ): Promise<{ success: boolean; message: string }> {
     const staff = await this.staffRepository.findOne({ where: { id }, relations: ['hotel'] });
+    
 
     if (!staff) {
       throw new NotFoundException('Staff member not found');
     }
     const room = await this.roomRepository.findOne({
-      where: { id: assignTaskDto.roomId },
+      where: { roomNumber: assignTaskDto.roomNumber },
       relations: ['hotel'],
     });
     if (!room) {
@@ -125,21 +126,17 @@ export class StaffService {
     assignment.hotel = staff.hotel;
     assignment.staff = staff;
     assignment.assignedAt = new Date(); // Set the assignedAt timestamp
-    console.log('room', room)
-    if (room) {
-      assignment.room = room;
-    }
+    assignment.room = room;
     await this.assignmentRepository.save(assignment);
 
-    staff.assignedRoomId = assignTaskDto.roomId;
+    staff.assignedRoomId = assignTaskDto.roomNumber;
     staff.currentTask = assignTaskDto.task;
-    staff.status = 'working';
 
     await this.staffRepository.save(staff);
 
     return {
       success: true,
-      message: 'Staff assigned to cleaning task',
+      message: `Task ${assignTaskDto.task} assigned to ${staff.firstname} ${staff.lastname}. Room: ${assignTaskDto.roomNumber}`,
     };
   }
 
@@ -163,6 +160,7 @@ export class StaffService {
       phonenumber: staff.phonenumber,
       email: staff.email,
       assignedRoomId: staff.assignedRoomId,
+      currentTask: staff.currentTask,
     }));
 
     return {
@@ -216,4 +214,67 @@ export class StaffService {
       message:"staff memeber successfuly updated"
     };
   }
+
+  async getAllAssignments(): Promise<{
+    success: boolean;
+    data: {
+      assignmentId: string;
+      task: string;
+      description: string;
+      startTime: string;
+      endTime: string;
+      staffName: string;
+      roomNumber: string;
+      assignedAt: Date;
+    }[];
+  }> {
+
+
+    const assignments = await this.assignmentRepository.find({
+      relations: ['staff', 'room', 'hotel'],
+    });
+    const formattedAssignments = assignments.map(assignment => ({
+      assignmentId: assignment.id,
+      task: assignment.task,
+      description: assignment.description,
+      startTime: assignment.startTime,
+      endTime: assignment.endTime,
+      staffName: `${assignment.staff.firstname} ${assignment.staff.lastname}`,
+      roomNumber: assignment.room.roomNumber,
+      assignedAt: assignment.assignedAt,
+    }));
+
+    return {
+      success: true,
+      data: formattedAssignments,
+    };
+
+  }
+
+  async deleteAssignment(id: string): Promise<{ 
+    success: boolean; message: string 
+  }> {
+    console.log(id)
+    const assignment = await this.assignmentRepository.findOne(
+      
+      { where: { id }, relations: ['staff', 'room', 'hotel'] }
+    );
+    if (!assignment) {
+      throw new NotFoundException('Assignment not found');
+    }
+    
+    const staff = await this.staffRepository.findOne({ where: { id: assignment.staff.id } });
+    if (!staff) {
+      throw new NotFoundException('Staff member not found');
+    }
+    staff.currentTask = "";
+    staff.assignedRoomId = "";
+    await this.staffRepository.save(staff);
+    await this.assignmentRepository.remove(assignment);
+    return {
+      success: true,
+      message: 'Assignment deleted successfully',
+    };
+    
+}
 }

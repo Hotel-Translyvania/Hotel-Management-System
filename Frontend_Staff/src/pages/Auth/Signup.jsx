@@ -16,13 +16,13 @@ const Signup = () => {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm();
 
   const navigate = useNavigate();
   const [submissionStatus, setSubmissionStatus] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [picture, setPicture] = useState(null);
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -40,10 +40,6 @@ const Signup = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const validatePasswordMatch = (value) => {
-    return value === watch("password") || "Passwords don't match";
   };
 
   const fadeInAnimation = {
@@ -123,11 +119,11 @@ const Signup = () => {
       </div>
 
       {/* Right Side - Signup Form */}
-      <div className="w-full md:w-1/2  bg-white py-12 px-6 flex items-center justify-center">
+      <div className="w-full md:w-1/2 bg-white py-12 px-6 flex items-center justify-center">
         {/* Form Container */}
-        <div className="w-full max-w-md ">
+        <div className="w-full max-w-md space-y-2">
           <motion.h1
-            className="text-center mb-20 text-3xl font-extrabold text-gray-800"
+            className="text-center text-3xl font-extrabold text-gray-800"
             variants={fadeInAnimation}
             initial="initial"
             animate="animate"
@@ -135,7 +131,38 @@ const Signup = () => {
             Create Admin Account
           </motion.h1>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="md:flex items-center justify-center w-full">
+            <motion.div
+              className=" to-teal-500 p-2"
+              variants={fadeInAnimation}
+              initial="initial"
+              animate="animate"
+            >
+              <label
+                htmlFor="fileInput"
+                className="cursor-pointer bg-gray-200 hover:text-gray-700 rounded-full size-32 flex text-center items-center justify-center"
+              >
+                {picture ? (
+                  <img
+                    src={URL.createObjectURL(picture)}
+                    alt="Profile"
+                    className="size-32 rounded-full object-cover"
+                  />
+                ) : (
+                  <p>Upload profile picture</p>
+                )}
+                <input
+                  type="file"
+                  id="fileInput"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => setPicture(e.target.files[0])}
+                />
+              </label>
+            </motion.div>
+          </div>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* First Name and Last Name */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* First Name */}
@@ -242,39 +269,66 @@ const Signup = () => {
               )}
             </motion.div>
 
-            {/* Password */}
+            {/* DOB */}
             <motion.div
               variants={fadeInAnimation}
               initial="initial"
               animate="animate"
             >
               <label
-                htmlFor="password"
+                htmlFor="dob"
                 className="block text-sm font-medium text-gray-700"
               >
-                Password
+                Date of Birth
               </label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaLock className="text-gray-400" />
+                  <FaIdBadge className="text-gray-400" />
                 </div>
                 <input
-                  type="password"
-                  id="password"
+                  type="date"
+                  id="dob"
                   className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-3 py-1 sm:text-sm border-gray-300 rounded-md"
-                  placeholder="Enter password (min. 8 characters)"
-                  {...register("password", {
-                    required: "Password is required",
-                    minLength: {
-                      value: 8,
-                      message: "Password must be at least 8 characters",
+                  {...register("dob", {
+                    required: "Date of birth is required",
+                  })}
+                />
+              </div>
+              {errors.dob && (
+                <p className="mt-2 text-sm text-red-600">
+                  {errors.dob.message}
+                </p>
+              )}
+            </motion.div>
+
+            <motion.div
+              variants={fadeInAnimation}
+              initial="initial"
+              animate="animate"
+            >
+              <label className="block text-sm font-medium text-gray-700">
+                Phone Number
+              </label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FaIdBadge className="text-gray-400" />
+                </div>
+                <input
+                  type="text"
+                  className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-3 py-1 sm:text-sm border-gray-300 rounded-md"
+                  placeholder="Enter phone number"
+                  {...register("phone", {
+                    required: "Phone number is required",
+                    pattern: {
+                      value: /^\+?[0-9]{10,15}$/,
+                      message: "Invalid phone number",
                     },
                   })}
                 />
               </div>
-              {errors.password && (
+              {errors.phone && (
                 <p className="mt-2 text-sm text-red-600">
-                  {errors.password.message}
+                  {errors.phone.message}
                 </p>
               )}
             </motion.div>
@@ -285,30 +339,25 @@ const Signup = () => {
               initial="initial"
               animate="animate"
             >
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Confirm Password
+              <label className="block text-sm font-medium text-gray-700">
+                Address
               </label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaLock className="text-gray-400" />
+                  <FaIdBadge className="text-gray-400" />
                 </div>
                 <input
-                  type="password"
-                  id="confirmPassword"
+                  type="text"
                   className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-3 py-1 sm:text-sm border-gray-300 rounded-md"
-                  placeholder="Confirm password"
-                  {...register("confirmPassword", {
-                    required: "Please confirm your password",
-                    validate: validatePasswordMatch,
+                  placeholder="Enter address"
+                  {...register("address", {
+                    required: "Address is required",
                   })}
                 />
               </div>
-              {errors.confirmPassword && (
+              {errors.address && (
                 <p className="mt-2 text-sm text-red-600">
-                  {errors.confirmPassword.message}
+                  {errors.address.message}
                 </p>
               )}
             </motion.div>
@@ -353,9 +402,7 @@ const Signup = () => {
                 )}
               </Button>
             </motion.div>
-            {/* 
-            Redirect back to home page after successful signup
-            */}
+
             <motion.div
               variants={fadeInAnimation}
               initial="initial"

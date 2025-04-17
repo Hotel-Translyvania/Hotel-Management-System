@@ -23,7 +23,7 @@ export const useGuestStore = create((set, get) => ({
         phone: guest.phone,
         address: guest.address,
         nationality: guest.nationality,
-        idType: guest.idType,
+        idType: guest.identificationType,
         idNumber: guest.idNumber,
       }));
 
@@ -126,7 +126,7 @@ export const useGuestStore = create((set, get) => ({
         email: data.email,
         phone: data.phone,
         nationality: data.nationality,
-        idType: data.idType,
+        identificationType: data.idType,
         idNumber: data.idNumber,
       };
       console.log("Guest Data:", guestData);

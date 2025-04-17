@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import SpinPage from "@/components/Spin/Spin";
+import SpinPage from "../Spin/Spin";
 
 const api = axios.create({
   baseURL: "http://localhost:3000/api/v1",

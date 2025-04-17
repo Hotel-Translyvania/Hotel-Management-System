@@ -32,6 +32,7 @@ export const DeleteButton = ({ onDelete , role}) => {
   return (
     <div>
       <Button
+        data-testid="delete-btn"
         variant="ghost"
         size="sm"
         onClick={() => setIsOpen(true)}

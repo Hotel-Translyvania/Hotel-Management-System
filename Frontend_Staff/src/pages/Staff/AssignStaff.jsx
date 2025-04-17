@@ -1,7 +1,12 @@
-import React from "react";
+import { useStaffStore } from "@/components/store/useStaffStore";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import SpinPage from "@/components/Spin/Spin";
 
 const AssignStaff = ({ onSuccess, staff_id }) => {
+  const { assignStaff } = useStaffStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const form = useForm({
     defaultValues: {
       serviceType: "",
@@ -13,10 +18,28 @@ const AssignStaff = ({ onSuccess, staff_id }) => {
   });
   const { register, handleSubmit, formState } = form;
   const { errors } = formState;
-  const OnSubmit = (data) => {
-    console.log("Form Data: ", data, staff_id);
-    onSuccess();
+  const OnSubmit = async (data) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      await assignStaff(data, staff_id);
+      onSuccess();
+    } catch (error) {
+      console.error("Error assigning staff:", error);
+      setError("Failed to assign staff. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center flex-col items-center p-10">
+        <div className="text-center text-gray-500">Assigning...</div>
+        <SpinPage />
+      </div>
+    );
+  }
   return (
     <div className="p-4">
       <div className="flex justify-center">
