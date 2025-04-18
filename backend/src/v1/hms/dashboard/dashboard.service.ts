@@ -3,9 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Transaction } from '../../../common/entities/transaction.entity'; // Correct path
 import { Booking } from '../../../common/entities/booking.entity';
-import { User } from '../../../common/entities/user.entity';
-import { RoomTypesResponseDto } from 'src/v1/hms/dashboard/dto/room-types-response.dto';
-import { Room } from 'src/common/entities/room.entity';
+import { RoomTypesResponseDto } from '../../hms/dashboard/dto/room-types-response.dto';
+import { Room } from '../../../common/entities/room.entity';
 
 @Injectable()
 export class DashboardService {

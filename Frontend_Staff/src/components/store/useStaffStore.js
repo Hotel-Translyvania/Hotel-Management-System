@@ -12,7 +12,7 @@ export const useStaffStore = create((set, get) => ({
   fetchStaff: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(`${API_BASE_URL}/hms/hotels/1/staff`)
+      const response = await axios.get(`${API_BASE_URL}/hms/hotels/1/staff`);
       const data = response.data?.data;
       console.log("Staff data:", data); // Log the fetched data
       const formattedStaff = data.map((staff) => ({
@@ -51,5 +51,26 @@ export const useStaffStore = create((set, get) => ({
   deleteStaff: async (id) => {
     try {
     } catch (error) {}
+  },
+
+  assignStaff: async (staffData, staff_id) => {
+    try {
+      const staffFormattedData = {
+        roomNumber: staffData.roomId,
+        task: staffData.serviceType,
+        description: staffData.description,
+        startTime: staffData.startTime,
+        endTime: staffData.endTime,
+      };
+      console.log(staffFormattedData);
+      const response = await axios.patch(
+        `${API_BASE_URL}/hms/hotels/1/staff/${staff_id}`,
+        staffFormattedData
+      );
+      const data = response.data;
+      alert(data.message);
+    } catch (error) {
+      console.error("Error fetching food items:", error);
+    }
   },
 }));

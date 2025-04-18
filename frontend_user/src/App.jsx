@@ -68,7 +68,6 @@ const App = () => (
             <Route path="/rewards" element={<NotFound />} />
             <Route path="*" element={<NotFound />} />
             {/* Catch-all 404 route */}
-            <Route path="*" element={<NotFound />} />
           </Routes>
         </BookingProvider>
           <Routes>
@@ -78,7 +77,6 @@ const App = () => (
           <Route path="/restaurant/order" element={<OrderForm />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

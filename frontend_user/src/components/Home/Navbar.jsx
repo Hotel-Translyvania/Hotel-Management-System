@@ -36,8 +36,8 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-8">
             <div className={`flex space-x-6 ${isScrolled ? 'text-gray-700' : 'text-white'}`}>
               <Link to="/" className="hover:text-primary transition-300 font-medium">Home</Link>
-              <Link to="#about" className="hover:text-primary transition-300 font-medium">About Us</Link>
-              <Link to="#contact" className="hover:text-primary transition-300 font-medium">Contact</Link>
+              <Link to="/about" className="hover:text-primary transition-300 font-medium">About Us</Link>
+              <Link to="/contact" className="hover:text-primary transition-300 font-medium">Contact</Link>
             </div>
 
             {/* Search Bar */}
@@ -82,8 +82,8 @@ const Navbar = () => {
           <div className="md:hidden bg-white mt-2 py-4 px-4 rounded-lg shadow-lg animate-fade-in">
             <div className="flex flex-col space-y-3">
               <Link to="/" className="text-gray-700 hover:text-primary py-2 transition-300">Home</Link>
-              <Link to="#about" className="text-gray-700 hover:text-primary py-2 transition-300">About Us</Link>
-              <Link to="#contact" className="text-gray-700 hover:text-primary py-2 transition-300">Contact</Link>
+              <Link to="/about" className="text-gray-700 hover:text-primary py-2 transition-300">About Us</Link>
+              <Link to="/contact" className="text-gray-700 hover:text-primary py-2 transition-300">Contact</Link>
               
               <div className="relative mt-2">
                 <Input placeholder="Search hotels..." className="pl-10 pr-4 py-2 rounded-full bg-gray-100" />
