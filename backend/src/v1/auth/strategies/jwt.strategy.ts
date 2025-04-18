@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
@@ -59,3 +60,5 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     };
   }
 }
+console.log('JWT_SECRET:', process.env.JWT_SECRET);
+console.log('STAFF_JWT_SECRET:', process.env.STAFF_JWT_SECRET);

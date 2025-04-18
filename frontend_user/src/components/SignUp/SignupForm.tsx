@@ -8,7 +8,7 @@ import { CalendarIcon, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import { Calendar } from "@/components/ui/calendar";
 import {
   Select,
@@ -35,12 +35,11 @@ import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import FormStepper from "./FormStepper";
 import { toast } from "@/hooks/use-toast";
-import { signup } from "../../api"; // Import the signup API function
+import { signup } from "../../api";
 
 const STEPS = ["Personal Info", "Contact", "Identity", "Security"] as const;
 const NATIONALITIES = ["Ethiopian", "American", "Australian", "British", "Canadian", "Chinese", "French", "German", "Indian", "Italian", "Japanese", "Mexican", "Spanish", "Other"] as const;
 
-// Define a schema for our form
 const formSchema = z.object({
   firstName: z.string().min(2, {
     message: "First name must be at least 2 characters.",
@@ -115,7 +114,6 @@ const SignupForm: React.FC = () => {
     try {
       setIsLoading(true);
       
-      // Transform data to match API expectations
       const apiData = {
         firstName: data.firstName,
         lastName: data.lastName,
@@ -127,23 +125,29 @@ const SignupForm: React.FC = () => {
         nationality: data.nationality,
         dateOfBirth: data.dateOfBirth.toISOString(),
         gender: data.gender,
-        phone: data.phone, // Make sure this matches your form field name
+        phone: data.phone,
         role: "user",
         picture: "https://example.com/default-avatar.jpg"
       };
   
-      const response = await signup(apiData);
-      console.log("Signup successful", response);
+      await signup(apiData);
+    
+      // Show success toast
       toast({
         title: "Account created!",
         description: "You have successfully created your account.",
       });
+      
+      // Navigate to login
       navigate('/login');
-    } catch (error) {
-      console.error("Signup error", error);
+      
+    } catch (error: any) {  // Explicitly type error as any to access message
+      // Show error toast
       toast({
         title: "Signup Error",
-        description: error.message || "An error occurred while creating your account. Please try again.",
+        description: error?.response?.data?.message || 
+                    error?.message || 
+                    "An error occurred while creating your account.",
         variant: "destructive",
       });
     } finally {
@@ -206,6 +210,7 @@ const SignupForm: React.FC = () => {
                           placeholder="John"
                           {...field}
                           className="rounded-xl shadow-form-input h-12"
+                          data-testid="firstname-input"
                         />
                       </FormControl>
                       <FormMessage />
@@ -223,6 +228,7 @@ const SignupForm: React.FC = () => {
                           placeholder="Doe"
                           {...field}
                           className="rounded-xl shadow-form-input h-12"
+                          data-testid="lastname-input"
                         />
                       </FormControl>
                       <FormMessage />
@@ -237,19 +243,27 @@ const SignupForm: React.FC = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Gender</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select 
+                      onValueChange={field.onChange} 
+                      defaultValue={field.value}
+                      data-testid="gender-select"
+                    >
                       <FormControl>
-                        <SelectTrigger className="rounded-xl shadow-form-input h-12">
+                        <SelectTrigger 
+                          className="rounded-xl shadow-form-input h-12" 
+                          data-testid="gender-trigger"
+                          aria-invalid={!!form.formState.errors.gender}
+                        >
                           <SelectValue placeholder="Select your gender" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="rounded-xl">
-                        <SelectItem value="Male">Male</SelectItem>
-                        <SelectItem value="Female">Female</SelectItem>
+                        <SelectItem value="Male" data-testid="gender-male">Male</SelectItem>
+                        <SelectItem value="Female" data-testid="gender-female">Female</SelectItem>
                         <SelectItem value="Prefer not to say">Prefer not to say</SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormMessage />
+                    <FormMessage data-testid="gender-error" />
                   </FormItem>
                 )}
               />
@@ -267,8 +281,11 @@ const SignupForm: React.FC = () => {
                             variant={"outline"}
                             className={cn(
                               "w-full pl-3 text-left font-normal rounded-xl shadow-form-input h-12",
-                              !field.value && "text-muted-foreground"
+                              !field.value && "text-muted-foreground",
+                              form.formState.errors.dateOfBirth && "border-destructive"
                             )}
+                            data-testid="date-trigger"
+                            aria-invalid={!!form.formState.errors.dateOfBirth}
                           >
                             {field.value ? (
                               format(field.value, "PPP")
@@ -279,7 +296,7 @@ const SignupForm: React.FC = () => {
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
+                      <PopoverContent className="w-auto p-0" align="start" data-testid="date-picker">
                         <Calendar
                           mode="single"
                           selected={field.value}
@@ -289,26 +306,14 @@ const SignupForm: React.FC = () => {
                           }
                           initialFocus
                           captionLayout="dropdown-buttons"
-                          showYearDropdown
-                          fromYear={1900}
-                          toYear={new Date().getFullYear()}
                           className="rounded-md border"
-                          components={{
-                             Dropdown: (props) =>
-                              props.name === 'month' ? null : (
-                              <select
-                              {...props}
-                              className={cn("p-3 pointer-events-auto")}
                         />
-                              ),
-                              }}
-                              />
                       </PopoverContent>
                     </Popover>
                     <FormDescription>
                       You must be at least 18 years old to register.
                     </FormDescription>
-                    <FormMessage />
+                    <FormMessage data-testid="dob-error" />
                   </FormItem>
                 )}
               />
@@ -326,15 +331,14 @@ const SignupForm: React.FC = () => {
                       <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
+                          id="email"
                           placeholder="john.doe@example.com"
                           type="email"
                           {...field}
                           className="rounded-xl shadow-form-input h-12"
+                          data-testid="email-input"
                         />
                       </FormControl>
-                      <FormDescription>
-                        We'll send verification to this email.
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -351,6 +355,7 @@ const SignupForm: React.FC = () => {
                           type="tel"
                           {...field}
                           className="rounded-xl shadow-form-input h-12"
+                          data-testid="phone-input"
                         />
                       </FormControl>
                       <FormMessage />
@@ -370,6 +375,7 @@ const SignupForm: React.FC = () => {
                         placeholder="Enter your full address"
                         {...field}
                         className="rounded-xl shadow-form-input min-h-[100px]"
+                        data-testid="address-textarea"
                       />
                     </FormControl>
                     <FormMessage />
@@ -383,15 +389,23 @@ const SignupForm: React.FC = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Nationality</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select 
+                      onValueChange={field.onChange} 
+                      defaultValue={field.value}
+                      data-testid="nationality-select"
+                    >
                       <FormControl>
-                        <SelectTrigger className="rounded-xl shadow-form-input h-12">
+                        <SelectTrigger className="rounded-xl shadow-form-input h-12" data-testid="nationality-trigger">
                           <SelectValue placeholder="Select your nationality" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="rounded-xl max-h-[200px]">
                         {NATIONALITIES.map((nationality) => (
-                          <SelectItem key={nationality} value={nationality}>
+                          <SelectItem 
+                            key={nationality} 
+                            value={nationality}
+                            data-testid={`nationality-${nationality.toLowerCase().replace(' ', '-')}`}
+                          >
                             {nationality}
                           </SelectItem>
                         ))}
@@ -412,16 +426,20 @@ const SignupForm: React.FC = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Identification Type</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select 
+                      onValueChange={field.onChange} 
+                      defaultValue={field.value}
+                      data-testid="idtype-select"
+                    >
                       <FormControl>
-                        <SelectTrigger className="rounded-xl shadow-form-input h-12">
+                        <SelectTrigger className="rounded-xl shadow-form-input h-12" data-testid="idtype-trigger">
                           <SelectValue placeholder="Select ID type" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="rounded-xl">
-                        <SelectItem value="Passport">Passport</SelectItem>
-                        <SelectItem value="National ID">National ID</SelectItem>
-                        <SelectItem value="Driver License">Driver License</SelectItem>
+                        <SelectItem value="Passport" data-testid="idtype-passport">Passport</SelectItem>
+                        <SelectItem value="National ID" data-testid="idtype-national">National ID</SelectItem>
+                        <SelectItem value="Driver License" data-testid="idtype-driver">Driver License</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -440,6 +458,7 @@ const SignupForm: React.FC = () => {
                         placeholder="Enter your ID number"
                         {...field}
                         className="rounded-xl shadow-form-input h-12"
+                        data-testid="idnumber-input"
                       />
                     </FormControl>
                     <FormDescription>
@@ -467,11 +486,14 @@ const SignupForm: React.FC = () => {
                           type={showPassword ? "text" : "password"}
                           {...field}
                           className="rounded-xl shadow-form-input h-12 pr-10"
+                          data-testid="password-input"
                         />
                         <button
                           type="button"
                           className="absolute right-3 top-1/2 transform -translate-y-1/2"
                           onClick={() => setShowPassword(!showPassword)}
+                          aria-label={showPassword ? "Hide password" : "Show password"}
+                          data-testid="password-toggle"
                         >
                           {showPassword ? (
                             <EyeOff size={20} className="text-gray-400" />
@@ -503,11 +525,14 @@ const SignupForm: React.FC = () => {
                           type={showConfirmPassword ? "text" : "password"}
                           {...field}
                           className="rounded-xl shadow-form-input h-12 pr-10"
+                          data-testid="confirm-password-input"
                         />
                         <button
                           type="button"
                           className="absolute right-3 top-1/2 transform -translate-y-1/2"
                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                          data-testid="confirm-password-toggle"
                         >
                           {showConfirmPassword ? (
                             <EyeOff size={20} className="text-gray-400" />
@@ -532,6 +557,7 @@ const SignupForm: React.FC = () => {
                 onClick={prevStep}
                 className="rounded-xl px-6"
                 disabled={isLoading}
+                data-testid="back-button"
               >
                 Back
               </Button>
@@ -543,8 +569,19 @@ const SignupForm: React.FC = () => {
               onClick={nextStep}
               className="rounded-xl px-8 py-6 text-base font-medium"
               disabled={isLoading}
+              data-testid="continue-button"
             >
-              {step === 3 ? "Create Account" : "Continue"}
+              {isLoading ? (
+                <span className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {step === 3 ? "Creating Account..." : "Continuing..."}
+                </span>
+              ) : (
+                step === 3 ? "Create Account" : "Continue"
+              )}
             </Button>
           </div>
         </form>
@@ -553,13 +590,12 @@ const SignupForm: React.FC = () => {
       <div className="text-center text-gray-600 text-sm">
         Already have an account?{' '}
         <Link 
-        to="/Login" 
-        className="text-primary hover:text-primary/80 font-medium"
+          to="/Login" 
+          className="text-primary hover:text-primary/80 font-medium"
         >
-        Login
+          Login
         </Link>
       </div>
-      
     </div>
   );
 };
