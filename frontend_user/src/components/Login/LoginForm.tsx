@@ -72,7 +72,7 @@ const LoginForm = () => {
     <div className="w-full max-w-md mx-auto">
       <form onSubmit={handleSubmit} className="fade-in space-y-6">
         {error && (
-          <div className="p-3 rounded-xl bg-red-50 text-red-500 text-sm border border-red-100">
+          <div role="alert" className="p-3 rounded-xl bg-red-50 text-red-500 text-sm border border-red-100">
             {error}
           </div>
         )}
@@ -123,6 +123,7 @@ const LoginForm = () => {
               autoComplete="current-password"
             />
             <div
+              data-testid="password-toggle"
               className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-400 hover:text-gray-600"
               onClick={() => setShowPassword(!showPassword)}
             >

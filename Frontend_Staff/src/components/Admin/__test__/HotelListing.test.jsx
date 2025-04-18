@@ -5,9 +5,9 @@ import axios from "axios";
 
 // Mock axios and child components
 jest.mock("axios");
-jest.mock("../path/to/AddHotel", () => () => <div>AddHotel Mock</div>);
-jest.mock("../path/to/EditHotel", () => () => <div>EditHotel Mock</div>);
-jest.mock("../path/to/HotelCard", () => ({ hotel }) => (
+jest.mock("../AddHotel", () => () => <div>AddHotel Mock</div>);  // the correct path to AddHotel component -> ../AddHotel
+jest.mock("../EditHotel", () => () => <div>EditHotel Mock</div>);
+jest.mock("../Hotels/hotelCard", () => ({ hotel }) => (
   <div>{hotel.hotelName}</div>
 ));
 

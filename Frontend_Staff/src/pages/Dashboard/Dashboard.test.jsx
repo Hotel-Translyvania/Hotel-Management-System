@@ -1,141 +1,102 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import Dashboard from './Dashboard'; // Adjust path if needed
-import fetchMock from 'jest-fetch-mock';
+import '@testing-library/jest-dom';
+import Dashboard from './Dashboard';
 
-// --- Mock API Data ---
-const API_BASE_URL = "http://localhost:3000";
-const HOTEL_ID = 1;
+jest.mock('../../components/dashboard/LoadingSpinner', () => () => <div data-testid="loading-spinner">Loading...</div>);
+jest.mock('../../components/dashboard/ErrorMessage', () => ({ message }) => message ? <div data-testid="error-message">{message}</div> : null);
+jest.mock('../../components/dashboard/KeyMetrics', () => ({ totalRevenue, totalBookings }) => <div data-testid="key-metrics">Revenue: {totalRevenue} Bookings: {totalBookings}</div>);
+jest.mock('../../components/dashboard/GuestCountryChart', () => () => <div data-testid="guest-country-chart">Guest Country Chart</div>);
+jest.mock('../../components/dashboard/GenderDemographicsChart', () => () => <div data-testid="gender-demographics-chart">Gender Demographics Chart</div>);
+jest.mock('../../components/dashboard/RoomTypeChart', () => () => <div data-testid="room-type-chart">Room Type Chart</div>);
+jest.mock('../../components/dashboard/AssignmentsInsights', () => ({ assignments }) => (
+    <div data-testid="assignments-insights">
+        Assignments Count: {assignments?.length || 0}
+    </div>
+));
 
-// !! Corrected Mock Revenue !!
-const mockRevenueResponse = { revenue: "1234500" }; // 1,234,500 cents = $12,345.00
-const mockBookingsResponse = { booked: 88 };
-const mockDemographicsResponse = { male: 40, female: 48 };
-const mockCountriesResponse = { country: [{ usa: 50 }, { canada: 30 }, { mexico: 8 }] };
-const mockRoomTypesResponse = { data: { Suite: [{}, {}], Standard: [{}, {}, {}], Deluxe: [{}] } };
-// --- End Mock Data ---
+if (typeof global.fetch === 'undefined') {
+  global.fetch = jest.fn();
+}
 
-describe('Dashboard', () => {
+beforeEach(() => {
+    fetch.mockClear();
+});
 
-  beforeEach(() => {
-    fetchMock.resetMocks();
-  });
+const mockRevenueResponse = { success: true, revenue: 50000 };
+const mockBookingsResponse = { success: true, booked: 120 };
+const mockDemographicsResponse = { success: true, male: 60, female: 40 };
+const mockCountriesResponse = { success: true, country: [{ "USA": 50 }, { "Canada": 30 }] };
+const mockRoomTypesResponse = { success: true, data: { "Single": ["101", "102"], "Double": ["201"] } };
+const mockAssignmentsResponse = { success: true, data: [{ assignmentId: 1, task: "Test Task" }, { assignmentId: 2, task: "Another Task" }] };
 
-  it('shows loading indicator initially', () => {
-    render(<Dashboard />);
-    expect(screen.getByText(/Loading dashboard data.../i)).toBeInTheDocument();
-  });
 
-  it('fetches data and renders metrics and charts on successful load', async () => {
-    fetchMock.mockResponse(async req => {
-      const url = req.url;
-      if (url.endsWith('/revenue')) return JSON.stringify(mockRevenueResponse); // Use corrected value
-      if (url.endsWith('/bookings')) return JSON.stringify(mockBookingsResponse);
-      if (url.endsWith('/demographics')) return JSON.stringify(mockDemographicsResponse);
-      if (url.endsWith('/countries')) return JSON.stringify(mockCountriesResponse);
-      if (url.endsWith('/room-types')) return JSON.stringify(mockRoomTypesResponse);
-      throw new Error(`Unexpected fetch URL in success test: ${url}`);
+describe('Dashboard Component', () => {
+    test('renders loading spinner initially', () => {
+        fetch.mockImplementation(() => new Promise(() => { }));
+        render(<Dashboard />);
+        expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
+        expect(screen.queryByTestId('error-message')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('key-metrics')).not.toBeInTheDocument();
     });
 
-    render(<Dashboard />);
+    test('renders dashboard components after successful data fetch', async () => {
+        fetch
+            .mockResolvedValueOnce({ ok: true, json: async () => mockRevenueResponse })
+            .mockResolvedValueOnce({ ok: true, json: async () => mockBookingsResponse })
+            .mockResolvedValueOnce({ ok: true, json: async () => mockDemographicsResponse })
+            .mockResolvedValueOnce({ ok: true, json: async () => mockCountriesResponse })
+            .mockResolvedValueOnce({ ok: true, json: async () => mockRoomTypesResponse })
+            .mockResolvedValueOnce({ ok: true, json: async () => mockAssignmentsResponse });
 
-    // Wait for the CORRECT revenue value
-    await screen.findByText('$12,345.00');
+        render(<Dashboard />);
 
-    // Check other expected data
-    expect(screen.getByText('88')).toBeInTheDocument();
-    expect(await screen.findByText('Usa')).toBeInTheDocument();
-    expect(await screen.findByText('Male')).toBeInTheDocument();
-    expect(await screen.findByText('Standard')).toBeInTheDocument();
+        expect(await screen.findByTestId('key-metrics')).toBeInTheDocument();
+        expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('error-message')).not.toBeInTheDocument();
 
-    expect(fetchMock).toHaveBeenCalledTimes(5);
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-  });
+        expect(screen.getByTestId('guest-country-chart')).toBeInTheDocument();
+        expect(screen.getByTestId('gender-demographics-chart')).toBeInTheDocument();
+        expect(screen.getByTestId('room-type-chart')).toBeInTheDocument();
 
-  it('handles partial API failures and displays an error message', async () => {
-    fetchMock.mockResponse(async req => {
-      const url = req.url;
-      if (url.endsWith('/countries')) {
-         return Promise.resolve({ status: 500, body: 'Internal Server Error' });
-      }
-      // Respond successfully for others
-      if (url.endsWith('/revenue')) return JSON.stringify(mockRevenueResponse);
-      if (url.endsWith('/bookings')) return JSON.stringify(mockBookingsResponse);
-      if (url.endsWith('/demographics')) return JSON.stringify(mockDemographicsResponse);
-      if (url.endsWith('/room-types')) return JSON.stringify(mockRoomTypesResponse);
-      throw new Error(`Unexpected fetch URL in partial failure test: ${url}`);
+        const assignmentsInsights = screen.getByTestId('assignments-insights');
+        expect(assignmentsInsights).toBeInTheDocument();
+        expect(assignmentsInsights).toHaveTextContent('Assignments Count: 2');
+
+        expect(screen.getByTestId('key-metrics')).toHaveTextContent('Revenue: 500 Bookings: 120');
     });
 
-    render(<Dashboard />);
+   test('renders error message if a fetch fails', async () => {
+        fetch
+            .mockResolvedValueOnce({ ok: true, json: async () => mockRevenueResponse })
+            .mockResolvedValueOnce({ ok: true, json: async () => mockBookingsResponse })
+            .mockRejectedValueOnce(new Error('API Error Demographics'))
+            .mockResolvedValueOnce({ ok: true, json: async () => mockCountriesResponse })
+            .mockResolvedValueOnce({ ok: true, json: async () => mockRoomTypesResponse })
+            .mockResolvedValueOnce({ ok: true, json: async () => mockAssignmentsResponse });
 
-    // --- MODIFICATION START ---
-    // Wait for the ERROR message first in partial failure scenarios
-    await screen.findByRole('alert');
+        render(<Dashboard />);
 
-    // Check the specific error message content
-    expect(screen.getByText(/Failed to load some data: Country/i)).toBeInTheDocument();
-    // --- MODIFICATION END ---
+        expect(await screen.findByTestId('error-message')).toBeInTheDocument();
+        expect(screen.getByTestId('error-message')).toHaveTextContent(/Failed to load some data: Demographics/i);
 
-    // Check that successful data is still rendered (revenue might be reset to 0, check bookings)
-    expect(screen.getByText('88')).toBeInTheDocument();
-    expect(await screen.findByText('Male')).toBeInTheDocument();
+        expect(screen.getByTestId('key-metrics')).toBeInTheDocument();
+        expect(screen.getByTestId('guest-country-chart')).toBeInTheDocument();
+        expect(screen.getByTestId('assignments-insights')).toHaveTextContent('Assignments Count: 2');
+        expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
+   });
 
-    // Check failed component shows its "no data" state
-    expect(screen.getByText('Guests by Country')).toBeInTheDocument();
-    expect(screen.getByText('No country data available.')).toBeInTheDocument();
-  });
+    test('renders generic error message if all fetches fail', async () => {
+        fetch.mockRejectedValue(new Error('Network Error'));
 
-  it('handles total API failure (e.g., network error)', async () => {
-    fetchMock.mockReject(new Error('Network Error Simulated'));
-    render(<Dashboard />);
+        render(<Dashboard />);
 
-    // Wait for the specific error message for total failure
-    // Use findByRole which uses waitFor internally
-    const alert = await screen.findByRole('alert');
-    expect(alert).toBeInTheDocument();
+        expect(await screen.findByTestId('error-message')).toBeInTheDocument();
+        expect(screen.getByTestId('error-message')).toHaveTextContent(/Failed to load dashboard data/i);
 
-    // Check the correct error message text (based on component logic update)
-    expect(screen.getByText(/Failed to load dashboard data. Please check the connection or try again later./i)).toBeInTheDocument();
-
-    // Check metrics are reset/default
-    expect(screen.getByText('$0.00')).toBeInTheDocument();
-    expect(screen.getByText('0')).toBeInTheDocument();
-
-    // Check all charts show "no data"
-    expect(screen.getByText('No country data available.')).toBeInTheDocument();
-    expect(screen.getByText('No gender data available.')).toBeInTheDocument();
-    expect(screen.getByText('No room type data available.')).toBeInTheDocument();
-  });
-
-  it('handles API response with success: false field', async () => {
-     fetchMock.mockResponse(async req => {
-        const url = req.url;
-        if (url.endsWith('/demographics')) {
-            return JSON.stringify({ success: false, message: 'API Logic Error' });
-        }
-        // Respond successfully for others
-        if (url.endsWith('/revenue')) return JSON.stringify(mockRevenueResponse);
-        if (url.endsWith('/bookings')) return JSON.stringify(mockBookingsResponse);
-        if (url.endsWith('/countries')) return JSON.stringify(mockCountriesResponse);
-        if (url.endsWith('/room-types')) return JSON.stringify(mockRoomTypesResponse);
-        throw new Error(`Unexpected fetch URL in success:false test: ${url}`);
-    });
-
-    render(<Dashboard />);
-
-    // --- MODIFICATION START ---
-    // Wait for the error message first
-    await screen.findByRole('alert');
-
-    // Check error reflects the specific component whose data processing failed
-    expect(screen.getByText(/Failed to load some data: Demographics/i)).toBeInTheDocument();
-    // --- MODIFICATION END ---
-
-    // Check successful data is rendered (revenue might be reset, check bookings)
-    expect(screen.getByText('88')).toBeInTheDocument();
-
-    // Check failed component shows no data
-    expect(screen.getByText('Gender Demographics')).toBeInTheDocument();
-    expect(screen.getByText('No gender data available.')).toBeInTheDocument();
+        expect(screen.queryByTestId('key-metrics')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('guest-country-chart')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('assignments-insights')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
    });
 });

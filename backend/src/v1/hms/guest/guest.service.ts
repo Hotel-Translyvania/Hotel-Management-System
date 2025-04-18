@@ -10,36 +10,32 @@ export class GuestService {
 
     constructor(
         @InjectRepository(User)
-        private guestRepostiory: Repository<User>
+        private guestRepository: Repository<User>
     ) { }
     async createGuest(createGuestDto: CreateGuestDto): Promise<{ success: boolean, guestId: string, message: string }> {
-
-        const date = new Date()
-    
+        const date = new Date();
         try {
-            const guest = this.guestRepostiory.create({
+            const guest = this.guestRepository.create({
                 ...createGuestDto,
+                dateOfBirth: createGuestDto.dateOfBirth ? new Date(createGuestDto.dateOfBirth) : undefined,
                 createdAt: date,
-            })
-            const result = await this.guestRepostiory.save(guest)
-            console.log("guest",result)
+            });
+            const result = await this.guestRepository.save(guest);
+            console.log("guest", result);
             return {
                 success: true,
                 guestId: result.id,
-                message: "guest has been added successfully"
-            }
+                message: "guest has been added successfully",
+            };
         } catch (error) {
-            console.log('Error message: ', error)
-            throw new InternalServerErrorException(error, 'Unable to Create Guest')
+            console.log('Error message: ', error);
+            throw new InternalServerErrorException(error, 'Unable to Create Guest');
         }
-
-
-       
     }
 
     async getAllGuests(): Promise<{ success: boolean, data: any[] }> {
         try {
-            const result = await this.guestRepostiory.find();
+            const result = await this.guestRepository.find();
             const mappedResult = result.map((guest) => ({
                 id: guest.id,
                 firstName: guest.firstName,
@@ -65,7 +61,7 @@ export class GuestService {
 
     
     async getUserProfile(identificationNumber: string): Promise<UserProfileDto> {
-        const user = await this.guestRepostiory.findOne({ where: { id: identificationNumber } });
+        const user = await this.guestRepository.findOne({ where: { id: identificationNumber } });
         
         if (!user) {
           throw new Error('User not found');
@@ -88,14 +84,14 @@ export class GuestService {
       
     async updateGuest(id: string, updateGuestDto: any): Promise<{ success: boolean, message: string }> {
         try {
-            const guest = await this.guestRepostiory.findOne({ where: { id: id } })
+            const guest = await this.guestRepository.findOne({ where: { id: id } })
             if (!guest) {
                 return {
                     success: false,
                     message: "guest not found"
                 }
             }
-            await this.guestRepostiory.update(id, updateGuestDto)
+            await this.guestRepository.update(id, updateGuestDto)
         } catch (error) {
             console.log('Error message:', error);
             throw new InternalServerErrorException(error, 'Unable to update guest');
@@ -107,14 +103,14 @@ export class GuestService {
     }
     async deleteGuest(id: string): Promise<{ success: boolean, message: string }> {
         try {
-            const guest = await this.guestRepostiory.findOne({ where: { id: id } })
+            const guest = await this.guestRepository.findOne({ where: { id: id } })
             if (!guest) {
                 return {
                     success: false,
                     message: "guest not found"
                 }
             }
-            await this.guestRepostiory.delete(id)
+            await this.guestRepository.delete(id)
         } catch (error) {
             console.log('Error message:', error);
             throw new InternalServerErrorException(error, 'Unable to delete guest');

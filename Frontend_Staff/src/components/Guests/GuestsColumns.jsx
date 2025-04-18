@@ -137,6 +137,7 @@ export const guestColumns = [
     cell: ({ row, table }) => (
       <div className="flex space-x-2">
         <Button
+          aria-label="edit"
           variant="ghost"
           size="sm"
           onClick={(e) => {
@@ -148,6 +149,7 @@ export const guestColumns = [
           <Edit className="h-4 w-4 text-blue-600" />
         </Button>
         <DeleteButton
+          data-testid="delete-btn"
           onDelete={() => table.options.meta?.onDeleteClick?.(row.original)}
         />
       </div>

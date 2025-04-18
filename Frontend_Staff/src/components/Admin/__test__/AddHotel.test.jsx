@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import AddHotel from "../path/to/AddHotel";
+import AddHotel from "../AddHotel";
 import "@testing-library/jest-dom";
 import axios from "axios";
 

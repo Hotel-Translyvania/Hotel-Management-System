@@ -1,11 +1,12 @@
 export class BookingDto {
   bookingId: string;
-  guestName: string;
+  guestId: string;
+  guestFirstName: string;
+  guestLastName: string;
   roomNum: string;
-  bookingType: string;
   roomType: string;
   checkIn: Date;
   checkOut: Date;
-  status: string;
+  bookingStatus: string;
   createdAt: Date;
 }
