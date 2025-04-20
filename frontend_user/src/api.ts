@@ -17,6 +17,7 @@ export const signup = async (data: any) => {
 
 // Login function
 export const login = async (data: any) => {
+  console.log('Login API called with:', data); // Debugging log
   try {
     const response = await api.post("/auth/login", data);
     return response.data; // Return response data for further use (like a token)
