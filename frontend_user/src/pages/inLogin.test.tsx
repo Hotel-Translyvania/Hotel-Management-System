@@ -1,96 +1,159 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
+import "@testing-library/jest-dom";
 import { MemoryRouter } from 'react-router-dom';
-import Login from '@/pages/Login';
+import LoginForm from '../components/Login/LoginForm';
 import { login } from '@/api';
+import { useToast } from '@/components/ui/use-toast';
 
-// Mock the API module
-jest.mock('@/api', () => ({
-  login: jest.fn(),
-}));
+// Mock the API and toast functions
+jest.mock('@/api');
+jest.mock('@/components/ui/use-toast');
 
-// Mock the components
-jest.mock('@/components/Login/Logo', () => () => <div data-testid="logo">Logo</div>);
+const mockedLogin = login as jest.MockedFunction<typeof login>;
+const mockedUseToast = useToast as jest.MockedFunction<typeof useToast>;
 
-// Fixed LoginForm mock (mocking onSubmit)
-jest.mock('@/components/Login/LoginForm', () => ({
-  onSubmit,
-}: {
-  onSubmit: (data: { email: string; password: string }) => void;
-}) => {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (onSubmit) {
-      onSubmit({
-        email: 'test@example.com', 
-        password: 'password123',
-      });
-    }
+describe('LoginForm', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    // Mock useToast implementation
+    mockedUseToast.mockReturnValue({
+      toast: jest.fn(),
+      dismiss: jest.fn(),
+      toasts: [],
+    });
+  });
+
+  const renderForm = () => {
+    return render(
+      <MemoryRouter>
+        <LoginForm />
+      </MemoryRouter>
+    );
   };
 
-  return (
-    <form data-testid="login-form" onSubmit={handleSubmit}>
-      <button type="submit">Submit</button>
-    </form>
-  );
-});
+  const fillForm = async (email = 'user@example.com', password = 'password123') => {
+    await userEvent.type(screen.getByPlaceholderText('your@email.com'), email);
+    await userEvent.type(screen.getByPlaceholderText('••••••••'), password);
+  };
 
-describe('Login Page', () => {
-  beforeEach(() => {
-    // Clear all mocks before each test
-    jest.clearAllMocks();
-  });
+  test('renders all form elements', () => {
+    renderForm();
 
-  it('renders correctly on desktop view', () => {
-    render(
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
-    );
-
-    // Check for main elements
-    expect(screen.queryAllByTestId('logo').length).toBeGreaterThan(0);  
-    expect(screen.getByText('Login to your account')).toBeInTheDocument();
-    expect(screen.getByText('Welcome back! Please enter your details.')).toBeInTheDocument();
     expect(screen.getByTestId('login-form')).toBeInTheDocument();
-    expect(screen.getByText('← Back to Home')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('your@email.com')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('••••••••')).toBeInTheDocument();
+    expect(screen.getByTestId('password-toggle')).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: /remember me/i })).toBeInTheDocument();
+    expect(screen.getByTestId('login-button')).toBeInTheDocument();
+    expect(screen.getByText(/don't have an account/i)).toBeInTheDocument();
   });
 
-  it('renders mobile-specific elements on mobile view', () => {
-    // Mock window.innerWidth for mobile view
-    global.innerWidth = 500;
-    global.dispatchEvent(new Event('resize'));
+  test('shows validation errors for empty fields', async () => {
+    renderForm();
 
-    render(
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
-    );
+    fireEvent.click(screen.getByTestId('login-button'));
 
-    // Mobile should show logo in the center
-    const mobileLogo = screen.getAllByTestId('logo')[0];
-    expect(mobileLogo).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Please fill in all fields.')).toBeInTheDocument();
+    });
   });
 
-  it('navigates to home when "Back to Home" is clicked', () => {
-    render(
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
-    );
+  test('shows validation error for short password', async () => {
+    renderForm();
 
-    const homeLink = screen.getByText('← Back to Home');
-    expect(homeLink).toHaveAttribute('href', '/');
+    await userEvent.type(screen.getByPlaceholderText('your@email.com'), 'user@example.com');
+    await userEvent.type(screen.getByPlaceholderText('••••••••'), 'short');
+    fireEvent.click(screen.getByTestId('login-button'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Password must be at least 6 characters.')).toBeInTheDocument();
+    });
   });
 
-  it('displays the correct terms and conditions text', () => {
-    render(
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
-    );
+  test('successfully submits form with valid data', async () => {
+    const mockToken = 'mock-token-123';
+    mockedLogin.mockResolvedValueOnce({ token: mockToken });
+    renderForm();
 
-    expect(screen.getByText('By signing in, you agree to our Terms and Privacy Policy.')).toBeInTheDocument();
+    await fillForm();
+    fireEvent.click(screen.getByTestId('login-button'));
+
+    await waitFor(() => {
+      expect(mockedLogin).toHaveBeenCalledWith({
+        email: 'user@example.com',
+        password: 'password123'
+      });
+
+      // Check if token was stored in localStorage
+      expect(localStorage.getItem('token')).toBe(mockToken);
+
+      // Check if toast was shown
+      expect(mockedUseToast().toast).toHaveBeenCalledWith({
+        title: 'Success!',
+        description: 'You have successfully logged in.',
+      });
+    });
+  });
+
+  test('handles login failure with specific error message', async () => {
+    const errorMessage = 'Invalid credentials';
+    mockedLogin.mockRejectedValueOnce(new Error(errorMessage));
+    renderForm();
+
+    await fillForm();
+    fireEvent.click(screen.getByTestId('login-button'));
+
+    await waitFor(() => {
+      expect(screen.getByText(errorMessage)).toBeInTheDocument();
+    });
+  });
+
+  test('handles login failure with generic error message', async () => {
+    mockedLogin.mockRejectedValueOnce(new Error());
+    renderForm();
+
+    await fillForm();
+    fireEvent.click(screen.getByTestId('login-button'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Login failed. Please try again.')).toBeInTheDocument();
+    });
+  });
+
+  test('toggles password visibility', async () => {
+    renderForm();
+
+    const passwordInput = screen.getByPlaceholderText('••••••••');
+    const toggleButton = screen.getByTestId('password-toggle');
+
+    // Password should be hidden by default
+    expect(passwordInput).toHaveAttribute('type', 'password');
+
+    // Click to show password
+    fireEvent.click(toggleButton);
+    expect(passwordInput).toHaveAttribute('type', 'text');
+
+    // Click to hide password again
+    fireEvent.click(toggleButton);
+    expect(passwordInput).toHaveAttribute('type', 'password');
+  });
+
+  test('toggles remember me checkbox', async () => {
+    renderForm();
+
+    const checkbox = screen.getByRole('checkbox', { name: /remember me/i });
+
+    // Checkbox should be unchecked by default
+    expect(checkbox).not.toBeChecked();
+
+    // Click to check
+    fireEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+
+    // Click to uncheck again
+    fireEvent.click(checkbox);
+    expect(checkbox).not.toBeChecked();
   });
 });

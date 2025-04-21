@@ -260,7 +260,7 @@ const SignupForm: React.FC = () => {
                       <SelectContent className="rounded-xl">
                         <SelectItem value="Male" data-testid="gender-male">Male</SelectItem>
                         <SelectItem value="Female" data-testid="gender-female">Female</SelectItem>
-                        <SelectItem value="Prefer not to say">Prefer not to say</SelectItem>
+                        <SelectItem value="Prefer not to say" data-testid="gender-prefer-not-to-say">Prefer not to say</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage data-testid="gender-error" />

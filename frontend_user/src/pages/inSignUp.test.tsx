@@ -1,77 +1,165 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import "@testing-library/jest-dom";
 import { MemoryRouter } from 'react-router-dom';
-import SignUp from './SignUp';
-const useIsMobileMock = require('@/hooks/use-mobile').useIsMobile;
+import SignupForm from '../components/SignUp/mockSignupForm';
+import { signup } from '../api';
+import { toast } from '@/hooks/use-toast';
 
-// filepath: c:\Users\Nas\Contacts\Desktop\Class\Main-Product\frontend_user\src\pages\SignUp.test.tsx
+// Mock the API and toast functions
+jest.mock('../api');
+jest.mock('@/hooks/use-toast');
 
-// Mock dependencies
-jest.mock('@/components/SignUp/Logo', () => () => <div data-testid="logo">Logo</div>);
-jest.mock('@/components/SignUp/SignupForm', () => () => <div data-testid="signup-form">SignupForm</div>);
-jest.mock('@/hooks/use-mobile', () => ({
-  useIsMobile: jest.fn(),
-}));
+const mockedSignup = signup as jest.MockedFunction<typeof signup>;
+const mockedToast = toast as jest.MockedFunction<typeof toast>;
 
-describe('SignUp Page', () => {
-
+describe('SignupForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders correctly on desktop view', () => {
-    useIsMobileMock.mockReturnValue(false); // Simulate desktop view
-
-    render(
+  const renderForm = () => {
+    return render(
       <MemoryRouter>
-        <SignUp />
+        <SignupForm />
       </MemoryRouter>
     );
+  };
 
-    // Check for left panel
-    expect(screen.getByText('Welcome to EzyStay')).toBeInTheDocument();
-    expect(screen.getByText('Your home away from home. Sign up to discover the perfect stays for your next trip.')).toBeInTheDocument();
+  const fillForm = async () => {
+    // Personal Info
+    await userEvent.type(screen.getByTestId('firstname-input'), 'John');
+    await userEvent.type(screen.getByTestId('lastname-input'), 'Doe');
+    
+    // Select gender
+    fireEvent.click(screen.getByTestId('gender-trigger'));
+    fireEvent.click(screen.getByTestId('gender-male'));
 
-    // Check for right panel
-    expect(screen.getByTestId('logo')).toBeInTheDocument();
-    expect(screen.getByTestId('signup-form')).toBeInTheDocument();
-    expect(screen.getByText('Create your account')).toBeInTheDocument();
-    expect(screen.getByText('Join EzyStay to start booking your perfect stays')).toBeInTheDocument();
+    // Select date of birth
+    fireEvent.click(screen.getByTestId('date-trigger'));
+    const dayButton = screen.getByRole('gridcell', { name: '15' });
+    fireEvent.click(dayButton);
 
-    // Check for "Back to Home" link
-    const backToHomeLink = screen.getByText('← Back to Home');
-    expect(backToHomeLink).toBeInTheDocument();
-    expect(backToHomeLink).toHaveAttribute('href', '/');
+    // Contact Info
+    await userEvent.type(screen.getByTestId('email-input'), 'john.doe@example.com');
+    await userEvent.type(screen.getByTestId('phone-input'), '+1234567890');
+    await userEvent.type(screen.getByTestId('address-textarea'), '123 Main St, City, Country');
+    
+    // Select nationality
+    fireEvent.click(screen.getByTestId('nationality-trigger'));
+    fireEvent.click(screen.getByTestId('nationality-ethiopian'));
+
+    // Identity Info
+    fireEvent.click(screen.getByTestId('idtype-trigger'));
+    fireEvent.click(screen.getByTestId('idtype-passport'));
+    await userEvent.type(screen.getByTestId('idnumber-input'), 'AB1234567');
+
+    // Security Info
+    await userEvent.type(screen.getByTestId('password-input'), 'SecurePass123!');
+    await userEvent.type(screen.getByTestId('confirm-password-input'), 'SecurePass123!');
+  };
+
+  test('renders all form fields', () => {
+    renderForm();
+
+    expect(screen.getByTestId('firstname-input')).toBeInTheDocument();
+    expect(screen.getByTestId('lastname-input')).toBeInTheDocument();
+    expect(screen.getByTestId('gender-trigger')).toBeInTheDocument();
+    expect(screen.getByTestId('date-trigger')).toBeInTheDocument();
+    expect(screen.getByTestId('email-input')).toBeInTheDocument();
+    expect(screen.getByTestId('phone-input')).toBeInTheDocument();
+    expect(screen.getByTestId('address-textarea')).toBeInTheDocument();
+    expect(screen.getByTestId('nationality-trigger')).toBeInTheDocument();
+    expect(screen.getByTestId('idtype-trigger')).toBeInTheDocument();
+    expect(screen.getByTestId('idnumber-input')).toBeInTheDocument();
+    expect(screen.getByTestId('password-input')).toBeInTheDocument();
+    expect(screen.getByTestId('confirm-password-input')).toBeInTheDocument();
   });
 
-  it('hides the left panel on mobile view', () => {
-    useIsMobileMock.mockReturnValue(true); // Simulate mobile view
+  test('successfully submits form with valid data', async () => {
+    mockedSignup.mockResolvedValueOnce({ data: { success: true } });
+    renderForm();
 
-    render(
-      <MemoryRouter>
-        <SignUp />
-      </MemoryRouter>
-    );
+    await fillForm();
+    fireEvent.click(screen.getByTestId('submit-button'));
 
-    // Left panel should not be visible
-    expect(screen.queryByText('Welcome to EzyStay')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(mockedSignup).toHaveBeenCalledWith({
+        firstName: 'John',
+        lastName: 'Doe',
+        identificationType: 'Passport',
+        identificationNumber: 'AB1234567',
+        address: '123 Main St, City, Country',
+        email: 'john.doe@example.com',
+        password: 'SecurePass123!',
+        nationality: 'Ethiopian',
+        dateOfBirth: expect.any(String),
+        gender: 'Male',
+        phone: '+1234567890',
+        role: 'user',
+        picture: 'https://example.com/default-avatar.jpg'
+      });
 
-    // Right panel should still render
-    expect(screen.getByTestId('logo')).toBeInTheDocument();
-    expect(screen.getByTestId('signup-form')).toBeInTheDocument();
+      expect(mockedToast).toHaveBeenCalledWith({
+        title: "Account created!",
+        description: "You have successfully created your account.",
+      });
+    });
   });
 
-  it('renders footer correctly', () => {
-    useIsMobileMock.mockReturnValue(false); // Simulate desktop view
+  test('shows error toast when signup fails', async () => {
+    const errorMessage = 'Email already in use';
+    mockedSignup.mockRejectedValueOnce({
+      response: { data: { message: errorMessage } }
+    });
+    renderForm();
 
-    render(
-      <MemoryRouter>
-        <SignUp />
-      </MemoryRouter>
-    );
+    await fillForm();
+    fireEvent.click(screen.getByTestId('submit-button'));
 
-    // Check for footer text
-    expect(screen.getByText('© 2025 EzyStay. All rights reserved.')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mockedToast).toHaveBeenCalledWith({
+        title: "Signup Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    });
+  });
+
+  test('toggles password visibility', async () => {
+    renderForm();
+
+    const passwordInput = screen.getByTestId('password-input');
+    const toggleButton = screen.getByTestId('password-toggle');
+
+    // Password should be hidden by default
+    expect(passwordInput).toHaveAttribute('type', 'password');
+
+    // Click to show password
+    fireEvent.click(toggleButton);
+    expect(passwordInput).toHaveAttribute('type', 'text');
+
+    // Click to hide password again
+    fireEvent.click(toggleButton);
+    expect(passwordInput).toHaveAttribute('type', 'password');
+  });
+
+  test('toggles confirm password visibility', async () => {
+    renderForm();
+
+    const confirmPasswordInput = screen.getByTestId('confirm-password-input');
+    const toggleButton = screen.getByTestId('confirm-password-toggle');
+
+    // Password should be hidden by default
+    expect(confirmPasswordInput).toHaveAttribute('type', 'password');
+
+    // Click to show password
+    fireEvent.click(toggleButton);
+    expect(confirmPasswordInput).toHaveAttribute('type', 'text');
+
+    // Click to hide password again
+    fireEvent.click(toggleButton);
+    expect(confirmPasswordInput).toHaveAttribute('type', 'password');
   });
 });
