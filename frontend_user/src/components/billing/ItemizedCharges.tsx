@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { ChargeItem, ServiceType } from '../data/mockData';
+import { ChargeItem, ServiceType } from '../../data/mockData';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface ItemizedChargesProps {

@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { Star, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
 
 interface HotelCardProps {
   hotel: {
@@ -27,9 +27,9 @@ const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
           alt={hotel.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
-        <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded-md text-sm font-semibold text-gray-800">
+        {/* <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded-md text-sm font-semibold text-gray-800">
           ${hotel.price}/night
-        </div>
+        </div> */}
       </div>
       
       {/* Content */}
@@ -51,7 +51,7 @@ const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
           {hotel.description}
         </p>
         
-        {/* Amenities */}
+        {/* Amenities
         <div className="flex flex-wrap gap-2 mb-4">
           {hotel.amenities.map((amenity, index) => (
             <span 
@@ -61,11 +61,13 @@ const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
               {amenity}
             </span>
           ))}
-        </div>
+        </div> */}
         
         <div className="flex justify-between items-center mt-4">
           <Button variant="outline" className="text-sm">View Details</Button>
-          <Button className="text-sm bg-hotel-primary hover:bg-hotel-accent">Book Now</Button>
+          <Link to={`/rooms/${hotel.name}/${hotel.id}`}>
+            <Button className="text-sm bg-hotel-primary hover:bg-hotel-accent">Book Now</Button>
+          </Link>
         </div>
       </div>
     </div>

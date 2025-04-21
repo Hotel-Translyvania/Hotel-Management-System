@@ -36,8 +36,8 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-8">
             <div className={`flex space-x-6 ${isScrolled ? 'text-gray-700' : 'text-white'}`}>
               <Link to="/" className="hover:text-primary transition-300 font-medium">Home</Link>
-              <Link to="/about" className="hover:text-primary transition-300 font-medium">About Us</Link>
-              <Link to="/contact" className="hover:text-primary transition-300 font-medium">Contact</Link>
+              <Link to="/" className="hover:text-primary transition-300 font-medium">About Us</Link>
+              <Link to="/" className="hover:text-primary transition-300 font-medium">Contact</Link>
             </div>
 
             {/* Search Bar */}

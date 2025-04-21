@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useBooking } from '../../hooks/useBooking';
+import { useBilling } from "../../context/BillingContext";
+
 import axios from 'axios';
 
 
 const BookingForm = ({ room, onClose }) => {
+  const { setBooking } = useBilling();
   const { bookRoom } = useBooking();
   const [formData, setFormData] = useState({
     checkIn: '',
@@ -12,6 +15,7 @@ const BookingForm = ({ room, onClose }) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const today = new Date().toISOString().split('T')[0]; 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -19,6 +23,7 @@ const BookingForm = ({ room, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setBooking(formData); 
     setIsSubmitting(true);
     
     try {
@@ -38,10 +43,10 @@ const BookingForm = ({ room, onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Book Room #{room.roomNum}</h2>
+          <h2 className="text-xl font-bold">Book Room #{room.roomNumber}</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
             &times;
-          </button>
+          </button> 
         </div>
         
         <form onSubmit={handleSubmit}>
@@ -54,6 +59,7 @@ const BookingForm = ({ room, onClose }) => {
               onChange={handleChange}
               className="w-full p-2 border rounded"
               required
+              min={today} 
             />
           </div>
           
@@ -66,6 +72,7 @@ const BookingForm = ({ room, onClose }) => {
               onChange={handleChange}
               className="w-full p-2 border rounded"
               required
+              min={formData.checkIn || today}
             />
           </div>
           

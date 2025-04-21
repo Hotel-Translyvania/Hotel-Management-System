@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { ServiceType, updateServiceDetails } from '../data/mockData';
+import { ServiceType, updateServiceDetails } from '../../data/mockData';
 import { Bed, Utensils, Sparkles, CalendarDays, Package } from 'lucide-react';
 
 interface ServiceSelectorProps {

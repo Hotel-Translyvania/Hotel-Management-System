@@ -1,10 +1,5 @@
-function App() {
-  return (
-    <div className="min-h-screen">
-      <Navbar />
-    </div>
-  );
-}
+import { useBilling } from "../context/BillingContext";
+
 import { useState } from 'react';
 import Navbar from '@/components/Navbar/Navbar';
 import GuestInfoCard from '@/components/billing/GuestInfoCard';
@@ -17,8 +12,9 @@ import { mockBillingData, updateServiceDetails, BillingData, ServiceType } from 
 import "../index.css";
 
 const Billing = () => {
+  const { booking, restaurantOrders } = useBilling();
   const [billingData, setBillingData] = useState<BillingData>(mockBillingData);
-
+  console.log("Billing Data:", booking);
   const handleServiceTypeChange = (type: ServiceType) => {
     const updatedService = updateServiceDetails(type);
     
