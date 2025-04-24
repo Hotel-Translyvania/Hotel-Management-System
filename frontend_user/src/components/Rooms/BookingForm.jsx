@@ -39,6 +39,24 @@ const BookingForm = ({ room, onClose }) => {
     }
   };
 
+  const handleBookingSubmit = async() =>{
+    const response = await fetch('http://localhost:3000/api/v1/hotels/101/rooms/rm-001/bookings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log('Booking successful:', data);
+      onClose(); // Close the modal after successful booking
+    } else {
+      console.error('Booking failed:', data);
+    }
+    
+
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
@@ -98,6 +116,7 @@ const BookingForm = ({ room, onClose }) => {
             <button
               type="submit"
               disabled={isSubmitting}
+              onClick={handleBookingSubmit}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-blue-400"
             >
               {isSubmitting ? 'Booking...' : 'Confirm Booking'}
