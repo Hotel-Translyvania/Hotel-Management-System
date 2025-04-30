@@ -3,14 +3,13 @@ import { Link } from 'react-router-dom';
 import Logo from '@/components/Login/Logo';
 import LoginForm from '@/components/Login/LoginForm';
 
-
 const Login = () => {
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row">
       {/* Left side - Brand illustration (visible on md screens and up) */}
       <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-blue-500 to-blue-600 p-8 items-center justify-center">
         <div className="max-w-md text-white">
-          <Logo className="mb-6 text-white" />
+          <Logo data-testid="logo-desktop" className="mb-6 text-white" />
           <h1 className="text-4xl font-bold mb-4">
             Welcome back to EzyStay
           </h1>
@@ -48,7 +47,7 @@ const Login = () => {
           </div>
           {/* Only show logo on mobile screens */}
           <div className="md:hidden mb-8 flex justify-center">
-            <Logo />
+            <Logo data-testid="logo-mobile" />
           </div>
 
           <div className="text-center mb-8">

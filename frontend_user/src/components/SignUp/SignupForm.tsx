@@ -64,6 +64,17 @@ const formSchema = z.object({
   }),
   dateOfBirth: z.date({
     required_error: "Please select your date of birth.",
+  })
+  .refine(date => {
+    const today = new Date();
+    const eighteenYearsAgo = new Date(
+      today.getFullYear() - 18,
+      today.getMonth(),
+      today.getDate()
+    );
+    return date <= eighteenYearsAgo;
+  }, {
+    message: "You must be at least 18 years old to register.",
   }),
   idType: z.string({
     required_error: "Please select an identification type.",
@@ -81,6 +92,16 @@ const formSchema = z.object({
   message: "Passwords do not match",
   path: ["confirmPassword"],
 });
+
+function calculateAge(birthDate: Date) {
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+}
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -260,7 +281,7 @@ const SignupForm: React.FC = () => {
                       <SelectContent className="rounded-xl">
                         <SelectItem value="Male" data-testid="gender-male">Male</SelectItem>
                         <SelectItem value="Female" data-testid="gender-female">Female</SelectItem>
-                        <SelectItem value="Prefer not to say">Prefer not to say</SelectItem>
+                        <SelectItem value="Prefer not to say" data-testid="gender-prefer-not-to-say">Prefer not to say</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage data-testid="gender-error" />
@@ -297,22 +318,38 @@ const SignupForm: React.FC = () => {
                         </FormControl>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start" data-testid="date-picker">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                          captionLayout="dropdown-buttons"
-                          className="rounded-md border"
-                        />
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) => {
+                          const today = new Date();
+                          const minDate = new Date(
+                            today.getFullYear() - 120, // Assuming 120 years is maximum age
+                            today.getMonth(),
+                            today.getDate()
+                          );
+                          const eighteenYearsAgo = new Date(
+                            today.getFullYear() - 18,
+                            today.getMonth(),
+                            today.getDate()
+                          );
+                          return date > eighteenYearsAgo || date < minDate;
+                        }}
+                        initialFocus
+                        captionLayout="dropdown-buttons"
+                        className="rounded-md border"
+                      />
                       </PopoverContent>
                     </Popover>
                     <FormDescription>
                       You must be at least 18 years old to register.
                     </FormDescription>
+                    {field.value && (
+                      <div className="text-sm text-muted-foreground mt-1">
+                        Age: {calculateAge(new Date(field.value))} years
+                      </div>
+                    )}
                     <FormMessage data-testid="dob-error" />
                   </FormItem>
                 )}

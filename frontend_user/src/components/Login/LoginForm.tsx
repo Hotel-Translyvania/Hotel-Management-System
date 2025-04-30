@@ -70,7 +70,7 @@ const LoginForm = () => {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <form onSubmit={handleSubmit} className="fade-in space-y-6">
+      <form data-testid="login-form" onSubmit={handleSubmit} className="fade-in space-y-6">
         {error && (
           <div role="alert" className="p-3 rounded-xl bg-red-50 text-red-500 text-sm border border-red-100">
             {error}
@@ -152,6 +152,7 @@ const LoginForm = () => {
           type="submit"
           className="w-full py-6 rounded-xl bg-primary hover:bg-primary/90 text-white"
           disabled={isLoading}
+          data-testid="login-button"
         >
           {isLoading ? 'Logging in...' : 'Log in'}
         </Button>
