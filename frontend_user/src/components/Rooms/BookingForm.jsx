@@ -45,6 +45,12 @@ const BookingForm = ({ room, onClose }) => {
       headers: {
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        checkIn: formData.checkIn,
+        checkOut: formData.checkOut,
+        specialRequests: formData.specialRequests,
+        roomId: room.roomId, // Include the room ID in the request body
+      }),
     });
     const data = await response.json();
     if (response.ok) {
@@ -53,8 +59,6 @@ const BookingForm = ({ room, onClose }) => {
     } else {
       console.error('Booking failed:', data);
     }
-    
-
   }
 
   return (
@@ -119,7 +123,7 @@ const BookingForm = ({ room, onClose }) => {
               onClick={handleBookingSubmit}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-blue-400"
             >
-              {isSubmitting ? 'Booking...' : 'Confirm Booking'}
+              {isSubmitting ? 'xxxx...' : 'Confirm Booking'}
             </button>
           </div>
         </form>

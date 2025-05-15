@@ -1,19 +1,40 @@
-function App() {
-  return (
-    <div className="min-h-screen">
-      <Navbar />
-    </div>
-  );
-}
-import React from 'react';
+import { jwtDecode } from "jwt-decode";
+import React, { useEffect } from 'react';
 import { useBooking } from '@/hooks/useBooking';
 import Navbar from '@/components/Navbar/Navbar';
 import CurrentBooking from '@/components/Rooms/CurrentBooking';
 import BookingHistory from '@/components/Rooms/BookingHistory';
 //import Navbar from '@/components/Rooms/Navbar';
 import "./Rooms_Booking.css";
+import { use } from 'react';
 
 const BookingPage = () => {
+  const token = localStorage.getItem("token");
+  console.log("Token from localStorage:", token);
+  const decoded = jwtDecode(token);
+  const guestId = decoded.sub;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/v1/hotels/1/bookings', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json(); // Handle the data from the API
+          console.log('Fetched booking data:', data);
+          await getBookingHistory(); // Fetch booking history
+        }
+      } catch (error) {
+        console.error('Error fetching booking history:', error);
+      }
+    };
+    fetchData();
+  }, []); // Empty dependency array to run once on mount
   const { currentBooking, bookings, isLoading, error, cancelBooking } = useBooking();
   const handleCancelBooking = async (bookingId) => {
     if (window.confirm('Are you sure you want to cancel this booking?')) {
