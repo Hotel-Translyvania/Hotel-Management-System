@@ -1,8 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import axios from "axios";
-
-const API_BASE_URL = "http://localhost:3000/api/v1";
+import { api } from "@/lib/api";
 axios.defaults.withCredentials = true;
 
 export const useAuthStore = create(
@@ -20,8 +19,8 @@ export const useAuthStore = create(
       login: async (email, password, role) => {
         set({ loading: true, error: null });
         try {
-          const response = await axios.post(
-            `${API_BASE_URL}/auth/hms/login`,
+          const response = await api.post(
+            `/auth/hms/login`,
             {
               email,
               password,
@@ -49,7 +48,7 @@ export const useAuthStore = create(
       logout: async () => {
         set({ loading: true });
         try {
-          await axios.post(`${API_BASE_URL}/auth/hms/logout`);
+          await api.post(`/auth/hms/logout`);
           set({
             user: null,
             role: null,
@@ -69,7 +68,7 @@ export const useAuthStore = create(
       initializeAuth: async () => {
         set({ loading: true, isCheckingAuth: true, error: null });
         try {
-          const res = await axios.get(`${API_BASE_URL}/auth/hms/checkAuth`);
+          const res = await api.get(`/auth/hms/checkAuth`);
           set({
             user: res.data?.user,
             role: res.data?.user?.role,

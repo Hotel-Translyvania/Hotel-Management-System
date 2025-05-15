@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { CustomTable } from "../Table/Table";
-import { managersDatabase } from "./ManagersDatabase";
 import AddManager from "./AddManagers";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import ManagersColumns from "./ManagersCoulumn";
 import axios from "axios";
 import SpinPage from "@/components/Spin/Spin";
-
-export const api = axios.create({
-  baseURL: "http://localhost:3000/api/v1",
-});
+import { api } from "@/lib/api";
 
 const Managers = () => {
   const [addManagerIsOpen, setAddManagerOpen] = useState(false);

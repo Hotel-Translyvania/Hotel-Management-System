@@ -20,9 +20,6 @@ import axios from "axios";
 import SpinPage from "@/components/Spin/Spin";
 import { useFoodStore } from "../store/useFoodStore";
 
-export const api = axios.create({
-  baseURL: "http://localhost:3000/api/v1",
-});
 
 export const FoodListingView = () => {
   const { user } = useAuthStore();

@@ -5,10 +5,8 @@ import { foodOrderColumns } from "./orderColumns";
 import { CustomTable } from "../Table/Table";
 import axios from "axios";
 import SpinPage from "@/components/Spin/Spin";
+import { api } from "@/lib/api";
 
-export const api = axios.create({
-  baseURL: "http://localhost:3000/api/v1",
-});
 const OrderedFood = () => {
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState(null);

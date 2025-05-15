@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
-
-const API_BASE_URL = "http://localhost:3000/api/v1";
+import { api } from "@/lib/api";
 
 export const useRoomStore = create((set, get) => ({
   rooms: [],
@@ -12,7 +11,7 @@ export const useRoomStore = create((set, get) => ({
   fetchRooms: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(`${API_BASE_URL}/hotels/1/rooms`);
+      const response = await api.get(`/hotels/1/rooms`);
       const roomsData = response?.data?.rooms?.data;
       set({
         rooms: roomsData,
@@ -47,8 +46,8 @@ export const useRoomStore = create((set, get) => ({
     formData.append("amenities", JSON.stringify(amenitiesArray));
     formData.append("image", data.image);
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/hms/hotels/1/rooms`,
+      const response = await api.post(
+        `/hms/hotels/1/rooms`,
         formData,
         {
           headers: {
@@ -100,8 +99,8 @@ export const useRoomStore = create((set, get) => ({
 
     try {
       // localhost:3000/api/v1/hms/hotels/1/rooms/:roomId
-      const response = await axios.patch(
-        `${API_BASE_URL}/hms/hotels/1/rooms/${roomId}`,
+      const response = await api.patch(
+        `/hms/hotels/1/rooms/${roomId}`,
         formData,
         {
           headers: {
@@ -142,7 +141,7 @@ export const useRoomStore = create((set, get) => ({
 
   deleteRoom: async (roomId) => {
     try {
-      await axios.delete(`${API_BASE_URL}/hms/hotels/1/rooms/${roomId}`);
+      await api.delete(`/hms/hotels/1/rooms/${roomId}`);
       set((state) => ({
         rooms: state.rooms.filter((room) => room.id !== roomId),
         isLoading: false,

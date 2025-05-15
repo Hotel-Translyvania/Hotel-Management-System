@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
-
-const API_BASE_URL = "http://localhost:3000/api/v1";
+import { api } from "@/lib/api";
 
 export const useGuestStore = create((set, get) => ({
   guests: [],
@@ -12,7 +11,7 @@ export const useGuestStore = create((set, get) => ({
   fetchGuests: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(`${API_BASE_URL}/hotels/1/guests`);
+      const response = await api.get(`/hotels/1/guests`);
       const data = response.data?.data;
       const formatted = data.map((guest) => ({
         id: guest.id,
@@ -45,7 +44,7 @@ export const useGuestStore = create((set, get) => ({
 
   deleteGuest: async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/hotels/1/guest/${id}`);
+      await api.delete(`/hotels/1/guest/${id}`);
       set((state) => ({
         guests: state.guests.filter((guest) => guest.id !== id),
         isLoading: false,
@@ -75,14 +74,11 @@ export const useGuestStore = create((set, get) => ({
         identificationNumber: guestFormData.idNumber,
       };
 
-      const createGuestResponse = await axios.post(
-        `${API_BASE_URL}/hotels/1/guest`,
-        guestData
-      );
+      const createGuestResponse = await api.post(`/hotels/1/guest`, guestData);
 
       const guestId = createGuestResponse.data.guestId;
-      const response = await axios.post(
-        `${API_BASE_URL}/hotels/1/rooms/${selectedRoom.id}/bookings`,
+      const response = await api.post(
+        `/hotels/1/rooms/${selectedRoom.id}/bookings`,
         {
           guestId: guestId,
           checkIn: bookingFormData.checkIn,
@@ -131,10 +127,7 @@ export const useGuestStore = create((set, get) => ({
       };
       // console.log("Guest Data:", guestData);
 
-      const response = await axios.patch(
-        `${API_BASE_URL}/hotels/1/guest/${id}`,
-        guestData
-      );
+      const response = await api.patch(`/hotels/1/guest/${id}`, guestData);
 
       const updatedGuest = {
         firstName: data.fname,
@@ -145,8 +138,7 @@ export const useGuestStore = create((set, get) => ({
         nationality: data.nationality,
         idType: data.idType,
         idNumber: data.idNumber,
-
-      }
+      };
 
       set((state) => ({
         guests: state.guests.map((guest) =>

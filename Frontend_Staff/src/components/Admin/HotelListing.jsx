@@ -8,10 +8,7 @@ import AddHotel from "./AddHotel";
 import EditHotel from "./EditHotel";
 import axios from "axios";
 import SpinPage from "@/components/Spin/Spin";
-
-export const api = axios.create({
-  baseURL: "http://localhost:3000/api/v1",
-});
+import { api } from "@/lib/api";
 
 export const HotelListing = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -33,6 +30,7 @@ export const HotelListing = () => {
         setIsLoading(true);
         const response = await api.get("hotels");
         const data = response.data.data;
+        console.log(data)
         const formattedHotel = data.map((hotel) => ({
           id: hotel.id,
           hotelName: hotel.name,

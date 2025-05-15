@@ -4,9 +4,7 @@ import axios from "axios";
 import SpinPage from "@/components/Spin/Spin";
 import { useRoomStore } from "@/components/store/useRoomStore";
 
-const api = axios.create({
-  baseURL: "http://localhost:3000/api/v1",
-});
+
 const EditRoom = ({ onSuccess, roomData }) => {
   const {editRoom} = useRoomStore();
   const {
