@@ -11,7 +11,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://localhost:8080'], // Your React dev server
+    origin: ['https://hotel-management-system-34ql.onrender.com', 'http://localhost:8080'], // Your React dev server
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
     exposedHeaders: ['Authorization', 'Set-Cookie'],
