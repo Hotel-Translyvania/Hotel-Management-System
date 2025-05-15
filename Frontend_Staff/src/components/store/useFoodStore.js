@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
-
-const API_BASE_URL = "http://localhost:3000/api/v1";
+import { api } from "@/lib/api";
 
 export const useFoodStore = create((set, get) => ({
   foodItems: [],
@@ -12,7 +11,7 @@ export const useFoodStore = create((set, get) => ({
   fetchFood: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(`${API_BASE_URL}/hotels/1/menu`);
+      const response = await api.get(`/hotels/1/menu`);
       const data = response.data;
       const formattedFood = data.map((food) => ({
         id: food.id,
@@ -54,15 +53,11 @@ export const useFoodStore = create((set, get) => ({
     formData.append("image", foodItem.image);
     formData.append("status", foodItem.status);
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/hms/hotels/1/food`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await api.post(`/hms/hotels/1/food`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       console.log("Food item added successfully:", response.data);
       const newFoodItem = {
@@ -93,7 +88,7 @@ export const useFoodStore = create((set, get) => ({
 
   deleteFood: async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/hms/hotels/1/food/${id}`);
+      await api.delete(`/hms/hotels/1/food/${id}`);
       set((state) => ({
         foodItems: state.foodItems.filter((food) => food.id !== id),
 

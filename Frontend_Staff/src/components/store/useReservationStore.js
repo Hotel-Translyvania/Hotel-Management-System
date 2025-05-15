@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
-
-const API_BASE_URL = "http://localhost:3000/api/v1";
+import { api } from "@/lib/api";
 
 export const useReservationStore = create((set, get) => ({
   reservations: [],
@@ -12,9 +11,7 @@ export const useReservationStore = create((set, get) => ({
   fetchReservations: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/hms/hotels/1/reservations/bookings`
-      );
+      const response = await api.get(`/hms/hotels/1/reservations/bookings`);
       const data = response.data?.data;
       const formatted = data.map((reservation) => ({
         bookingId: reservation.bookingId,
@@ -47,7 +44,7 @@ export const useReservationStore = create((set, get) => ({
 
   deleteReservation: async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/hotels/1/bookings/${id}`);
+      await api.delete(`/hotels/1/bookings/${id}`);
       set((state) => ({
         reservations: state.reservations.filter(
           (reservation) => reservation.bookingId !== id
@@ -66,8 +63,8 @@ export const useReservationStore = create((set, get) => ({
 
   addReservation: async (selectedGuest, selectedRoom, bookingFormData) => {
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/hotels/1/rooms/${selectedRoom.id}/bookings`,
+      const response = await api.post(
+        `/hotels/1/rooms/${selectedRoom.id}/bookings`,
         {
           guestId: selectedGuest.id,
           checkIn: bookingFormData.checkIn,
@@ -105,8 +102,8 @@ export const useReservationStore = create((set, get) => ({
   editReservation: async (id, updatedData) => {
     // localhost:3000/api/v1/hms/hotels/1/reservations/bookings/4b482ea3-8bca-430d-a7a3-f0f8dcb492cd
     try {
-      const response = await axios.patch(
-        `${API_BASE_URL}/hms/hotels/1/reservations/bookings/${id}`,
+      const response = await api.patch(
+        `/hms/hotels/1/reservations/bookings/${id}`,
         {
           checkIn: updatedData.checkIn,
           checkOut: updatedData.checkOut,

@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { api } from "@/lib/api";
 
 const EditHotel = ({ currentHotel, onSuccess }) => {
   const form = useForm({
@@ -8,7 +9,6 @@ const EditHotel = ({ currentHotel, onSuccess }) => {
       hotelName: currentHotel.hotelName,
       location: currentHotel.location,
       description: currentHotel.description,
-      image: currentHotel.image,
     },
   });
 
@@ -16,9 +16,20 @@ const EditHotel = ({ currentHotel, onSuccess }) => {
   const { errors } = formState;
   const [hotelImage, setHotelImage] = useState(currentHotel.image);
 
-  const onSubmit = (data) => {
-    console.log(data);
-    onSuccess();
+  const onSubmit = async (data) => {
+    try {
+      const formatData = {
+        description: data.description,
+        name: data.hotelName,
+        location: data.location,
+      };
+      const response = await api.patch(
+        `/hotels/${currentHotel.id}`,
+        formatData
+      );
+      console.log(response)
+      onSuccess();
+    } catch (error) {}
   };
 
   const handleHotelImageChange = (event) => {

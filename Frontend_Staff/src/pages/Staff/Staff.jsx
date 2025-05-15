@@ -10,10 +10,6 @@ import axios from "axios";
 import SpinPage from "@/components/Spin/Spin";
 import { useStaffStore } from "@/components/store/useStaffStore";
 
-const api = axios.create({
-  baseURL: "http://localhost:3000/api/v1",
-});
-
 const StaffList = () => {
   const {fetchStaff, initialized, isLoading, staffs} = useStaffStore();
   const [selectedStaff, setSelectedStaff] = useState(null);

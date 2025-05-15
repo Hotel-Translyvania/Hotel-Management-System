@@ -34,8 +34,10 @@ const HotelCard = ({ hotel, onEditClick }) => {
           </Button>
         </div>
 
-        <div className="text-sm text-muted-foreground">
+        <div className="text-sm text-muted-foreground sapce-y-2">
           <p className=" text-gray-600 truncated">{hotel.description}</p>
+          <p className=" text-blue-400 truncated font-semibold"> Hotel ID : {hotel.id}</p>
+
         </div>
       </div>
     </div>

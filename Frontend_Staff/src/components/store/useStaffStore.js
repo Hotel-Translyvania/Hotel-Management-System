@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
-
-const API_BASE_URL = "http://localhost:3000/api/v1";
+import { api } from "@/lib/api";
 
 export const useStaffStore = create((set, get) => ({
   staffs: [],
@@ -12,7 +11,7 @@ export const useStaffStore = create((set, get) => ({
   fetchStaff: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(`${API_BASE_URL}/hms/hotels/1/staff`);
+      const response = await api.get(`/hms/hotels/1/staff`);
       const data = response.data?.data;
       console.log("Staff data:", data); // Log the fetched data
       const formattedStaff = data.map((staff) => ({
@@ -51,7 +50,6 @@ export const useStaffStore = create((set, get) => ({
 
   editStaff: async (id, staff) => {
     try {
-
       const staffFormattedData = {
         email: staff.email,
         phonenumber: staff.phone,
@@ -63,11 +61,10 @@ export const useStaffStore = create((set, get) => ({
         lastname: staff.lname,
       };
       console.log(staffFormattedData);
-      const response = await axios.patch(
-        `${API_BASE_URL}/hms/hotels/1/staff/update/${id}`,
+      const response = await api.patch(
+        `/hms/hotels/1/staff/update/${id}`,
         staffFormattedData
       );
-      
     } catch (error) {
       console.error("Error fetching food items:", error);
       set({
@@ -94,8 +91,8 @@ export const useStaffStore = create((set, get) => ({
         endTime: staffData.endTime,
       };
       console.log(staffFormattedData);
-      const response = await axios.patch(
-        `${API_BASE_URL}/hms/hotels/1/staff/${staff_id}`,
+      const response = await api.patch(
+        `/hms/hotels/1/staff/${staff_id}`,
         staffFormattedData
       );
       const data = response.data;
