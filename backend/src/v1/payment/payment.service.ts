@@ -24,7 +24,7 @@ export class PaymentService {
       throw new Error('STRIPE_SECRET_KEY is not defined in environment variables');
     }
     this.stripe = new Stripe(stripeSecretKey, {
-      apiVersion: '2025-03-31.basil',
+      apiVersion: '2025-04-30.basil',
     });
   }
 
