@@ -21,6 +21,7 @@ import { Manager } from 'src/common/entities/manager.entity';
 import { Admin } from 'src/common/entities/admin.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
+
 // Extended Request type for authenticated routes
 interface AuthenticatedRequest extends Request {
   user: {
@@ -68,7 +69,7 @@ export class StaffAuthController {
         httpOnly: true,
         sameSite: 'lax',
         maxAge: 24 * 60 * 60 * 1000,
-        secure: false,
+        secure: process.env.NODE_ENV === 'production',
         path: '/',
       });
 
@@ -84,11 +85,11 @@ export class StaffAuthController {
           phone: staff.phonenumber,
           dateOfBirth: staff.dateOfBirth,
           profilePic: staff.profilePic,
-          address: staff.address
+          address: staff.address,
         },
       });
     } else if (role === 'admin') {
-      console.log("before admin")
+      console.log('before admin');
       const admin = await this.adminAuthService.validateAdmin(
         loginDto.email,
         loginDto.password,
@@ -105,7 +106,7 @@ export class StaffAuthController {
         httpOnly: true,
         sameSite: 'lax',
         maxAge: 24 * 60 * 60 * 1000,
-        secure: false,
+        secure: process.env.NODE_ENV === 'production',
         path: '/',
       });
 
@@ -121,7 +122,7 @@ export class StaffAuthController {
           phone: admin.phoneNumber,
           dateOfBirth: admin.dateOfBirth,
           profilePic: admin.profilePic,
-          address: admin.address
+          address: admin.address,
         },
       });
     } else {
@@ -142,9 +143,10 @@ export class StaffAuthController {
         httpOnly: true,
         sameSite: 'lax',
         maxAge: 24 * 60 * 60 * 1000,
-        secure: false,
+        secure: process.env.NODE_ENV === 'production',
         path: '/',
       });
+
       return res.status(HttpStatus.OK).json({
         success: true,
         message: 'Login successful',
@@ -157,7 +159,7 @@ export class StaffAuthController {
           phone: manager.phoneNumber,
           dateOfBirth: manager.dateOfBirth,
           profilePic: manager.profilePic,
-          address: manager.address
+          address: manager.address,
         },
       });
     }
@@ -232,7 +234,7 @@ export class StaffAuthController {
         phone: user?.phonenumber || user?.phoneNumber,
         dateOfBirth: user.dateOfBirth,
         profilePic: user.profilePic,
-        address: user.address
+        address: user.address,
       },
     };
   }
