@@ -34,9 +34,6 @@ export class FoodMenuService {
     let totalPrice = 0;
     const orderItems: OrderItem[] = [];
 
-    console.log('-----------------------------------------------------')
-    console.log('items:', items); // Debug log
-    console.log('-----------------------------------------------------')
 
     for (const item of items) {
       const food = await this.foodRepository.findOne({ where: { id: item.foodId, status: 'Available' } });
@@ -64,9 +61,6 @@ export class FoodMenuService {
       totalPrice,
       status: 'pending',
     });
-
-    console.log('-----------------------------------------------------')
-    console.log('order:', order); // Debug log
 
     const savedOrder = await this.orderRepository.save(order);
 
