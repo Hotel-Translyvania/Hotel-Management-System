@@ -10,6 +10,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
+    "start": "vite preview --port $PORT",
     "test": "jest"
   },
   "dependencies": {
