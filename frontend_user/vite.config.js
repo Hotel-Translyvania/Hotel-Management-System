@@ -11,6 +11,9 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
   ],
+  build:{
+    outDir:'dist'
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"), // Set alias for imports
